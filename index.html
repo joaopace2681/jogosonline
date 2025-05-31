@@ -229,6 +229,7 @@
     </div>
 
     <script type="module">
+        // Importações do Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { 
@@ -239,7 +240,37 @@
             updateProfile 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+        // Tenta obter a configuração do Studio, senão usa a configuração hardcoded como fallback
+        let firebaseConfig;
         const firebaseConfigFromStudio = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+
+        if (firebaseConfigFromStudio) {
+            try {
+                firebaseConfig = JSON.parse(firebaseConfigFromStudio);
+                if (!firebaseConfig.apiKey) { // Verifica se a apiKey existe após o parse
+                    console.warn("Configuração do Firebase do Studio não contém apiKey. Usando fallback.");
+                    firebaseConfig = null; // Força o uso do fallback
+                }
+            } catch (e) {
+                console.error("Erro ao parsear __firebase_config:", e);
+                firebaseConfig = null; // Garante que caia no fallback se o parse falhar
+            }
+        }
+        
+        // Fallback para configuração hardcoded se a do Studio não estiver disponível ou for inválida
+        if (!firebaseConfig) {
+            console.warn("Usando configuração Firebase hardcoded como fallback.");
+            firebaseConfig = {
+                apiKey: "AIzaSyB4_yBB6BPjOZrCsZ0_TMkmVBRk3WWMAFE", // Substitua pela sua chave se necessário
+                authDomain: "jogosonlie-461ae.firebaseapp.com",
+                projectId: "jogosonlie-461ae",
+                storageBucket: "jogosonlie-461ae.appspot.com", // Corrigido para .appspot.com
+                messagingSenderId: "113950581434",
+                appId: "1:113950581434:web:8af6396a43f829ed739883",
+                measurementId: "G-S18H8MRX4T"
+            };
+        }
+
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'caca-frutas-auth'; 
 
         let app, db, auth;
@@ -266,10 +297,11 @@
         if (authLogoImg.getAttribute('src') && authLogoImg.complete && authLogoImg.naturalHeight !== 0) {
              authLogoImg.classList.remove('hidden');
              textLogoFallback.classList.add('hidden');
-        } else {
+        } else if (!authLogoImg.getAttribute('src')) { // Se o src estiver vazio ou for inválido inicialmente
             authLogoImg.classList.add('hidden');
             textLogoFallback.classList.remove('hidden');
         }
+
 
         function displayAuthMessage(element, message, isError = true) {
             if (!element) return;
@@ -284,53 +316,44 @@
                 firebaseErrorElement.classList.remove('hidden');
             }
             // Desabilita botões de formulário se o Firebase falhar
-            if (loginForm) loginForm.querySelector('button[type="submit"]').disabled = true;
-            if (registrationForm) registrationForm.querySelector('button[type="submit"]').disabled = true;
-            
-            // Opcional: esconder os links de alternância se o sistema está totalmente indisponível
-            // if(showLoginLinkFromRegisterElement && showLoginLinkFromRegisterElement.parentElement) showLoginLinkFromRegisterElement.parentElement.classList.add('hidden');
-            // if(showRegisterLink && showRegisterLink.parentElement) showRegisterLink.parentElement.classList.add('hidden');
+             const loginButton = loginForm ? loginForm.querySelector('button[type="submit"]') : null;
+             const registerButton = registrationForm ? registrationForm.querySelector('button[type="submit"]') : null;
+
+            if (loginButton) loginButton.disabled = true;
+            if (registerButton) registerButton.disabled = true;
         }
 
-
-        if (firebaseConfigFromStudio) {
-            try {
-                const parsedConfig = JSON.parse(firebaseConfigFromStudio);
-                if (parsedConfig.apiKey) {
-                    app = initializeApp(parsedConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
-                    firebaseInitialized = true;
-                    console.log("Firebase inicializado com sucesso na página de autenticação!");
-                    if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden'); // Esconde erro global se inicializou
-                } else {
-                    console.warn("Configuração do Firebase recebida, mas apiKey está ausente.");
-                    displayGlobalFirebaseError("Erro de configuração do servidor. Tente novamente mais tarde.");
-                }
-            } catch (error) {
-                console.error("Erro ao parsear ou inicializar Firebase com __firebase_config:", error);
-                displayGlobalFirebaseError("Erro crítico na configuração do Firebase. Tente novamente mais tarde.");
+        // Inicialização do Firebase
+        try {
+            if (firebaseConfig && firebaseConfig.apiKey) { 
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                firebaseInitialized = true;
+                console.log("Firebase inicializado com sucesso na página de autenticação!");
+                if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
+            } else {
+                throw new Error("Configuração do Firebase inválida ou apiKey ausente.");
             }
-        } else {
-            console.warn("Variável __firebase_config não definida. Login/Cadastro não funcionarão.");
-            displayGlobalFirebaseError("Configuração do servidor não encontrada. Tente novamente mais tarde.");
+        } catch (error) {
+            console.error("Erro crítico ao inicializar Firebase:", error);
+            displayGlobalFirebaseError("Erro crítico na configuração. Funcionalidades de login/cadastro indisponíveis.");
         }
         
         function switchToLoginScreen() {
-            registrationScreen.classList.add('hidden');
-            loginScreen.classList.remove('hidden');
+            if (registrationScreen) registrationScreen.classList.add('hidden');
+            if (loginScreen) loginScreen.classList.remove('hidden');
             if(registerAuthMessage) registerAuthMessage.textContent = '';
             if(loginAuthMessage) loginAuthMessage.textContent = '';
         }
 
         function switchToRegisterScreen() {
-            loginScreen.classList.add('hidden');
-            registrationScreen.classList.remove('hidden');
+            if (loginScreen) loginScreen.classList.add('hidden');
+            if (registrationScreen) registrationScreen.classList.remove('hidden');
             if(registerAuthMessage) registerAuthMessage.textContent = '';
             if(loginAuthMessage) loginAuthMessage.textContent = '';
         }
         
-        // Corrigido para usar o ID correto do link na tela de cadastro
         if (showLoginLinkFromRegisterElement) { 
             showLoginLinkFromRegisterElement.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -350,7 +373,7 @@
             registrationForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
                 if (!firebaseInitialized) {
-                    displayAuthMessage(registerAuthMessage, "Serviço de autenticação indisponível. Verifique sua conexão ou tente mais tarde.");
+                    displayAuthMessage(registerAuthMessage, "Serviço de autenticação indisponível.");
                     return;
                 }
                 if(registerAuthMessage) registerAuthMessage.textContent = '';
@@ -405,6 +428,10 @@
                         credits: 100, 
                         valorCofre: 0 
                     };
+                    // Usar o appId na coleção para seguir as regras de segurança do Firestore
+                    // Exemplo: doc(db, "appData", appId, "users", user.uid);
+                    // Por simplicidade, usaremos uma coleção "users" global por enquanto.
+                    // Certifique-se de que suas regras do Firestore permitem isso ou ajuste o caminho.
                     const userProfileRef = doc(db, "users", user.uid); 
                     await setDoc(userProfileRef, userProfileData);
                     
@@ -439,7 +466,7 @@
             loginForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
                  if (!firebaseInitialized) {
-                    displayAuthMessage(loginAuthMessage, "Serviço de autenticação indisponível. Verifique sua conexão ou tente mais tarde.");
+                    displayAuthMessage(loginAuthMessage, "Serviço de autenticação indisponível.");
                     return;
                 }
                 if(loginAuthMessage) loginAuthMessage.textContent = '';
@@ -499,8 +526,6 @@
                 }
             });
         } else {
-             // Se Firebase não inicializou, displayGlobalFirebaseError já foi chamado e desabilitou botões.
-             // Apenas garante que a tela de login seja a padrão visível dentro do authContent.
              loginScreen.classList.remove('hidden');
              registrationScreen.classList.add('hidden');
         }
