@@ -24,7 +24,7 @@
         }
         .container {
             width: 100%; 
-            max-width: 380px; /* Reduzido para tornar o formulário mais compacto */
+            max-width: 400px; 
             margin-left: auto;
             margin-right: auto;
         }
@@ -35,8 +35,8 @@
             background-size: cover;
             background-position: center;
             backdrop-filter: blur(8px); 
-            padding: 1.25rem; /* Reduzido */
-            border-radius: 20px; /* Levemente reduzido */
+            padding: 1.25rem; 
+            border-radius: 20px; 
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255,255,255,0.03); 
             text-align: left;
             border: 1px solid rgba(139, 92, 246, 0.25); 
@@ -45,51 +45,51 @@
 
         .auth-logo-container {
             text-align: center;
-            margin-bottom: 1rem; /* Reduzido */
+            margin-bottom: 1rem; 
         }
         #authLogo { 
-            max-width: 160px; /* Reduzido */
+            max-width: 160px; 
             height: auto;
-            margin-bottom: 0.25rem; /* Reduzido */
+            margin-bottom: 0.25rem; 
             filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5)); 
         }
         .text-logo { 
             font-family: 'Russo One', sans-serif;
-            font-size: clamp(1.7rem, 5.5vw, 2.3rem); /* Ajustado */
+            font-size: clamp(1.7rem, 5.5vw, 2.3rem); 
             color: #fff;
             text-transform: uppercase;
             letter-spacing: 1.5px; 
-            text-shadow: 0 0 3px #8b5cf6, 0 0 6px #8b5cf6, 0 0 10px #ec4899, 0 0 14px #ec4899; /* Ajustado */
+            text-shadow: 0 0 3px #8b5cf6, 0 0 6px #8b5cf6, 0 0 10px #ec4899, 0 0 14px #ec4899; 
         }
 
         #registrationScreen h2, #loginScreen h2 {
             font-family: 'Poppins', sans-serif;
-            font-size: clamp(1.2rem, 3.8vw, 1.6rem); /* Ajustado */
+            font-size: clamp(1.2rem, 3.8vw, 1.6rem); 
             font-weight: 700;
             color: #e0e0e0; 
-            margin-bottom: 1rem; /* Ajustado */
+            margin-bottom: 1rem; 
             text-align: center;
         }
         .form-group {
-            margin-bottom: 0.75rem; /* Ajustado */
+            margin-bottom: 0.75rem; 
         }
         .form-group label {
             display: block;
-            margin-bottom: 0.2rem; /* Ajustado */
+            margin-bottom: 0.2rem; 
             font-weight: 600;
-            font-size: 0.7rem; /* Ajustado */
+            font-size: 0.7rem; 
             color: #a5b4fc; 
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .form-group input {
             width: 100%;
-            padding: 0.6rem; /* Ajustado */
+            padding: 0.6rem; 
             border-radius: 8px; 
             border: 1px solid #4a5568; 
             background-color: rgba(23, 30, 48, 0.7); 
             color: #e5e7eb;
-            font-size: 0.85rem; /* Ajustado */
+            font-size: 0.85rem; 
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .form-group input::placeholder {
@@ -103,15 +103,15 @@
         .address-grid {
             display: grid;
             grid-template-columns: 1fr; 
-            gap: 0.5rem; /* Ajustado */
+            gap: 0.5rem; 
         }
          .address-grid .form-group.full-width {
             grid-column: span 1; 
         }
         .switch-auth-link {
             text-align: center;
-            margin-top: 1rem; /* Ajustado */
-            font-size: 0.8rem; /* Ajustado */
+            margin-top: 1rem; 
+            font-size: 0.8rem; 
         }
         .switch-auth-link a {
             color: #c4b5fd; 
@@ -123,15 +123,15 @@
             color: #fff;
         }
         .submit-button { 
-            margin-top: 1rem; /* Ajustado */
+            margin-top: 1rem; 
             width: 100%; 
             font-family: 'Poppins', sans-serif; 
             background: linear-gradient(to right, #7c3aed, #db2777); 
             color: white; 
-            padding: 0.7rem 1.4rem; /* Ajustado */
+            padding: 0.7rem 1.4rem; 
             border: none; 
             border-radius: 10px; 
-            font-size: clamp(0.85rem, 3.3vw, 1rem); /* Ajustado */
+            font-size: clamp(0.85rem, 3.3vw, 1rem); 
             font-weight: 700; 
             cursor: pointer; 
             transition: all 0.3s ease; 
@@ -153,8 +153,8 @@
         }
         .auth-message {
             text-align: center;
-            margin-top: 0.875rem; /* Ajustado */
-            font-size: 0.8rem; /* Ajustado */
+            margin-top: 0.875rem; 
+            font-size: 0.8rem; 
             min-height: 1.1rem; 
         }
         .auth-message.error {
@@ -166,8 +166,6 @@
         .hidden { display: none !important; } 
 
         @media (min-width: 420px) { 
-            /* Mantém uma coluna para o address-grid mesmo em telas um pouco maiores, 
-               pois o container principal é max-width: 400px */
             .address-grid {
                  grid-template-columns: 1fr; 
             }
@@ -182,8 +180,7 @@
                     <img id="authLogo" src="imagens_interface/logo-caca-frutas.png" alt="CAÇA-FRUTAS" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
                     <div id="textLogoFallback" class="text-logo hidden">CAÇA-FRUTAS</div>
                 </div>
-                
-                <div id="loginScreen"> 
+                <p id="firebaseError" class="auth-message error text-center mb-4 hidden"></p> <div id="loginScreen"> 
                     <h2>Login do Jogador</h2>
                     <form id="loginForm">
                         <div class="form-group">
@@ -230,7 +227,6 @@
     </div>
 
     <script type="module">
-        // Importações do Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { 
@@ -245,29 +241,8 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'caca-frutas-auth'; 
 
         let app, db, auth;
+        let firebaseInitialized = false;
 
-        if (firebaseConfigFromStudio) {
-            try {
-                const parsedConfig = JSON.parse(firebaseConfigFromStudio);
-                if (parsedConfig.apiKey) {
-                    app = initializeApp(parsedConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
-                    console.log("Firebase inicializado com sucesso na página de autenticação!");
-                } else {
-                    console.warn("Configuração do Firebase recebida, mas apiKey está ausente.");
-                    displayAuthMessage(loginAuthMessage, "Erro de configuração do servidor.", true);
-                    if(registerAuthMessage) displayAuthMessage(registerAuthMessage, "Erro de configuração do servidor.", true);
-                }
-            } catch (error) {
-                console.error("Erro ao parsear ou inicializar Firebase com __firebase_config:", error);
-                displayAuthMessage(loginAuthMessage, "Erro de configuração do servidor.", true);
-                if(registerAuthMessage) displayAuthMessage(registerAuthMessage, "Erro de configuração do servidor.", true);
-            }
-        } else {
-            console.warn("Variável __firebase_config não definida. Login/Cadastro não funcionarão.");
-        }
-        
         const authScreen = document.getElementById('authScreen');
         const authContent = document.getElementById('authContent');
         const authLogoImg = document.getElementById('authLogo');
@@ -280,6 +255,7 @@
         const showRegisterLink = document.getElementById('showRegisterLink');
         const loginAuthMessage = document.getElementById('loginAuthMessage');
         const registerAuthMessage = document.getElementById('registerAuthMessage');
+        const firebaseErrorElement = document.getElementById('firebaseError');
 
         authLogoImg.onerror = () => {
             authLogoImg.classList.add('hidden');
@@ -293,14 +269,47 @@
             textLogoFallback.classList.remove('hidden');
         }
 
-
         function displayAuthMessage(element, message, isError = true) {
             if (!element) return;
             element.textContent = message;
             element.className = isError ? 'auth-message error' : 'auth-message success';
-            setTimeout(() => { element.textContent = ''; }, 7000);
+            setTimeout(() => { if(element) element.textContent = ''; }, 7000);
+        }
+        
+        function displayGlobalAuthError(message) {
+            if (firebaseErrorElement) {
+                firebaseErrorElement.textContent = message;
+                firebaseErrorElement.classList.remove('hidden');
+            }
+            if (loginForm) loginForm.querySelector('button[type="submit"]').disabled = true;
+            if (registrationForm) registrationForm.querySelector('button[type="submit"]').disabled = true;
+            if(showLoginLinkFromRegisterElement && showLoginLinkFromRegisterElement.parentElement) showLoginLinkFromRegisterElement.parentElement.classList.add('hidden');
+            if(showRegisterLink && showRegisterLink.parentElement) showRegisterLink.parentElement.classList.add('hidden');
         }
 
+
+        if (firebaseConfigFromStudio) {
+            try {
+                const parsedConfig = JSON.parse(firebaseConfigFromStudio);
+                if (parsedConfig.apiKey) {
+                    app = initializeApp(parsedConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    firebaseInitialized = true;
+                    console.log("Firebase inicializado com sucesso na página de autenticação!");
+                } else {
+                    console.warn("Configuração do Firebase recebida, mas apiKey está ausente.");
+                    displayGlobalAuthError("Erro de configuração do servidor. Funcionalidades de login/cadastro indisponíveis.");
+                }
+            } catch (error) {
+                console.error("Erro ao parsear ou inicializar Firebase com __firebase_config:", error);
+                displayGlobalAuthError("Erro crítico na configuração do Firebase. Funcionalidades de login/cadastro indisponíveis.");
+            }
+        } else {
+            console.warn("Variável __firebase_config não definida. Login/Cadastro não funcionarão.");
+            displayGlobalAuthError("Configuração do servidor não encontrada. Login/Cadastro indisponíveis.");
+        }
+        
         function switchToLoginScreen() {
             registrationScreen.classList.add('hidden');
             loginScreen.classList.remove('hidden');
@@ -329,10 +338,13 @@
             });
         }
         
-
         if (registrationForm) {
             registrationForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
+                if (!firebaseInitialized) {
+                    displayAuthMessage(registerAuthMessage, "Serviço de autenticação indisponível.");
+                    return;
+                }
                 if(registerAuthMessage) registerAuthMessage.textContent = '';
                 const submitButton = registrationForm.querySelector('button[type="submit"]');
                 submitButton.disabled = true;
@@ -365,13 +377,6 @@
                 }
                 if (password.length < 6) {
                     displayAuthMessage(registerAuthMessage, "A senha deve ter pelo menos 6 caracteres.");
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Cadastrar e Jogar';
-                    return;
-                }
-
-                if (!auth || !db) {
-                    displayAuthMessage(registerAuthMessage,"Serviço de autenticação indisponível. Tente mais tarde.");
                     submitButton.disabled = false;
                     submitButton.textContent = 'Cadastrar e Jogar';
                     return;
@@ -425,6 +430,10 @@
         if (loginForm) {
             loginForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
+                 if (!firebaseInitialized) {
+                    displayAuthMessage(loginAuthMessage, "Serviço de autenticação indisponível.");
+                    return;
+                }
                 if(loginAuthMessage) loginAuthMessage.textContent = '';
                 const submitButton = loginForm.querySelector('button[type="submit"]');
                 submitButton.disabled = true;
@@ -435,13 +444,6 @@
 
                 if (!identifier || !password) {
                     displayAuthMessage(loginAuthMessage, "Por favor, preencha o email e a senha.");
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Entrar';
-                    return;
-                }
-
-                if (!auth) {
-                    displayAuthMessage(loginAuthMessage, "Serviço de autenticação indisponível.");
                     submitButton.disabled = false;
                     submitButton.textContent = 'Entrar';
                     return;
@@ -474,22 +476,22 @@
         
         // Inicialização Padrão: Mostrar tela de autenticação (login primeiro)
         authScreen.classList.remove('hidden'); 
-        loginScreen.classList.remove('hidden'); 
-        registrationScreen.classList.add('hidden'); 
+        authContent.classList.remove('hidden'); // Mostra o conteúdo principal da auth
 
-        // Verifica se o usuário já está logado ao carregar a página
-        if (auth) {
+        if (firebaseInitialized && auth) {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     console.log("Usuário já logado, redirecionando para o jogo...");
                     window.location.href = 'jogo.html';
                 } else {
                     console.log("Nenhum usuário logado. Exibindo tela de login.");
-                    authContent.classList.remove('hidden'); 
+                    loginScreen.classList.remove('hidden'); 
+                    registrationScreen.classList.add('hidden'); 
                 }
             });
         } else {
-             authContent.classList.remove('hidden'); 
+             // Se Firebase não inicializou, já mostramos o erro global. 
+             // Apenas garantimos que o login seja a tela padrão.
              loginScreen.classList.remove('hidden');
              registrationScreen.classList.add('hidden');
         }
