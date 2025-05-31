@@ -31,7 +31,7 @@
         
         #authScreen { 
             background-color: rgba(30, 30, 50, 0.85); 
-            background-image: url('imagens_interface/fundo-auth.jpg'); 
+            background-image: url('imagens_interface/fundo-auth.png'); /* CORRIGIDO PARA .png */
             background-size: cover;
             background-position: center;
             backdrop-filter: blur(8px); 
@@ -240,31 +240,32 @@
             updateProfile 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // Tenta obter a configuração do Studio, senão usa a configuração hardcoded como fallback
         let firebaseConfig;
         const firebaseConfigFromStudio = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
 
         if (firebaseConfigFromStudio) {
             try {
-                firebaseConfig = JSON.parse(firebaseConfigFromStudio);
-                if (!firebaseConfig.apiKey) { // Verifica se a apiKey existe após o parse
-                    console.warn("Configuração do Firebase do Studio não contém apiKey. Usando fallback.");
-                    firebaseConfig = null; // Força o uso do fallback
+                const parsedConfig = JSON.parse(firebaseConfigFromStudio);
+                if (parsedConfig.apiKey) { 
+                    firebaseConfig = parsedConfig;
+                     console.log("Usando configuração Firebase do Studio.");
+                } else {
+                    console.warn("Configuração do Firebase do Studio inválida (sem apiKey). Usando fallback hardcoded.");
+                    firebaseConfig = null; 
                 }
             } catch (e) {
-                console.error("Erro ao parsear __firebase_config:", e);
-                firebaseConfig = null; // Garante que caia no fallback se o parse falhar
+                console.error("Erro ao parsear __firebase_config, usando fallback hardcoded:", e);
+                firebaseConfig = null; 
             }
         }
         
-        // Fallback para configuração hardcoded se a do Studio não estiver disponível ou for inválida
-        if (!firebaseConfig) {
+        if (!firebaseConfig) { 
             console.warn("Usando configuração Firebase hardcoded como fallback.");
-            firebaseConfig = {
-                apiKey: "AIzaSyB4_yBB6BPjOZrCsZ0_TMkmVBRk3WWMAFE", // Substitua pela sua chave se necessário
+            firebaseConfig = { 
+                apiKey: "AIzaSyB4_yBB6BPjOZrCsZ0_TMkmVBRk3WWMAFE",
                 authDomain: "jogosonlie-461ae.firebaseapp.com",
                 projectId: "jogosonlie-461ae",
-                storageBucket: "jogosonlie-461ae.appspot.com", // Corrigido para .appspot.com
+                storageBucket: "jogosonlie-461ae.firebasestorage.app", 
                 messagingSenderId: "113950581434",
                 appId: "1:113950581434:web:8af6396a43f829ed739883",
                 measurementId: "G-S18H8MRX4T"
@@ -297,11 +298,10 @@
         if (authLogoImg.getAttribute('src') && authLogoImg.complete && authLogoImg.naturalHeight !== 0) {
              authLogoImg.classList.remove('hidden');
              textLogoFallback.classList.add('hidden');
-        } else if (!authLogoImg.getAttribute('src')) { // Se o src estiver vazio ou for inválido inicialmente
+        } else if (!authLogoImg.getAttribute('src')) { 
             authLogoImg.classList.add('hidden');
             textLogoFallback.classList.remove('hidden');
         }
-
 
         function displayAuthMessage(element, message, isError = true) {
             if (!element) return;
@@ -315,29 +315,24 @@
                 firebaseErrorElement.textContent = message;
                 firebaseErrorElement.classList.remove('hidden');
             }
-            // Desabilita botões de formulário se o Firebase falhar
-             const loginButton = loginForm ? loginForm.querySelector('button[type="submit"]') : null;
-             const registerButton = registrationForm ? registrationForm.querySelector('button[type="submit"]') : null;
-
-            if (loginButton) loginButton.disabled = true;
-            if (registerButton) registerButton.disabled = true;
+            if (loginForm) loginForm.querySelector('button[type="submit"]').disabled = true;
+            if (registrationForm) registrationForm.querySelector('button[type="submit"]').disabled = true;
         }
 
-        // Inicialização do Firebase
         try {
             if (firebaseConfig && firebaseConfig.apiKey) { 
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
                 firebaseInitialized = true;
-                console.log("Firebase inicializado com sucesso na página de autenticação!");
+                console.log("Firebase inicializado com sucesso!");
                 if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
             } else {
-                throw new Error("Configuração do Firebase inválida ou apiKey ausente.");
+                throw new Error("Configuração final do Firebase inválida ou apiKey ausente.");
             }
         } catch (error) {
             console.error("Erro crítico ao inicializar Firebase:", error);
-            displayGlobalFirebaseError("Erro crítico na configuração. Funcionalidades de login/cadastro indisponíveis.");
+            displayGlobalFirebaseError("Erro crítico na configuração do Firebase. Funcionalidades de login/cadastro indisponíveis.");
         }
         
         function switchToLoginScreen() {
@@ -368,7 +363,6 @@
             });
         }
         
-
         if (registrationForm) {
             registrationForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
@@ -428,10 +422,6 @@
                         credits: 100, 
                         valorCofre: 0 
                     };
-                    // Usar o appId na coleção para seguir as regras de segurança do Firestore
-                    // Exemplo: doc(db, "appData", appId, "users", user.uid);
-                    // Por simplicidade, usaremos uma coleção "users" global por enquanto.
-                    // Certifique-se de que suas regras do Firestore permitem isso ou ajuste o caminho.
                     const userProfileRef = doc(db, "users", user.uid); 
                     await setDoc(userProfileRef, userProfileData);
                     
@@ -453,6 +443,10 @@
                         friendlyMessage = "A senha é muito fraca.";
                     } else if (error.code === 'auth/invalid-email') {
                         friendlyMessage = "Formato de email inválido.";
+                    } else if (error.code === 'auth/operation-not-allowed') {
+                         friendlyMessage = "Cadastro por email/senha não está habilitado no Firebase.";
+                    } else if (error.code === 'auth/project-not-found' || error.code === 'auth/api-key-not-valid' || error.code === 'auth/configuration-not-found') {
+                        friendlyMessage = "Problema na configuração do Firebase. Contate o suporte.";
                     }
                     displayAuthMessage(registerAuthMessage, friendlyMessage);
                 } finally {
@@ -500,6 +494,8 @@
                         friendlyMessage = "Email ou senha inválidos.";
                     } else if (error.code === 'auth/invalid-email') {
                         friendlyMessage = "Formato de email inválido.";
+                    } else if (error.code === 'auth/operation-not-allowed' || error.code === 'auth/project-not-found' || error.code === 'auth/api-key-not-valid' || error.code === 'auth/configuration-not-found') {
+                        friendlyMessage = "Problema na configuração do Firebase ou serviço indisponível.";
                     }
                     displayAuthMessage(loginAuthMessage, friendlyMessage);
                 } finally {
@@ -509,7 +505,6 @@
             });
         }
         
-        // Inicialização Padrão: Mostrar tela de autenticação (login primeiro)
         authScreen.classList.remove('hidden'); 
         authContent.classList.remove('hidden'); 
 
