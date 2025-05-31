@@ -151,6 +151,9 @@
 
         let firebaseConfig;
         const firebaseConfigFromStudio = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+        const baseHref = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        const indexPageUrl = baseHref + 'index.html';
+
 
         if (firebaseConfigFromStudio) {
             try {
@@ -171,7 +174,7 @@
         if (!firebaseConfig) { 
             console.warn("Usando configuração Firebase hardcoded como fallback em jogo.html.");
             firebaseConfig = { 
-                apiKey: "AIzaSyB4_yBB6BPjOZrCsZ0_TMkmVBRk3WWMAFE",
+                apiKey: "AIzaSyB4_yBB6BPjOZrCsZ0_TMkmVBRk3WWMAFE", 
                 authDomain: "jogosonlie-461ae.firebaseapp.com",
                 projectId: "jogosonlie-461ae",
                 storageBucket: "jogosonlie-461ae.firebasestorage.app", 
@@ -206,9 +209,11 @@
             }
         } catch (error) {
             console.error("Erro crítico ao inicializar Firebase em jogo.html:", error);
-            if (firebaseErrorContainer) firebaseErrorContainer.classList.remove('hidden');
-            if (firebaseErrorMessage) firebaseErrorMessage.textContent = "Erro de configuração do Firebase. O jogo não pode ser carregado. Por favor, contate o suporte.";
-            // Esconde o jogo e o loading se o Firebase falhar criticamente
+            if (firebaseErrorContainer) {
+                firebaseErrorContainer.classList.remove('hidden');
+                firebaseErrorContainer.style.display = 'flex'; // Garante que está visível
+            }
+            if (firebaseErrorMessage) firebaseErrorMessage.textContent = "Erro de configuração do Firebase. O jogo não pode ser carregado. Por favor, contate o suporte ou tente recarregar a página.";
             if (gameScreen) gameScreen.classList.add('hidden');
             if (loadingOverlayGame) loadingOverlayGame.classList.add('hidden');
         }
@@ -258,6 +263,7 @@
         }
 
         function populatePaytable() {
+            if (!paytableContent) return;
             paytableContent.innerHTML = ''; 
             symbols.forEach(symbol => {
                 if (symbol.payout.three > 0 || symbol.payout.two > 0) {
@@ -303,8 +309,8 @@
         }
         
         async function loadUserData(userId) {
-            if (!db) {
-                console.log("DB não inicializado, usando valores padrão para créditos e cofre.");
+            if (!db || !firebaseInitialized) { 
+                console.log("DB não inicializado ou Firebase não pronto, usando valores padrão para créditos e cofre.");
                 credits = 100;
                 valorCofre = 0; 
                 updateCredits();
@@ -332,14 +338,21 @@
                 updateCredits();
             } catch (error) {
                 console.error("Erro ao carregar dados do usuário do Firestore:", error);
-                credits = 100; 
-                valorCofre = 0; 
+                if (error.code === 'permission-denied' || error.code === 'unavailable') {
+                    console.warn("Firestore indisponível ou sem permissão. Usando créditos locais para esta sessão.");
+                    credits = 100; 
+                    valorCofre = 0; 
+                } else {
+                     console.error("Erro desconhecido ao carregar dados, usando fallback.");
+                    credits = 100; 
+                    valorCofre = 0; 
+                }
                 updateCredits();
             }
         }
 
         async function saveGameData(userIdToSave) {
-            if (!db || !userIdToSave) return;
+            if (!db || !userIdToSave || !firebaseInitialized) return; 
             const userDocRef = doc(db, "users", userIdToSave);
             try {
                 await setDoc(userDocRef, { 
@@ -354,6 +367,13 @@
 
 
         function initializeGameAssets() {
+            if (!loadingOverlayGame || !spinButton || !messageDisplay || !reelElements.every(r => r.img)) {
+                console.error("Elementos essenciais do jogo não encontrados no DOM.");
+                if (firebaseErrorContainer) firebaseErrorContainer.classList.remove('hidden');
+                if (firebaseErrorMessage) firebaseErrorMessage.textContent = "Erro interno ao carregar o jogo. Elementos faltando.";
+                return;
+            }
+
             loadingOverlayGame.classList.remove('hidden');
             loadingOverlayGame.style.display = 'flex';
             spinButton.disabled = true;
@@ -366,7 +386,7 @@
             
             populatePaytable(); 
 
-            if (currentUserId) {
+            if (currentUserId && firebaseInitialized) { 
                 loadUserData(currentUserId).then(() => {
                      setTimeout(() => {
                         loadingOverlayGame.style.display = 'none';
@@ -379,11 +399,14 @@
                         messageDisplay.textContent = credits >= spinCost ? 'CLIQUE EM GIRAR!' : 'SEM CRÉDITOS'; 
                     }, 500); 
                 });
+            } else if (!firebaseInitialized) {
+                console.log("Firebase não inicializado em initializeGameAssets. O jogo não pode prosseguir corretamente.");
+                 loadingOverlayGame.style.display = 'none';
+                 messageDisplay.textContent = 'Erro de conexão. Tente recarregar.';
+                 spinButton.disabled = true;
             } else {
-                console.log("Nenhum usuário logado em initializeGameAssets. Isso não deveria acontecer aqui.");
-                // Se chegar aqui, é um estado inesperado, pois onAuthStateChanged deveria ter redirecionado.
-                // Por segurança, podemos redirecionar novamente ou mostrar uma mensagem de erro.
-                window.location.href = 'index.html';
+                console.log("Nenhum usuário logado em initializeGameAssets. Redirecionando para login.");
+                window.location.href = indexPageUrl; 
             }
         }
 
@@ -403,7 +426,7 @@
             valorCofre += 0.50; 
             credits -= spinCost;
             
-            if (currentUserId && db) {
+            if (currentUserId && db && firebaseInitialized) { 
                 await saveGameData(currentUserId); 
             }
             console.log(`[ADMIN] Valor no cofre: R$ ${formatAsReal(valorCofre)}`); 
@@ -513,7 +536,7 @@
                     console.log(`[ADMIN] Prêmio de R$ ${formatAsReal(premioDoCofre)} pago pelo cofre. Novo valor do cofre (interno): R$ ${formatAsReal(valorCofre)}`);
                     forcarTrincaPeloCofre = false; 
                     simboloTrincaCofre = null;
-                    if(currentUserId && db) { 
+                    if(currentUserId && db && firebaseInitialized) { 
                         saveGameData(currentUserId); 
                     }
                 }
@@ -551,11 +574,13 @@
 
         function resetGame() {
             credits = 100; 
-            // valorCofre = 0; // Cofre não é resetado aqui, é por usuário ou global
             forcarTrincaPeloCofre = false;
             simboloTrincaCofre = null;
             updateCredits();
-            console.log("Jogo resetado (créditos). Cofre (interno) mantém valor.");
+            // Não resetamos o valorCofre aqui, pois ele é persistente para o usuário
+            // Se quiser zerar o cofre ao clicar em "Jogar Novamente", descomente a linha abaixo:
+            // valorCofre = 0; 
+            // console.log("Jogo resetado (créditos). Cofre (interno) mantém valor se não zerado acima.");
             messageDisplay.textContent = 'BOA SORTE!';
             messageDisplay.style.color = '#e5e7eb';
             
@@ -567,26 +592,27 @@
             hideModal();
         }
         
-        logoutButton.addEventListener('click', async () => {
-            if (!auth) return;
-            try {
-                if (currentUserId && db) {
-                    await saveGameData(currentUserId); // Salva os dados antes de deslogar
+        if(logoutButton) {
+            logoutButton.addEventListener('click', async () => {
+                if (!auth || !firebaseInitialized) return; 
+                try {
+                    if (currentUserId && db) {
+                        await saveGameData(currentUserId); 
+                    }
+                    await signOut(auth);
+                    console.log("Usuário deslogado.");
+                    window.location.href = indexPageUrl; 
+                } catch (error) {
+                    console.error("Erro ao fazer logout:", error);
+                    alert("Erro ao sair. Tente novamente.");
                 }
-                await signOut(auth);
-                console.log("Usuário deslogado.");
-                window.location.href = 'index.html'; 
-            } catch (error) {
-                console.error("Erro ao fazer logout:", error);
-                alert("Erro ao sair. Tente novamente.");
-            }
-        });
+            });
+        }
 
-        spinButton.addEventListener('click', spinReels);
-        resetButton.addEventListener('click', resetGame);
+        if(spinButton) spinButton.addEventListener('click', spinReels);
+        if(resetButton) resetButton.addEventListener('click', resetGame);
 
-        // Verifica o estado de autenticação ao carregar a página do jogo
-        if (auth) {
+        if (auth && firebaseInitialized) { 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     currentUserId = user.uid;
@@ -595,22 +621,22 @@
                     initializeGameAssets(); 
                 } else {
                     console.log("Nenhum usuário logado, redirecionando para index.html");
-                    window.location.href = 'index.html';
+                    window.location.href = indexPageUrl; 
                 }
             });
-        } else {
-            // Se o Firebase não inicializou corretamente na página do jogo
+        } else if (!firebaseInitialized) {
             if (gameScreen) gameScreen.classList.add('hidden');
-            const errorContainer = document.createElement('div');
-            errorContainer.className = 'text-center text-red-400 p-8 bg-gray-800 rounded-lg shadow-xl';
-            errorContainer.innerHTML = `<h2 class="text-2xl font-bold mb-4">Erro de Configuração</h2>
-                                        <p class="mb-4">Não foi possível conectar aos serviços do jogo. Por favor, tente voltar e fazer login novamente.</p>
-                                        <a href="index.html" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Voltar para Login</a>`;
-            document.body.innerHTML = ''; // Limpa o corpo para mostrar só a mensagem de erro
-            document.body.appendChild(errorContainer);
-            document.body.style.display = 'flex'; // Re-aplica flex para centralizar
-            document.body.style.justifyContent = 'center';
-            document.body.style.alignItems = 'center';
+            const errorContainer = document.getElementById('firebaseErrorContainer');
+            const errorMsgElem = document.getElementById('firebaseErrorMessage');
+            if (errorContainer) {
+                errorContainer.classList.remove('hidden');
+                errorContainer.style.display = 'flex';
+            }
+            if (errorMsgElem) errorMsgElem.textContent = "Erro de configuração do Firebase. O jogo não pode ser carregado.";
+            console.log("Firebase não inicializado, jogo não pode carregar.");
+        } else {
+             console.log("Objeto Auth não disponível. Redirecionando para login.");
+             window.location.href = indexPageUrl; 
         }
 
     </script>
