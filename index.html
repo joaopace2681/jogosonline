@@ -123,7 +123,7 @@
         .switch-auth-link a:hover {
             color: #fff;
         }
-        .submit-button, .payment-button { 
+        .submit-button, .payment-button, .pix-confirm-button { 
             margin-top: 1rem; 
             width: 100%; 
             font-family: 'Poppins', sans-serif; 
@@ -140,12 +140,12 @@
             text-transform: uppercase; 
             letter-spacing: 1px;
         }
-        .submit-button:hover, .payment-button:hover {
+        .submit-button:hover, .payment-button:hover, .pix-confirm-button:hover {
             background: linear-gradient(to right, #8b5cf6, #ec4899);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 25px rgba(219, 39, 119, 0.6);
             transform: translateY(-2px) scale(1.02);
         }
-        .submit-button:disabled {
+        .submit-button:disabled, .payment-button:disabled, .pix-confirm-button:disabled {
             background: #4b5563;
             cursor: not-allowed;
             opacity: 0.6;
@@ -166,6 +166,41 @@
         }
         .hidden { display: none !important; } 
 
+        #pixInfoContainer {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+        #pixQrCode {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1rem;
+            background-color: white; /* Para o QR code ser visível */
+            padding: 5px;
+            border-radius: 8px;
+        }
+        #pixKey {
+            font-weight: 600;
+            word-break: break-all;
+            background-color: rgba(0,0,0,0.2);
+            padding: 0.5rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+         #pixKey:hover {
+            background-color: rgba(0,0,0,0.4);
+        }
+        .copy-feedback {
+            font-size: 0.75rem;
+            color: #a5b4fc;
+            min-height: 1rem;
+            margin-top: 0.25rem;
+        }
+
+
         @media (min-width: 420px) { 
             .address-grid {
                  grid-template-columns: 1fr; 
@@ -178,7 +213,7 @@
         <div id="authScreen">
             <div id="authContent"> 
                 <div class="auth-logo-container">
-                    <img id="authLogo" src="imagens_interface/logo-caca-frutas.png" alt="GAME FUN Logo" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
+                    <img id="authLogo" src="imagens_interface/logo-game-fun.png" alt="GAME FUN Logo" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
                     <div id="textLogoFallback" class="text-logo hidden">GAME FUN</div>
                 </div>
                 <p id="firebaseError" class="auth-message error text-center mb-4 hidden"></p> 
@@ -229,16 +264,23 @@
                 <div id="paymentScreen" class="hidden">
                     <h2>Comprar Créditos</h2>
                     <p id="paymentUserInfo" class="text-center mb-4"></p>
-                    <div class="form-group">
-                        <label for="paymentAmount">Valor do Depósito (R$)</label>
-                        <select id="paymentAmount" class="form-group input">
-                            <option value="5">R$ 5,00 (10 créditos)</option>
-                            <option value="10">R$ 10,00 (20 créditos)</option>
-                            <option value="20">R$ 20,00 (40 créditos)</option>
-                            <option value="50">R$ 50,00 (100 créditos)</option>
-                        </select>
+                    <div id="paymentOptions">
+                        <div class="form-group">
+                            <label for="paymentAmount">Valor do Depósito (R$)</label>
+                            <select id="paymentAmount" class="form-group input">
+                                <option value="5">R$ 5,00 (10 créditos)</option>
+                                <option value="10">R$ 10,00 (20 créditos)</option>
+                                <option value="20">R$ 20,00 (40 créditos)</option>
+                                <option value="50">R$ 50,00 (100 créditos)</option>
+                            </select>
+                        </div>
+                        <button id="initiatePixPaymentButton" class="payment-button submit-button">Pagar com PIX</button> </div>
+                    <div id="pixInfoContainer" class="hidden">
+                        <p class="mb-2">Escaneie o QR Code ou copie a chave PIX:</p>
+                        <img id="pixQrCode" src="imagens_interface/qrcode-pix-placeholder.png" alt="QR Code PIX"> <p>Chave PIX (Exemplo): <span id="pixKey" class="font-mono bg-gray-700 p-1 rounded">00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-4266141740005204000053039865802BR5913NOME DO RECEBEDOR6009SAO PAULO62070503***6304E29B</span></p>
+                        <div id="copyFeedback" class="copy-feedback"></div>
+                        <button id="paymentConfirmedButton" class="pix-confirm-button submit-button mt-4">Já Paguei / Continuar</button>
                     </div>
-                    <button id="initiatePaymentButton" class="payment-button submit-button">Pagar com Gateway</button>
                     <p id="paymentMessage" class="auth-message"></p>
                     <p class="switch-auth-link"><a href="#" id="backToGameLink" class="hidden">Voltar ao Jogo</a></p>
                 </div>
@@ -248,7 +290,6 @@
     </div>
 
     <script type="module">
-        // Importações do Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { 
@@ -267,11 +308,11 @@
         if (firebaseConfigFromStudio) {
             try {
                 const parsedConfig = JSON.parse(firebaseConfigFromStudio);
-                if (parsedConfig.apiKey) { 
+                if (parsedConfig.apiKey && parsedConfig.projectId === "jogosonlie-fadc2") { 
                     firebaseConfig = parsedConfig;
-                     console.log("Usando configuração Firebase do Studio.");
+                     console.log("Usando configuração Firebase do Studio para jogosonlie-fadc2.");
                 } else {
-                    console.warn("Configuração do Firebase do Studio inválida (sem apiKey). Usando fallback hardcoded.");
+                    console.warn("Configuração do Firebase do Studio inválida ou para projeto errado. Usando fallback hardcoded.");
                     firebaseConfig = null; 
                 }
             } catch (e) {
@@ -281,21 +322,18 @@
         }
         
         if (!firebaseConfig) { 
-            console.warn("Usando configuração Firebase hardcoded como fallback.");
+            console.warn("Usando configuração Firebase hardcoded para jogosonlie-fadc2.");
             firebaseConfig = { 
-                apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8", // Sua NOVA API KEY
-                authDomain: "jogosonlie-fadc2.firebaseapp.com", // Seu NOVO authDomain
-                projectId: "jogosonlie-fadc2", // Seu NOVO projectId
-                storageBucket: "jogosonlie-fadc2.appspot.com", // Seu NOVO storageBucket 
-                messagingSenderId: "998401435610", // Seu NOVO messagingSenderId (geralmente o número do projeto)
-                appId: "1:998401435610:web:COLOQUE_O_RESTANTE_DO_SEU_APP_ID_AQUI", // SEU APP ID COMPLETO AQUI
-                measurementId: "G-S18H8MRX4T" // VERIFIQUE SE ESTE É O CORRETO PARA O PROJETO jogosonlie-fadc2
+                apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8", 
+                authDomain: "jogosonlie-fadc2.firebaseapp.com",
+                projectId: "jogosonlie-fadc2",
+                storageBucket: "jogosonlie-fadc2.appspot.com", 
+                messagingSenderId: "998401435610", 
+                appId: "1:998401435610:web:YOUR_SPECIFIC_APP_ID_SUFFIX", // ***** ATENÇÃO: SUBSTITUA PELO SEU APP ID COMPLETO *****
+                measurementId: "G-S18H8MRX4T" 
             };
-            // IMPORTANTE: Atualize 'COLOQUE_O_RESTANTE_DO_SEU_APP_ID_AQUI' com o valor correto do seu projeto Firebase.
-            // Verifique também o measurementId e messagingSenderId no console do Firebase.
         }
-
-        // const appId = typeof __app_id !== 'undefined' ? __app_id : 'caca-frutas-auth'; // Esta variável não é o Firebase App ID
+        console.log("Firebase Config a ser usada:", JSON.parse(JSON.stringify(firebaseConfig)));
 
         let app, db, auth;
         let firebaseInitialized = false;
@@ -312,9 +350,16 @@
         const paymentScreen = document.getElementById('paymentScreen');
         const paymentUserInfo = document.getElementById('paymentUserInfo');
         const paymentAmountSelect = document.getElementById('paymentAmount');
-        const initiatePaymentButton = document.getElementById('initiatePaymentButton');
+        const initiatePixPaymentButton = document.getElementById('initiatePixPaymentButton'); // Novo ID
         const paymentMessage = document.getElementById('paymentMessage');
         const backToGameLink = document.getElementById('backToGameLink');
+        const pixInfoContainer = document.getElementById('pixInfoContainer');
+        const pixQrCodeImg = document.getElementById('pixQrCode');
+        const pixKeyElement = document.getElementById('pixKey');
+        const paymentConfirmedButton = document.getElementById('paymentConfirmedButton');
+        const paymentOptionsDiv = document.getElementById('paymentOptions');
+        const copyFeedback = document.getElementById('copyFeedback');
+
 
         const showLoginLinkFromRegisterElement = document.getElementById('showLoginLinkFromRegister'); 
         const showRegisterLink = document.getElementById('showRegisterLink');
@@ -348,18 +393,18 @@
             }
             if (loginForm) loginForm.querySelector('button[type="submit"]').disabled = true;
             if (registrationForm) registrationForm.querySelector('button[type="submit"]').disabled = true;
-            if (initiatePaymentButton) initiatePaymentButton.disabled = true;
+            if (initiatePixPaymentButton) initiatePixPaymentButton.disabled = true;
         }
 
         try {
-            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.appId && !firebaseConfig.appId.includes("xxxxxxxxxxxxxx")) { 
+            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.appId && !firebaseConfig.appId.includes("YOUR_SPECIFIC_APP_ID_SUFFIX")) { 
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-                console.log("Firebase (Auth/Firestore) inicializado com sucesso com a config:", firebaseConfig);
+                console.log("Firebase (Auth/Firestore) inicializado com sucesso!");
 
                 try {
-                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // COMENTE OU REMOVA PARA GITHUB PAGES
+                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; 
                     
                     const appCheckSiteKey = '6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'; 
                     console.log(`[AppCheck] Inicializando com a chave do site: ${appCheckSiteKey}`);
@@ -377,11 +422,16 @@
                 firebaseInitialized = true;
                 if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
             } else {
-                throw new Error("Configuração final do Firebase inválida, apiKey ou appId ausente/incompleto.");
+                let errorMsg = "Configuração final do Firebase inválida.";
+                if (!firebaseConfig || !firebaseConfig.apiKey) errorMsg += " apiKey ausente.";
+                if (!firebaseConfig || !firebaseConfig.appId || firebaseConfig.appId.includes("YOUR_SPECIFIC_APP_ID_SUFFIX")) {
+                     errorMsg += " appId ausente ou incompleto. Por favor, substitua 'YOUR_SPECIFIC_APP_ID_SUFFIX' pelo valor correto.";
+                }
+                throw new Error(errorMsg);
             }
         } catch (error) {
             console.error("Erro crítico ao inicializar Firebase:", error);
-            displayGlobalFirebaseError("Erro crítico na configuração do Firebase. Funcionalidades de login/cadastro indisponíveis.");
+            displayGlobalFirebaseError(`Erro crítico na configuração do Firebase: ${error.message}. Funcionalidades de login/cadastro indisponíveis.`);
         }
         
         function switchToLoginScreen() {
@@ -406,6 +456,8 @@
             if(loginScreen) loginScreen.classList.add('hidden');
             if(registrationScreen) registrationScreen.classList.add('hidden');
             if(paymentScreen) paymentScreen.classList.remove('hidden');
+            if(paymentOptionsDiv) paymentOptionsDiv.classList.remove('hidden'); // Mostra opções de pagamento
+            if(pixInfoContainer) pixInfoContainer.classList.add('hidden'); // Esconde info do PIX
             if (paymentUserInfo) paymentUserInfo.textContent = `Comprando créditos para: ${user.displayName || user.email}`;
             if (backToGameLink) backToGameLink.classList.add('hidden'); 
             if (paymentMessage) paymentMessage.textContent = '';
@@ -581,28 +633,78 @@
             });
         }
 
-        if (initiatePaymentButton) {
-            initiatePaymentButton.addEventListener('click', async () => {
+        if (initiatePixPaymentButton) {
+            initiatePixPaymentButton.addEventListener('click', () => {
                 if (!firebaseInitialized || !currentUserId || !db) {
                     displayAuthMessage(paymentMessage, "Erro: Usuário não autenticado ou serviço indisponível.");
                     return;
                 }
-                const selectedValue = parseFloat(paymentAmountSelect.value);
+                paymentOptionsDiv.classList.add('hidden');
+                pixInfoContainer.classList.remove('hidden');
+                paymentMessage.textContent = 'Escaneie o QR Code ou copie a chave PIX abaixo.';
+                paymentMessage.className = 'auth-message'; // Sem cor de erro/sucesso por enquanto
+
+                // Simular QR Code e Chave PIX
+                // Substitua 'SUA_CHAVE_PIX_REAL_AQUI' pela sua chave PIX
+                const suaChavePix = "00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-4266141740005204000053039865802BR5913NOME DO RECEBEDOR6009SAO PAULO62070503***6304E29B"; // Exemplo
+                pixKeyElement.textContent = suaChavePix;
+                // Para o QR Code, você pode usar uma biblioteca JS para gerar ou um serviço online.
+                // Exemplo com api.qrserver.com (substitua pela sua imagem de QR Code real)
+                pixQrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(suaChavePix)}`;
+                pixQrCodeImg.alt = "QR Code PIX";
+                pixQrCodeImg.onerror = () => {
+                    pixQrCodeImg.alt = "Erro ao carregar QR Code";
+                    pixQrCodeImg.src = "imagens_interface/qrcode-error.png"; // Imagem de erro de QR Code
+                };
+            });
+        }
+
+        if (pixKeyElement) {
+            pixKeyElement.addEventListener('click', () => {
+                const textToCopy = pixKeyElement.textContent;
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = textToCopy;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                try {
+                    document.execCommand('copy');
+                    if(copyFeedback) copyFeedback.textContent = 'Chave PIX copiada!';
+                } catch (err) {
+                    if(copyFeedback) copyFeedback.textContent = 'Erro ao copiar.';
+                    console.error('Erro ao copiar chave PIX: ', err);
+                }
+                document.body.removeChild(tempTextArea);
+                setTimeout(() => { if(copyFeedback) copyFeedback.textContent = ''; }, 2000);
+            });
+        }
+
+
+        if (paymentConfirmedButton) {
+            paymentConfirmedButton.addEventListener('click', async () => {
+                if (!firebaseInitialized || !currentUserId || !db) {
+                    displayAuthMessage(paymentMessage, "Erro: Usuário não autenticado ou serviço indisponível.");
+                    return;
+                }
+                const selectedValue = parseFloat(paymentAmountSelect.value); // Pega o valor selecionado ANTES de esconder
                 const creditsToGive = selectedValue * 2; 
 
-                displayAuthMessage(paymentMessage, `Processando pagamento de R$ ${formatAsReal(selectedValue)}... (Simulação)`, false);
-                initiatePaymentButton.disabled = true;
-                initiatePaymentButton.textContent = 'Processando...';
+                displayAuthMessage(paymentMessage, `Confirmando pagamento de R$ ${formatAsReal(selectedValue)}...`, false);
+                paymentConfirmedButton.disabled = true;
+                paymentConfirmedButton.textContent = 'Confirmando...';
 
+                // SIMULAÇÃO DE CONFIRMAÇÃO DE PAGAMENTO
                 setTimeout(async () => {
                     try {
                         const userDocRef = doc(db, "users", currentUserId);
+                        // Atualiza os créditos e o valorCofre no Firestore
                         await updateDoc(userDocRef, {
                             credits: increment(creditsToGive)
+                            // O valorCofre é incrementado por giro, não aqui.
                         });
 
                         console.log(`${creditsToGive} créditos adicionados para ${currentUserId}`);
-                        displayAuthMessage(paymentMessage, `${creditsToGive} créditos adicionados! Redirecionando para o jogo...`, false);
+                        displayAuthMessage(paymentMessage, `R$ ${formatAsReal(selectedValue)} em créditos adicionados! Redirecionando para o jogo...`, false);
+                        
                         if (backToGameLink) {
                             backToGameLink.classList.remove('hidden');
                             backToGameLink.onclick = (e) => {
@@ -610,18 +712,20 @@
                                 window.location.href = 'jogo.html';
                             };
                         }
-                        setTimeout(() => { window.location.href = 'jogo.html'; }, 2000);
+                        setTimeout(() => { window.location.href = 'jogo.html'; }, 2500);
 
                     } catch (error) {
-                        console.error("Erro ao atualizar créditos após pagamento (simulado):", error);
-                        displayAuthMessage(paymentMessage, "Erro ao processar o pagamento. Tente novamente.", true);
+                        console.error("Erro ao atualizar créditos após confirmação de pagamento:", error);
+                        displayAuthMessage(paymentMessage, "Erro ao processar a confirmação. Tente novamente.", true);
                     } finally {
-                        initiatePaymentButton.disabled = false;
-                        initiatePaymentButton.textContent = 'Pagar com Gateway';
+                        // Não reabilitar o botão "Já Paguei" aqui, pois o fluxo deve ser o redirecionamento
+                        // paymentConfirmedButton.disabled = false;
+                        // paymentConfirmedButton.textContent = 'Já Paguei / Continuar';
                     }
                 }, 1500); 
             });
         }
+
 
         if (backToGameLink) { 
             backToGameLink.addEventListener('click', (e) => {
