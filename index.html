@@ -283,21 +283,19 @@
         if (!firebaseConfig) { 
             console.warn("Usando configuração Firebase hardcoded como fallback.");
             firebaseConfig = { 
-                apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8",
-                authDomain: "jogosonlie-fadc2.firebaseapp.com",
-                projectId: "jogosonlie-fadc2",
-                storageBucket: "jogosonlie-fadc2.appspot.com", 
-                messagingSenderId: "113950581434", 
-                appId: "1:998401435610:web:xxxxxxxxxxxxxx", // SUBSTITUA PELO SEU APP ID COMPLETO
-                measurementId: "G-S18H8MRX4T"
+                apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8", // Sua NOVA API KEY
+                authDomain: "jogosonlie-fadc2.firebaseapp.com", // Seu NOVO authDomain
+                projectId: "jogosonlie-fadc2", // Seu NOVO projectId
+                storageBucket: "jogosonlie-fadc2.appspot.com", // Seu NOVO storageBucket 
+                messagingSenderId: "998401435610", // Seu NOVO messagingSenderId (geralmente o número do projeto)
+                appId: "1:998401435610:web:COLOQUE_O_RESTANTE_DO_SEU_APP_ID_AQUI", // SEU APP ID COMPLETO AQUI
+                measurementId: "G-S18H8MRX4T" // VERIFIQUE SE ESTE É O CORRETO PARA O PROJETO jogosonlie-fadc2
             };
-            // ATENÇÃO: O appId "1:998401435610:web:xxxxxxxxxxxxxx" está incompleto. 
-            // Você PRECISA pegar o appId completo do seu projeto Firebase "jogosonlie-fadc2"
-            // e substituir "xxxxxxxxxxxxxx" pelo restante do ID.
-            // O mesmo vale para messagingSenderId e measurementId se eles mudaram.
+            // IMPORTANTE: Atualize 'COLOQUE_O_RESTANTE_DO_SEU_APP_ID_AQUI' com o valor correto do seu projeto Firebase.
+            // Verifique também o measurementId e messagingSenderId no console do Firebase.
         }
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'caca-frutas-auth'; 
+        // const appId = typeof __app_id !== 'undefined' ? __app_id : 'caca-frutas-auth'; // Esta variável não é o Firebase App ID
 
         let app, db, auth;
         let firebaseInitialized = false;
@@ -354,14 +352,14 @@
         }
 
         try {
-            if (firebaseConfig && firebaseConfig.apiKey) { 
+            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.appId && !firebaseConfig.appId.includes("xxxxxxxxxxxxxx")) { 
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-                console.log("Firebase (Auth/Firestore) inicializado com sucesso!");
+                console.log("Firebase (Auth/Firestore) inicializado com sucesso com a config:", firebaseConfig);
 
                 try {
-                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // COMENTADO - Para produção no GitHub Pages, confie no reCAPTCHA
+                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // COMENTE OU REMOVA PARA GITHUB PAGES
                     
                     const appCheckSiteKey = '6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'; 
                     console.log(`[AppCheck] Inicializando com a chave do site: ${appCheckSiteKey}`);
@@ -379,11 +377,11 @@
                 firebaseInitialized = true;
                 if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
             } else {
-                throw new Error("Configuração final do Firebase inválida ou apiKey ausente.");
+                throw new Error("Configuração final do Firebase inválida, apiKey ou appId ausente/incompleto.");
             }
         } catch (error) {
             console.error("Erro crítico ao inicializar Firebase:", error);
-            displayGlobalFirebaseError("Erro crítico na configuração. Funcionalidades de login/cadastro indisponíveis.");
+            displayGlobalFirebaseError("Erro crítico na configuração do Firebase. Funcionalidades de login/cadastro indisponíveis.");
         }
         
         function switchToLoginScreen() {
@@ -511,9 +509,9 @@
                             case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Verifique as configurações do reCAPTCHA e App Check no console do Firebase/Google Cloud."; break;
                             default: friendlyMessage = `Erro ao registrar: ${error.message || 'Verifique o console.'}`;
                         }
-                    } else if (error && typeof error === 'object') { // Trata caso de erro não-Firebase
-                        friendlyMessage = `Erro ao registrar: ${error.message || 'Ocorreu um erro inesperado.'}`;
-                    } else { // Caso error seja null ou undefined
+                    } else if (error && typeof error === 'object' && error.message) { 
+                        friendlyMessage = `Erro ao registrar: ${error.message}`;
+                    } else { 
                         friendlyMessage = "Ocorreu um erro inesperado durante o registro.";
                     }
                     displayAuthMessage(registerAuthMessage, friendlyMessage);
@@ -570,9 +568,9 @@
                             case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Verifique as configurações do reCAPTCHA e App Check no console do Firebase/Google Cloud."; break;
                             default: friendlyMessage = `Erro ao fazer login: ${error.message || 'Verifique o console.'}`;
                         }
-                    } else if (error && error.message) { // Verifica se error.message existe
+                    } else if (error && error.message) { 
                          friendlyMessage = `Erro ao fazer login: ${error.message}`;
-                    } else if (error) { // Se error existe mas não tem 'code' nem 'message'
+                    } else if (error) { 
                         friendlyMessage = "Ocorreu um erro inesperado durante o login.";
                     }
                     displayAuthMessage(loginAuthMessage, friendlyMessage);
@@ -639,7 +637,7 @@
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     currentUserId = user.uid;
-                    console.log("Usuário já logado:", currentUserId, ". Verificando se precisa comprar créditos ou ir ao jogo.");
+                    console.log("Usuário já logado:", currentUserId, ". Redirecionando para tela de pagamento/jogo.");
                     authScreen.classList.remove('hidden'); 
                     showPaymentScreen(user); 
                 } else {
