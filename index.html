@@ -6,7 +6,7 @@
     <title>GAME FUN - Autenticação</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Le9eVErAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -145,7 +145,7 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 25px rgba(219, 39, 119, 0.6);
             transform: translateY(-2px) scale(1.02);
         }
-        .submit-button:disabled, .payment-button:disabled {
+        .submit-button:disabled {
             background: #4b5563;
             cursor: not-allowed;
             opacity: 0.6;
@@ -178,7 +178,7 @@
         <div id="authScreen">
             <div id="authContent"> 
                 <div class="auth-logo-container">
-                    <img id="authLogo" src="imagens_interface/logo-game-fun.png" alt="GAME FUN Logo" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
+                    <img id="authLogo" src="imagens_interface/logo-caca-frutas.png" alt="GAME FUN Logo" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
                     <div id="textLogoFallback" class="text-logo hidden">GAME FUN</div>
                 </div>
                 <p id="firebaseError" class="auth-message error text-center mb-4 hidden"></p> 
@@ -260,6 +260,7 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
 
+
         let firebaseConfig;
         const firebaseConfigFromStudio = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
 
@@ -282,14 +283,18 @@
         if (!firebaseConfig) { 
             console.warn("Usando configuração Firebase hardcoded como fallback.");
             firebaseConfig = { 
-                apiKey: "AIzaSyB4_yBB6BPjOZrCsZ0_TMkmVBRk3WWMAFE",
-                authDomain: "jogosonlie-461ae.firebaseapp.com",
-                projectId: "jogosonlie-461ae",
-                storageBucket: "jogosonlie-461ae.firebasestorage.app", 
-                messagingSenderId: "113950581434",
-                appId: "1:113950581434:web:8af6396a43f829ed739883",
+                apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8",
+                authDomain: "jogosonlie-fadc2.firebaseapp.com",
+                projectId: "jogosonlie-fadc2",
+                storageBucket: "jogosonlie-fadc2.appspot.com", 
+                messagingSenderId: "113950581434", 
+                appId: "1:998401435610:web:xxxxxxxxxxxxxx", // SUBSTITUA PELO SEU APP ID COMPLETO
                 measurementId: "G-S18H8MRX4T"
             };
+            // ATENÇÃO: O appId "1:998401435610:web:xxxxxxxxxxxxxx" está incompleto. 
+            // Você PRECISA pegar o appId completo do seu projeto Firebase "jogosonlie-fadc2"
+            // e substituir "xxxxxxxxxxxxxx" pelo restante do ID.
+            // O mesmo vale para messagingSenderId e measurementId se eles mudaram.
         }
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'caca-frutas-auth'; 
@@ -356,9 +361,13 @@
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso!");
 
                 try {
-                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // APENAS PARA TESTE LOCAL
+                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // COMENTADO - Para produção no GitHub Pages, confie no reCAPTCHA
+                    
+                    const appCheckSiteKey = '6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'; 
+                    console.log(`[AppCheck] Inicializando com a chave do site: ${appCheckSiteKey}`);
+
                     const appCheck = initializeAppCheck(app, {
-                        provider: new ReCaptchaEnterpriseProvider('6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'), // CHAVE ATUALIZADA
+                        provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey), 
                         isTokenAutoRefreshEnabled: true
                     });
                     console.log("Firebase App Check inicializado.");
@@ -499,11 +508,13 @@
                             case 'auth/invalid-email': friendlyMessage = "Formato de email inválido."; break;
                             case 'auth/operation-not-allowed': case 'auth/project-not-found': case 'auth/api-key-not-valid': case 'auth/configuration-not-found':
                                 friendlyMessage = "Problema na configuração do Firebase. Contate o suporte."; break;
-                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Tente recarregar a página ou contate o suporte."; break;
+                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Verifique as configurações do reCAPTCHA e App Check no console do Firebase/Google Cloud."; break;
                             default: friendlyMessage = `Erro ao registrar: ${error.message || 'Verifique o console.'}`;
                         }
-                    } else if (error) {
-                         friendlyMessage = `Erro ao registrar: ${error.message || 'Detalhes não disponíveis'}`;
+                    } else if (error && typeof error === 'object') { // Trata caso de erro não-Firebase
+                        friendlyMessage = `Erro ao registrar: ${error.message || 'Ocorreu um erro inesperado.'}`;
+                    } else { // Caso error seja null ou undefined
+                        friendlyMessage = "Ocorreu um erro inesperado durante o registro.";
                     }
                     displayAuthMessage(registerAuthMessage, friendlyMessage);
                 } finally {
@@ -556,11 +567,13 @@
                                 friendlyMessage = "Problema na configuração do Firebase ou serviço indisponível."; break;
                             case 'auth/network-request-failed': friendlyMessage = "Erro de rede. Verifique sua conexão."; break;
                             case 'auth/too-many-requests': friendlyMessage = "Muitas tentativas de login. Tente novamente mais tarde."; break;
-                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Tente recarregar a página ou contate o suporte."; break;
+                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Verifique as configurações do reCAPTCHA e App Check no console do Firebase/Google Cloud."; break;
                             default: friendlyMessage = `Erro ao fazer login: ${error.message || 'Verifique o console.'}`;
                         }
-                    } else if (error) {
-                         friendlyMessage = `Erro ao fazer login: ${error.message || 'Detalhes não disponíveis'}`;
+                    } else if (error && error.message) { // Verifica se error.message existe
+                         friendlyMessage = `Erro ao fazer login: ${error.message}`;
+                    } else if (error) { // Se error existe mas não tem 'code' nem 'message'
+                        friendlyMessage = "Ocorreu um erro inesperado durante o login.";
                     }
                     displayAuthMessage(loginAuthMessage, friendlyMessage);
                 } finally {
@@ -588,7 +601,6 @@
                         const userDocRef = doc(db, "users", currentUserId);
                         await updateDoc(userDocRef, {
                             credits: increment(creditsToGive)
-                            // O valorCofre será incrementado por giro, não aqui na compra de créditos.
                         });
 
                         console.log(`${creditsToGive} créditos adicionados para ${currentUserId}`);
@@ -609,7 +621,7 @@
                         initiatePaymentButton.disabled = false;
                         initiatePaymentButton.textContent = 'Pagar com Gateway';
                     }
-                }, 1500); // Reduzido tempo de simulação
+                }, 1500); 
             });
         }
 
@@ -648,12 +660,3 @@
     </script>
 </body>
 </html>
-```
-
-E o arquivo `jogo.html` (ID: `slot_machine_game_pt_game`) permanece o mesmo da última atualização, pois a lógica de custo de giro e acúmulo no cofre já estava correta lá.
-
-**Lembre-se:**
-* **Custo do Giro:** `const spinCost = 1;` (no `jogo.html`)
-* **Acúmulo no Cofre por Giro:** `valorCofre += 0.50;` (no `jogo.html`)
-
-Essa configuração reflete a economia que você descreveu: o jogador paga R$ 5,00 para obter 10 créditos, e cada giro custa 1 desses créditos, contribuindo com o equivalente a R$ 0,50 para o cof
