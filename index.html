@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAME FUN - Autenticação</title> <script src="https://cdn.tailwindcss.com"></script>
+    <title>GAME FUN - Autenticação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Le9eVErAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -48,7 +49,7 @@
             margin-bottom: 1rem; 
         }
         #authLogo { 
-            max-width: 200px; /* Ajustado para o novo nome, se necessário */
+            max-width: 160px; 
             height: auto;
             margin-bottom: 0.25rem; 
             filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5)); 
@@ -62,7 +63,7 @@
             text-shadow: 0 0 3px #8b5cf6, 0 0 6px #8b5cf6, 0 0 10px #ec4899, 0 0 14px #ec4899; 
         }
 
-        #registrationScreen h2, #loginScreen h2 {
+        #registrationScreen h2, #loginScreen h2, #paymentScreen h2 {
             font-family: 'Poppins', sans-serif;
             font-size: clamp(1.2rem, 3.8vw, 1.6rem); 
             font-weight: 700;
@@ -82,7 +83,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 0.6rem; 
             border-radius: 8px; 
@@ -95,7 +96,7 @@
         .form-group input::placeholder {
             color: #9ca3af;
         }
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #a78bfa; 
             box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4), 0 0 10px rgba(167, 139, 250, 0.3); 
@@ -122,7 +123,7 @@
         .switch-auth-link a:hover {
             color: #fff;
         }
-        .submit-button { 
+        .submit-button, .payment-button { 
             margin-top: 1rem; 
             width: 100%; 
             font-family: 'Poppins', sans-serif; 
@@ -139,12 +140,12 @@
             text-transform: uppercase; 
             letter-spacing: 1px;
         }
-        .submit-button:hover {
+        .submit-button:hover, .payment-button:hover {
             background: linear-gradient(to right, #8b5cf6, #ec4899);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 25px rgba(219, 39, 119, 0.6);
             transform: translateY(-2px) scale(1.02);
         }
-        .submit-button:disabled {
+        .submit-button:disabled, .payment-button:disabled {
             background: #4b5563;
             cursor: not-allowed;
             opacity: 0.6;
@@ -178,7 +179,8 @@
             <div id="authContent"> 
                 <div class="auth-logo-container">
                     <img id="authLogo" src="imagens_interface/logo-game-fun.png" alt="GAME FUN Logo" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
-                    <div id="textLogoFallback" class="text-logo hidden">GAME FUN</div> </div>
+                    <div id="textLogoFallback" class="text-logo hidden">GAME FUN</div>
+                </div>
                 <p id="firebaseError" class="auth-message error text-center mb-4 hidden"></p> 
                 
                 <div id="loginScreen"> 
@@ -223,6 +225,24 @@
                     </form>
                     <p class="switch-auth-link">Já tem uma conta? <a href="#" id="showLoginLinkFromRegister">Faça login</a></p>
                 </div>
+
+                <div id="paymentScreen" class="hidden">
+                    <h2>Comprar Créditos</h2>
+                    <p id="paymentUserInfo" class="text-center mb-4"></p>
+                    <div class="form-group">
+                        <label for="paymentAmount">Valor do Depósito (R$)</label>
+                        <select id="paymentAmount" class="form-group input">
+                            <option value="5">R$ 5,00 (10 créditos)</option>
+                            <option value="10">R$ 10,00 (20 créditos)</option>
+                            <option value="20">R$ 20,00 (40 créditos)</option>
+                            <option value="50">R$ 50,00 (100 créditos)</option>
+                        </select>
+                    </div>
+                    <button id="initiatePaymentButton" class="payment-button submit-button">Pagar com Gateway</button>
+                    <p id="paymentMessage" class="auth-message"></p>
+                    <p class="switch-auth-link"><a href="#" id="backToGameLink" class="hidden">Voltar ao Jogo</a></p>
+                </div>
+
             </div>
         </div>
     </div>
@@ -230,7 +250,7 @@
     <script type="module">
         // Importações do Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { 
             getAuth, 
             createUserWithEmailAndPassword, 
@@ -239,7 +259,6 @@
             updateProfile 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
-
 
         let firebaseConfig;
         const firebaseConfigFromStudio = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
@@ -277,6 +296,7 @@
 
         let app, db, auth;
         let firebaseInitialized = false;
+        let currentUserId = null; 
 
         const authScreen = document.getElementById('authScreen');
         const authContent = document.getElementById('authContent');
@@ -286,30 +306,30 @@
         const registrationForm = document.getElementById('registrationForm');
         const loginScreen = document.getElementById('loginScreen');
         const loginForm = document.getElementById('loginForm');
+        const paymentScreen = document.getElementById('paymentScreen');
+        const paymentUserInfo = document.getElementById('paymentUserInfo');
+        const paymentAmountSelect = document.getElementById('paymentAmount');
+        const initiatePaymentButton = document.getElementById('initiatePaymentButton');
+        const paymentMessage = document.getElementById('paymentMessage');
+        const backToGameLink = document.getElementById('backToGameLink');
+
         const showLoginLinkFromRegisterElement = document.getElementById('showLoginLinkFromRegister'); 
         const showRegisterLink = document.getElementById('showRegisterLink');
         const loginAuthMessage = document.getElementById('loginAuthMessage');
         const registerAuthMessage = document.getElementById('registerAuthMessage');
         const firebaseErrorElement = document.getElementById('firebaseError');
 
-        // Lógica para exibir logo em imagem ou texto
-        const logoImageElement = document.getElementById('authLogo'); // Renomeado para evitar conflito
-        const logoTextElement = document.getElementById('textLogoFallback'); // Renomeado para evitar conflito
-        if (logoImageElement) {
-            logoImageElement.onerror = () => {
-                logoImageElement.classList.add('hidden');
-                if(logoTextElement) logoTextElement.classList.remove('hidden');
-            };
-            // Checa se o src está definido e se a imagem carregou, senão mostra o texto
-            if (logoImageElement.getAttribute('src') === 'imagens_interface/logo-game-fun.png' && logoImageElement.complete && logoImageElement.naturalHeight !== 0) { // Verifica o src correto
-                logoImageElement.classList.remove('hidden');
-                 if(logoTextElement) logoTextElement.classList.add('hidden');
-            } else if (!logoImageElement.getAttribute('src') || logoImageElement.getAttribute('src') !== 'imagens_interface/logo-game-fun.png') {
-                logoImageElement.classList.add('hidden');
-                if(logoTextElement) logoTextElement.classList.remove('hidden');
-            }
+        authLogoImg.onerror = () => {
+            authLogoImg.classList.add('hidden');
+            textLogoFallback.classList.remove('hidden');
+        };
+        if (authLogoImg.getAttribute('src') && authLogoImg.complete && authLogoImg.naturalHeight !== 0) {
+             authLogoImg.classList.remove('hidden');
+             textLogoFallback.classList.add('hidden');
+        } else if (!authLogoImg.getAttribute('src')) { 
+            authLogoImg.classList.add('hidden');
+            textLogoFallback.classList.remove('hidden');
         }
-
 
         function displayAuthMessage(element, message, isError = true) {
             if (!element) return;
@@ -325,6 +345,7 @@
             }
             if (loginForm) loginForm.querySelector('button[type="submit"]').disabled = true;
             if (registrationForm) registrationForm.querySelector('button[type="submit"]').disabled = true;
+            if (initiatePaymentButton) initiatePaymentButton.disabled = true;
         }
 
         try {
@@ -335,12 +356,9 @@
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso!");
 
                 try {
-                    // @ts-ignore 
-                    // eslint-disable-next-line no-undef
-                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // DESCOMENTE APENAS PARA TESTE LOCAL NO SEU AMBIENTE
-                    
+                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // APENAS PARA TESTE LOCAL
                     const appCheck = initializeAppCheck(app, {
-                        provider: new ReCaptchaEnterpriseProvider('6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'), 
+                        provider: new ReCaptchaEnterpriseProvider('6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'), // CHAVE ATUALIZADA
                         isTokenAutoRefreshEnabled: true
                     });
                     console.log("Firebase App Check inicializado.");
@@ -349,7 +367,6 @@
                     displayAuthMessage(loginAuthMessage, "Aviso: Problema na verificação do app (App Check).", true); 
                     if(registerAuthMessage) displayAuthMessage(registerAuthMessage, "Aviso: Problema na verificação do app (App Check).", true); 
                 }
-
                 firebaseInitialized = true;
                 if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
             } else {
@@ -362,16 +379,29 @@
         
         function switchToLoginScreen() {
             if (registrationScreen) registrationScreen.classList.add('hidden');
+            if (paymentScreen) paymentScreen.classList.add('hidden');
             if (loginScreen) loginScreen.classList.remove('hidden');
             if(registerAuthMessage) registerAuthMessage.textContent = '';
             if(loginAuthMessage) loginAuthMessage.textContent = '';
+            if(paymentMessage) paymentMessage.textContent = '';
         }
 
         function switchToRegisterScreen() {
             if (loginScreen) loginScreen.classList.add('hidden');
+            if (paymentScreen) paymentScreen.classList.add('hidden');
             if (registrationScreen) registrationScreen.classList.remove('hidden');
             if(registerAuthMessage) registerAuthMessage.textContent = '';
             if(loginAuthMessage) loginAuthMessage.textContent = '';
+            if(paymentMessage) paymentMessage.textContent = '';
+        }
+
+        function showPaymentScreen(user) {
+            if(loginScreen) loginScreen.classList.add('hidden');
+            if(registrationScreen) registrationScreen.classList.add('hidden');
+            if(paymentScreen) paymentScreen.classList.remove('hidden');
+            if (paymentUserInfo) paymentUserInfo.textContent = `Comprando créditos para: ${user.displayName || user.email}`;
+            if (backToGameLink) backToGameLink.classList.add('hidden'); 
+            if (paymentMessage) paymentMessage.textContent = '';
         }
         
         if (showLoginLinkFromRegisterElement) { 
@@ -435,6 +465,7 @@
                 try {
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
+                    currentUserId = user.uid;
                     
                     const userProfileData = {
                         uid: user.uid,
@@ -444,19 +475,18 @@
                         cpf,
                         address: { street, number, neighborhood, city, state, zip },
                         createdAt: new Date().toISOString(),
-                        credits: 100, 
+                        credits: 0, 
                         valorCofre: 0 
                     };
                     const userProfileRef = doc(db, "users", user.uid); 
                     await setDoc(userProfileRef, userProfileData);
-                    
                     await updateProfile(user, { displayName: fullName });
 
                     console.log("Usuário cadastrado e perfil salvo:", user.uid);
-                    displayAuthMessage(registerAuthMessage, "Cadastro realizado com sucesso! Redirecionando...", false);
+                    displayAuthMessage(registerAuthMessage, "Cadastro realizado! Prossiga para comprar créditos.", false);
                     
                     setTimeout(() => {
-                        window.location.href = 'jogo.html'; 
+                        showPaymentScreen(user); 
                     }, 2000);
 
                 } catch (error) {
@@ -464,29 +494,16 @@
                     let friendlyMessage = "Erro ao registrar. Tente novamente.";
                     if (error && error.code) {
                         switch (error.code) {
-                            case 'auth/email-already-in-use':
-                                friendlyMessage = "Este email já está em uso.";
-                                break;
-                            case 'auth/weak-password':
-                                friendlyMessage = "A senha é muito fraca.";
-                                break;
-                            case 'auth/invalid-email':
-                                friendlyMessage = "Formato de email inválido.";
-                                break;
-                            case 'auth/operation-not-allowed':
-                            case 'auth/project-not-found':
-                            case 'auth/api-key-not-valid':
-                            case 'auth/configuration-not-found':
-                                friendlyMessage = "Problema na configuração do Firebase. Contate o suporte.";
-                                break;
-                            case 'auth/app-check-token-is-invalid':
-                                friendlyMessage = "Falha na verificação do aplicativo. Tente recarregar a página ou contate o suporte.";
-                                break;
-                            default:
-                                friendlyMessage = `Erro ao registrar: ${error.message}`;
+                            case 'auth/email-already-in-use': friendlyMessage = "Este email já está em uso."; break;
+                            case 'auth/weak-password': friendlyMessage = "A senha é muito fraca."; break;
+                            case 'auth/invalid-email': friendlyMessage = "Formato de email inválido."; break;
+                            case 'auth/operation-not-allowed': case 'auth/project-not-found': case 'auth/api-key-not-valid': case 'auth/configuration-not-found':
+                                friendlyMessage = "Problema na configuração do Firebase. Contate o suporte."; break;
+                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Tente recarregar a página ou contate o suporte."; break;
+                            default: friendlyMessage = `Erro ao registrar: ${error.message || 'Verifique o console.'}`;
                         }
                     } else if (error) {
-                        friendlyMessage = `Erro ao registrar: ${error.message || 'Detalhes não disponíveis'}`;
+                         friendlyMessage = `Erro ao registrar: ${error.message || 'Detalhes não disponíveis'}`;
                     }
                     displayAuthMessage(registerAuthMessage, friendlyMessage);
                 } finally {
@@ -520,11 +537,11 @@
                 
                 try {
                     const userCredential = await signInWithEmailAndPassword(auth, identifier, password);
-                    console.log("Login bem-sucedido:", userCredential.user.uid);
-                    displayAuthMessage(loginAuthMessage, "Login bem-sucedido! Redirecionando...", false);
-
+                    currentUserId = userCredential.user.uid;
+                    console.log("Login bem-sucedido:", currentUserId);
+                    displayAuthMessage(loginAuthMessage, "Login bem-sucedido! Escolha um pacote de créditos.", false);
                     setTimeout(() => {
-                        window.location.href = 'jogo.html'; 
+                        showPaymentScreen(userCredential.user);
                     }, 1500);
 
                 } catch (error) {
@@ -532,31 +549,15 @@
                     let friendlyMessage = "Erro desconhecido ao fazer login. Tente novamente.";
                      if (error && error.code) {
                         switch (error.code) {
-                            case 'auth/invalid-credential':
-                            case 'auth/user-not-found':
-                            case 'auth/wrong-password':
-                                friendlyMessage = "Email ou senha inválidos.";
-                                break;
-                            case 'auth/invalid-email':
-                                friendlyMessage = "Formato de email inválido.";
-                                break;
-                            case 'auth/operation-not-allowed':
-                            case 'auth/project-not-found':
-                            case 'auth/api-key-not-valid':
-                            case 'auth/configuration-not-found':
-                                friendlyMessage = "Problema na configuração do Firebase ou serviço indisponível.";
-                                break;
-                            case 'auth/network-request-failed':
-                                friendlyMessage = "Erro de rede. Verifique sua conexão.";
-                                break;
-                            case 'auth/too-many-requests':
-                                friendlyMessage = "Muitas tentativas de login. Tente novamente mais tarde.";
-                                break;
-                            case 'auth/app-check-token-is-invalid':
-                                friendlyMessage = "Falha na verificação do aplicativo. Tente recarregar a página ou contate o suporte.";
-                                break;
-                            default:
-                                friendlyMessage = `Erro ao fazer login: ${error.message}`;
+                            case 'auth/invalid-credential': case 'auth/user-not-found': case 'auth/wrong-password':
+                                friendlyMessage = "Email ou senha inválidos."; break;
+                            case 'auth/invalid-email': friendlyMessage = "Formato de email inválido."; break;
+                            case 'auth/operation-not-allowed': case 'auth/project-not-found': case 'auth/api-key-not-valid': case 'auth/configuration-not-found':
+                                friendlyMessage = "Problema na configuração do Firebase ou serviço indisponível."; break;
+                            case 'auth/network-request-failed': friendlyMessage = "Erro de rede. Verifique sua conexão."; break;
+                            case 'auth/too-many-requests': friendlyMessage = "Muitas tentativas de login. Tente novamente mais tarde."; break;
+                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Tente recarregar a página ou contate o suporte."; break;
+                            default: friendlyMessage = `Erro ao fazer login: ${error.message || 'Verifique o console.'}`;
                         }
                     } else if (error) {
                          friendlyMessage = `Erro ao fazer login: ${error.message || 'Detalhes não disponíveis'}`;
@@ -568,6 +569,56 @@
                 }
             });
         }
+
+        if (initiatePaymentButton) {
+            initiatePaymentButton.addEventListener('click', async () => {
+                if (!firebaseInitialized || !currentUserId || !db) {
+                    displayAuthMessage(paymentMessage, "Erro: Usuário não autenticado ou serviço indisponível.");
+                    return;
+                }
+                const selectedValue = parseFloat(paymentAmountSelect.value);
+                const creditsToGive = selectedValue * 2; 
+
+                displayAuthMessage(paymentMessage, `Processando pagamento de R$ ${formatAsReal(selectedValue)}... (Simulação)`, false);
+                initiatePaymentButton.disabled = true;
+                initiatePaymentButton.textContent = 'Processando...';
+
+                setTimeout(async () => {
+                    try {
+                        const userDocRef = doc(db, "users", currentUserId);
+                        await updateDoc(userDocRef, {
+                            credits: increment(creditsToGive)
+                            // O valorCofre será incrementado por giro, não aqui na compra de créditos.
+                        });
+
+                        console.log(`${creditsToGive} créditos adicionados para ${currentUserId}`);
+                        displayAuthMessage(paymentMessage, `${creditsToGive} créditos adicionados! Redirecionando para o jogo...`, false);
+                        if (backToGameLink) {
+                            backToGameLink.classList.remove('hidden');
+                            backToGameLink.onclick = (e) => {
+                                e.preventDefault();
+                                window.location.href = 'jogo.html';
+                            };
+                        }
+                        setTimeout(() => { window.location.href = 'jogo.html'; }, 2000);
+
+                    } catch (error) {
+                        console.error("Erro ao atualizar créditos após pagamento (simulado):", error);
+                        displayAuthMessage(paymentMessage, "Erro ao processar o pagamento. Tente novamente.", true);
+                    } finally {
+                        initiatePaymentButton.disabled = false;
+                        initiatePaymentButton.textContent = 'Pagar com Gateway';
+                    }
+                }, 1500); // Reduzido tempo de simulação
+            });
+        }
+
+        if (backToGameLink) { 
+            backToGameLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = 'jogo.html';
+            });
+        }
         
         authScreen.classList.remove('hidden'); 
         authContent.classList.remove('hidden'); 
@@ -575,19 +626,34 @@
         if (firebaseInitialized && auth) {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    console.log("Usuário já logado, redirecionando para o jogo...");
-                    window.location.href = 'jogo.html';
+                    currentUserId = user.uid;
+                    console.log("Usuário já logado:", currentUserId, ". Verificando se precisa comprar créditos ou ir ao jogo.");
+                    authScreen.classList.remove('hidden'); 
+                    showPaymentScreen(user); 
                 } else {
                     console.log("Nenhum usuário logado. Exibindo tela de login.");
+                    authScreen.classList.remove('hidden');
                     loginScreen.classList.remove('hidden'); 
                     registrationScreen.classList.add('hidden'); 
+                    paymentScreen.classList.add('hidden');
                     if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
                 }
             });
         } else {
+             authScreen.classList.remove('hidden');
              loginScreen.classList.remove('hidden');
              registrationScreen.classList.add('hidden');
+             paymentScreen.classList.add('hidden');
         }
     </script>
 </body>
 </html>
+```
+
+E o arquivo `jogo.html` (ID: `slot_machine_game_pt_game`) permanece o mesmo da última atualização, pois a lógica de custo de giro e acúmulo no cofre já estava correta lá.
+
+**Lembre-se:**
+* **Custo do Giro:** `const spinCost = 1;` (no `jogo.html`)
+* **Acúmulo no Cofre por Giro:** `valorCofre += 0.50;` (no `jogo.html`)
+
+Essa configuração reflete a economia que você descreveu: o jogador paga R$ 5,00 para obter 10 créditos, e cada giro custa 1 desses créditos, contribuindo com o equivalente a R$ 0,50 para o cof
