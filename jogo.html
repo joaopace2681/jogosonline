@@ -6,6 +6,7 @@
     <title>Caça-Frutas - Jogo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -148,6 +149,8 @@
             signOut, 
             onAuthStateChanged 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
+
 
         let firebaseConfig;
         const firebaseConfigFromStudio = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
@@ -202,8 +205,26 @@
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
+                console.log("Firebase (Auth/Firestore) inicializado com sucesso na página do jogo!");
+
+                // Inicializar App Check
+                try {
+                    // @ts-ignore
+                    // eslint-disable-next-line no-undef
+                    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // APENAS PARA TESTE LOCAL, REMOVA EM PRODUÇÃO OU QUANDO FOR PARA GITHUB PAGES REAL
+                    
+                    const appCheck = initializeAppCheck(app, {
+                        provider: new ReCaptchaV3Provider('6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'), // SUA CHAVE reCAPTCHA
+                        isTokenAutoRefreshEnabled: true
+                    });
+                    console.log("Firebase App Check inicializado na página do jogo.");
+                } catch (appCheckError) {
+                    console.error("Erro ao inicializar Firebase App Check em jogo.html:", appCheckError);
+                    // Não tratar como erro fatal para a inicialização do Firebase Auth/Firestore,
+                    // mas logar o erro. O App Check pode falhar se o reCAPTCHA não estiver configurado
+                    // corretamente para o domínio no Google Cloud Console.
+                }
                 firebaseInitialized = true;
-                console.log("Firebase inicializado com sucesso na página do jogo!");
             } else {
                 throw new Error("Configuração final do Firebase inválida ou apiKey ausente em jogo.html.");
             }
@@ -211,7 +232,7 @@
             console.error("Erro crítico ao inicializar Firebase em jogo.html:", error);
             if (firebaseErrorContainer) {
                 firebaseErrorContainer.classList.remove('hidden');
-                firebaseErrorContainer.style.display = 'flex'; // Garante que está visível
+                firebaseErrorContainer.style.display = 'flex'; 
             }
             if (firebaseErrorMessage) firebaseErrorMessage.textContent = "Erro de configuração do Firebase. O jogo não pode ser carregado. Por favor, contate o suporte ou tente recarregar a página.";
             if (gameScreen) gameScreen.classList.add('hidden');
@@ -222,7 +243,7 @@
         let symbols = [ 
             { name: 'Limão', emojiForMessage: '🍋', value: 'LEMON', imageSrc: 'imagens_frutas/limao.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Maca', emojiForMessage: '🍎', value: 'APPLE', imageSrc: 'imagens_frutas/Maca.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
-            { name: 'Laranja', emojiForMessage: '🍊', value: 'ORANGE', imageSrc: 'imagens_frutas/Laranja.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Laranja', emojiForMessage: '�', value: 'ORANGE', imageSrc: 'imagens_frutas/Laranja.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Uva', emojiForMessage: '🍇', value: 'GRAPE', imageSrc: 'imagens_frutas/uva.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Melancia', emojiForMessage: '🍉', value: 'WATERMELON', imageSrc: 'imagens_frutas/melancia.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Abacate', emojiForMessage: '🥑', value: 'AVOCADO', imageSrc: 'imagens_frutas/Abacate.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' },  
@@ -404,7 +425,14 @@
                  loadingOverlayGame.style.display = 'none';
                  messageDisplay.textContent = 'Erro de conexão. Tente recarregar.';
                  spinButton.disabled = true;
-            } else {
+                 if(firebaseErrorContainer && firebaseErrorContainer.classList.contains('hidden')) {
+                    if (firebaseErrorContainer) {
+                        firebaseErrorContainer.classList.remove('hidden');
+                        firebaseErrorContainer.style.display = 'flex';
+                    }
+                    if (firebaseErrorMessage) firebaseErrorMessage.textContent = "Erro de configuração do Firebase impediu o carregamento do jogo.";
+                 }
+            } else { 
                 console.log("Nenhum usuário logado em initializeGameAssets. Redirecionando para login.");
                 window.location.href = indexPageUrl; 
             }
@@ -563,13 +591,14 @@
         }
 
         function showModal(title, message) {
+            if (!modalTitle || !modalMessageElement) return; 
             modalTitle.textContent = title;
             modalMessageElement.textContent = message; 
-            gameOverModal.style.display = 'flex';
+            if (gameOverModal) gameOverModal.style.display = 'flex';
         }
 
         function hideModal() {
-            gameOverModal.style.display = 'none';
+            if (gameOverModal) gameOverModal.style.display = 'none';
         }
 
         function resetGame() {
@@ -577,10 +606,13 @@
             forcarTrincaPeloCofre = false;
             simboloTrincaCofre = null;
             updateCredits();
-            // Não resetamos o valorCofre aqui, pois ele é persistente para o usuário
-            // Se quiser zerar o cofre ao clicar em "Jogar Novamente", descomente a linha abaixo:
-            // valorCofre = 0; 
-            // console.log("Jogo resetado (créditos). Cofre (interno) mantém valor se não zerado acima.");
+            console.log("Jogo resetado (créditos). Cofre (interno) mantém valor salvo no DB, ou é zerado na sessão se não houver DB.");
+            if (currentUserId && db) { 
+                saveGameData(currentUserId);
+            } else { 
+                valorCofre = 0;
+            }
+
             messageDisplay.textContent = 'BOA SORTE!';
             messageDisplay.style.color = '#e5e7eb';
             
@@ -635,10 +667,11 @@
             if (errorMsgElem) errorMsgElem.textContent = "Erro de configuração do Firebase. O jogo não pode ser carregado.";
             console.log("Firebase não inicializado, jogo não pode carregar.");
         } else {
-             console.log("Objeto Auth não disponível. Redirecionando para login.");
+             console.log("Objeto Auth não disponível, mas Firebase foi sinalizado como inicializado. Redirecionando para login.");
              window.location.href = indexPageUrl; 
         }
 
     </script>
 </body>
 </html>
+�
