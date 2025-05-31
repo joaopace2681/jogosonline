@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caça-Frutas - Jogo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem; 
+            color: #e5e7eb;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 100%; 
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .slot-machine {
+            background-color: rgba(55, 65, 81, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 1.5rem; 
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative; 
+        }
+        .title {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1.8rem, 6vw, 2.5rem); 
+            font-weight: 800;
+            margin-bottom: 1.5rem; 
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3), 0 0 20px rgba(255,255,255,0.2);
+        }
+        .reels { display: flex; justify-content: space-around; margin-bottom: 1.875rem; background-color: rgba(31, 41, 55, 0.7); padding: 1.25rem; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); }
+        .reel { width: clamp(60px, 20vw, 90px); height: clamp(80px, 25vw, 110px); background-color: #4b5563; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; box-shadow: inset 0 2px 8px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.1); transition: box-shadow 0.3s ease; }
+        .reel-image { max-width: 80%; max-height: 80%; object-fit: contain; transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out; }
+        .reel.spinning .reel-image { animation: modernSpinImageAnimation 0.08s linear infinite; box-shadow: none; }
+        .reel.spinning { box-shadow: inset 0 0 15px rgba(167, 139, 250, 0.5), 0 0 10px rgba(167, 139, 250, 0.3); }
+        @keyframes modernSpinImageAnimation { 0% { transform: translateY(-10px) scale(0.95); opacity: 0.7; } 50% { transform: translateY(10px) scale(1); opacity: 1; } 100% { transform: translateY(-10px) scale(0.95); opacity: 0.7; } } 
+        .controls button#spinButton { font-family: 'Poppins', sans-serif; background: linear-gradient(to right, #8b5cf6, #ec4899); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 12px; font-size: clamp(1rem, 4vw, 1.25rem); font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(236, 72, 153, 0.4); text-transform: uppercase; letter-spacing: 1px; }
+        .controls button#spinButton:hover { background: linear-gradient(to right, #a78bfa, #f472b6); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 30px rgba(236, 72, 153, 0.6); transform: translateY(-3px) scale(1.05); }
+        .controls button#spinButton:active { transform: translateY(0) scale(1); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 0 15px rgba(236, 72, 153, 0.3); }
+        .controls button#spinButton:disabled { background: #4b5563; cursor: not-allowed; opacity: 0.6; box-shadow: none; transform: none; }
+        
+        .logout-button {
+            background: linear-gradient(to right, #ef4444, #f97316) !important; 
+            padding: 0.5rem 1rem !important;
+            font-size: 0.875rem !important;
+            margin-top: 0; 
+        }
+        .logout-button:hover {
+            background: linear-gradient(to right, #f87171, #fb923c) !important;
+        }
+
+        .info { margin-top: 1.25rem; font-size: clamp(0.9rem, 3vw, 1.1rem); }
+        .info p { margin: 0.5rem 0; background-color: rgba(31, 41, 55, 0.5); padding: 0.625rem; border-radius: 10px; }
+        .message { font-weight: 600; min-height: 1.75rem; font-size: clamp(1rem, 3.5vw, 1.15rem); transition: color 0.3s ease; }
+        .paytable { margin-top: 1.25rem; background-color: rgba(31, 41, 55, 0.5); padding: 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .paytable h3 { font-family: 'Poppins', sans-serif; font-size: clamp(1.2rem, 4vw, 1.4rem); font-weight: 700; color: #fff; margin-bottom: 0.625rem; text-shadow: 0 0 8px rgba(255,255,255,0.2); }
+        #paytableContent { }
+        .paytable-item { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.3125rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: clamp(0.8rem, 2.5vw, 0.9rem); }
+        .paytable-item:last-child { border-bottom: none; }
+        .paytable-symbol-info { display: flex; align-items: center; }
+        .paytable-symbol-image { width: clamp(30px, 8vw, 35px); height: clamp(30px, 8vw, 35px); object-fit: contain; margin-right: 0.5rem; background-color: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px; }
+        .paytable-payouts { text-align: right; }
+        .paytable-payouts span { display: block; line-height: 1.3; font-size: clamp(0.75rem, 2.2vw, 0.85rem); }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(17, 24, 39, 0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
+        .modal-content { background-color: #374151; color: #d1d5db; margin: auto; padding: 1.875rem; border: none; border-radius: 16px; width: 85%; max-width: 420px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .modal-content h2 { font-family: 'Poppins', sans-serif; font-weight: 700; margin-top: 0; margin-bottom: 1rem; color: #fff; font-size: clamp(1.5rem, 5vw, 1.8rem); }
+        .modal-content p { font-size: clamp(0.9rem, 3vw, 1.1rem); margin-bottom: 1.5rem; }
+        .modal-button { font-family: 'Poppins', sans-serif; background: linear-gradient(to right, #8b5cf6, #ec4899); color: white; padding: 0.75rem 1.25rem; border: none; border-radius: 10px; font-size: clamp(0.9rem, 3.5vw, 1.1rem); font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .modal-button:hover { background: linear-gradient(to right, #a78bfa, #f472b6); box-shadow: 0 6px 15px rgba(0,0,0,0.3); transform: translateY(-2px); }
+        #loadingOverlayGame { position: absolute; inset: 0; background-color: rgba(31, 41, 55, 0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 50; border-radius: 24px; }
+        .loader { border-top-color: #8b5cf6; animation: spinner 1.2s linear infinite; border: 8px solid #4b5563; border-top-width: 8px; border-top-style: solid; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hidden { display: none !important; } 
+        
+        @media (min-width: 420px) { 
+            .address-grid {
+                grid-template-columns: repeat(2, 1fr); 
+            }
+            .address-grid .form-group.full-width {
+                grid-column: span 2; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="gameScreen" class="slot-machine hidden">
+            <div id="loadingOverlayGame" class="hidden"> 
+                <div class="loader ease-linear rounded-full h-24 w-24 mb-4"></div>
+                <p id="loadingMessageGame" class="text-white text-xl font-semibold text-center px-4">A carregar dados do jogo...</p>
+            </div>
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="title" style="margin-bottom: 0;">CAÇA-FRUTAS</h1>
+                <button id="logoutButton" class="logout-button controls button">Sair</button>
+            </div>
+            <div class="reels">
+                <div class="reel" id="reel1Container"><img src="" alt="Símbolo do rolo 1" class="reel-image" id="reel1Image"></div>
+                <div class="reel" id="reel2Container"><img src="" alt="Símbolo do rolo 2" class="reel-image" id="reel2Image"></div>
+                <div class="reel" id="reel3Container"><img src="" alt="Símbolo do rolo 3" class="reel-image" id="reel3Image"></div>
+            </div>
+            <div class="controls"> <button id="spinButton" disabled>Girar</button> </div>
+            <div class="info">
+                <p>Créditos: <span id="credits">100</span></p> 
+                <p class="message" id="message">Bem-vindo!</p>
+            </div>
+            <div class="paytable" id="paytableContainer">
+                <h3>Tabela de Prêmios</h3>
+                <div id="paytableContent"></div>
+            </div>
+        </div>
+
+        <div id="gameOverModal" class="modal">
+            <div class="modal-content">
+                <h2 id="modalTitle">FIM DE JOGO!</h2>
+                <p id="modalMessage">Você ficou sem créditos.</p> 
+                <button id="resetButton" class="modal-button">JOGAR NOVAMENTE</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Importações do Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { 
+            getAuth, 
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfigFromStudio = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'caca-frutas-default'; 
+
+        let app, db, auth, currentUserId = null;
+        let currentUserData = null; 
+
+        if (firebaseConfigFromStudio) {
+            try {
+                const parsedConfig = JSON.parse(firebaseConfigFromStudio);
+                if (parsedConfig.apiKey) {
+                    app = initializeApp(parsedConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    console.log("Firebase inicializado com sucesso na página do jogo!");
+                } else {
+                    console.warn("Configuração do Firebase recebida, mas apiKey está ausente.");
+                }
+            } catch (error) {
+                console.error("Erro ao parsear ou inicializar Firebase com __firebase_config:", error);
+            }
+        } else {
+            console.warn("Variável __firebase_config não definida. Funcionalidades de persistência de dados não funcionarão.");
+            // Se não houver config do Firebase, redireciona para uma página de erro ou mostra mensagem
+            // document.body.innerHTML = "<p>Erro de configuração. O jogo não pode ser carregado.</p>";
+        }
+        
+        const gameScreen = document.getElementById('gameScreen');
+        const loadingOverlayGame = document.getElementById('loadingOverlayGame'); 
+        const loadingMessageGame = document.getElementById('loadingMessageGame'); 
+        const logoutButton = document.getElementById('logoutButton');
+
+        let symbols = [ 
+            { name: 'Limão', emojiForMessage: '🍋', value: 'LEMON', imageSrc: 'imagens_frutas/limao.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Maca', emojiForMessage: '🍎', value: 'APPLE', imageSrc: 'imagens_frutas/Maca.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Laranja', emojiForMessage: '🍊', value: 'ORANGE', imageSrc: 'imagens_frutas/Laranja.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Uva', emojiForMessage: '🍇', value: 'GRAPE', imageSrc: 'imagens_frutas/uva.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Melancia', emojiForMessage: '🍉', value: 'WATERMELON', imageSrc: 'imagens_frutas/melancia.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Abacate', emojiForMessage: '🥑', value: 'AVOCADO', imageSrc: 'imagens_frutas/Abacate.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' },  
+            { name: 'Morango', emojiForMessage: '🍓', value: 'STRAWBERRY', imageSrc: 'imagens_frutas/Morango.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Banana', emojiForMessage: '🍌', value: 'BANANA', imageSrc: 'imagens_frutas/Banana.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }  
+        ];
+        const defaultImageSrc = 'imagens_frutas/Trevo.png'; 
+
+        const reel1Image = document.getElementById('reel1Image');
+        const reel2Image = document.getElementById('reel2Image');
+        const reel3Image = document.getElementById('reel3Image');
+        const reelElements = [ 
+            { img: reel1Image, container: document.getElementById('reel1Container'), finalSymbol: null, isStillSpinning: false },
+            { img: reel2Image, container: document.getElementById('reel2Container'), finalSymbol: null, isStillSpinning: false },
+            { img: reel3Image, container: document.getElementById('reel3Container'), finalSymbol: null, isStillSpinning: false }
+        ];
+
+        const spinButton = document.getElementById('spinButton');
+        const creditsDisplay = document.getElementById('credits'); 
+        const messageDisplay = document.getElementById('message');
+        const paytableContent = document.getElementById('paytableContent'); 
+        const gameOverModal = document.getElementById('gameOverModal');
+        const resetButton = document.getElementById('resetButton');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessageElement = document.getElementById('modalMessage');
+        
+        let credits = 100; 
+        const spinCost = 1; // Custo do giro alterado para 1 crédito
+        let isSpinning = false;
+        let valorCofre = 0; 
+        const valorCofreParaPremio = 15000;
+        const premioDoCofre = 5000; 
+        let forcarTrincaPeloCofre = false;
+        let simboloTrincaCofre = null;
+
+        function formatAsReal(value) {
+            return value.toFixed(2).replace('.', ',');
+        }
+
+        function populatePaytable() {
+            paytableContent.innerHTML = ''; 
+            symbols.forEach(symbol => {
+                if (symbol.payout.three > 0 || symbol.payout.two > 0) {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'paytable-item';
+                    const symbolInfoDiv = document.createElement('div');
+                    symbolInfoDiv.className = 'paytable-symbol-info';
+                    const img = document.createElement('img');
+                    img.src = symbol.imageSrc;
+                    img.alt = symbol.name;
+                    img.className = 'paytable-symbol-image';
+                    symbolInfoDiv.appendChild(img);
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = symbol.name;
+                    symbolInfoDiv.appendChild(nameSpan);
+                    itemDiv.appendChild(symbolInfoDiv); 
+                    const payoutsDiv = document.createElement('div');
+                    payoutsDiv.className = 'paytable-payouts';
+                    
+                    if (symbol.payout.three > 0) {
+                        const threePayoutSpan = document.createElement('span');
+                        if (symbol.prizeCurrency === 'R$') {
+                            threePayoutSpan.textContent = `3x = R$ ${formatAsReal(symbol.payout.three)}`;
+                        } else {
+                            threePayoutSpan.textContent = `3x = ${symbol.payout.three} créditos`;
+                        }
+                        payoutsDiv.appendChild(threePayoutSpan);
+                    }
+
+                    if (symbol.payout.two > 0) { // Embora não usado com as regras atuais, mantido para flexibilidade
+                        const twoPayoutSpan = document.createElement('span');
+                         if (symbol.prizeCurrency === 'R$') {
+                            twoPayoutSpan.textContent = `2x = R$ ${formatAsReal(symbol.payout.two)}`;
+                        } else {
+                            twoPayoutSpan.textContent = `2x = ${symbol.payout.two} créditos`;
+                        }
+                        payoutsDiv.appendChild(twoPayoutSpan);
+                    }
+                    itemDiv.appendChild(payoutsDiv); 
+                    paytableContent.appendChild(itemDiv);
+                }
+            });
+        }
+        
+        async function loadUserData(userId) {
+            if (!db) {
+                console.log("DB não inicializado, usando valores padrão para créditos e cofre.");
+                credits = 100;
+                valorCofre = 0; 
+                updateCredits();
+                return;
+            }
+            const userDocRef = doc(db, "users", userId);
+            try {
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) {
+                    currentUserData = docSnap.data();
+                    credits = currentUserData.credits !== undefined ? currentUserData.credits : 100;
+                    valorCofre = currentUserData.valorCofre !== undefined ? currentUserData.valorCofre : 0;
+                    console.log(`Dados carregados para ${userId}: Créditos=${credits}, Cofre (interno)=R$${formatAsReal(valorCofre)}`);
+                } else {
+                    console.log(`Nenhum perfil encontrado para ${userId} em jogo.html, redirecionando para login.`);
+                    window.location.href = 'index.html'; // Redireciona se não achar perfil
+                    return; // Importante para não continuar a execução
+                }
+                updateCredits();
+            } catch (error) {
+                console.error("Erro ao carregar dados do usuário do Firestore:", error);
+                credits = 100; 
+                valorCofre = 0; 
+                updateCredits();
+            }
+        }
+
+        async function saveGameData(userIdToSave) {
+            if (!db || !userIdToSave) return;
+            const userDocRef = doc(db, "users", userIdToSave);
+            try {
+                // Usamos updateDoc para não sobrescrever outros dados do perfil, como nome, cpf, etc.
+                // Se o documento não existir, setDoc com merge:true o criaria, mas loadUserData já deve ter criado.
+                await setDoc(userDocRef, { 
+                    credits: credits, 
+                    valorCofre: valorCofre 
+                }, { merge: true });
+                console.log(`Dados do jogo (créditos e cofre) salvos para o usuário: ${userIdToSave}`);
+            } catch (error) {
+                console.error("Erro ao salvar dados do jogo no Firestore:", error);
+            }
+        }
+
+
+        function initializeGameAssets() {
+            loadingOverlayGame.classList.remove('hidden');
+            loadingOverlayGame.style.display = 'flex';
+            spinButton.disabled = true;
+            loadingMessageGame.textContent = 'A carregar dados...'; // Mensagem mais genérica
+            
+            forcarTrincaPeloCofre = false;
+            simboloTrincaCofre = null;
+
+            reelElements.forEach(reel => reel.img.src = defaultImageSrc);
+            
+            populatePaytable(); 
+
+            // A carga de dados do usuário (incluindo créditos e cofre) é feita pelo onAuthStateChanged
+            // Apenas garantimos que a UI seja atualizada após os dados serem carregados.
+             if (currentUserId) {
+                // Os dados já devem ter sido carregados pelo onAuthStateChanged
+                // Apenas atualizamos a UI aqui se necessário ou esperamos o onAuthStateChanged terminar
+                updateCredits();
+                // Não precisa mostrar o cofre na tela
+                 setTimeout(() => {
+                    loadingOverlayGame.style.display = 'none';
+                    if (credits >= spinCost) {
+                        spinButton.disabled = false;
+                    } else {
+                        spinButton.disabled = true; 
+                        showModal("SEM CRÉDITOS", "Você não tem créditos suficientes para o primeiro giro. Reinicie para jogar."); 
+                    }
+                    messageDisplay.textContent = credits >= spinCost ? 'CLIQUE EM GIRAR!' : 'SEM CRÉDITOS'; 
+                }, 500);
+            } else {
+                // Isso não deveria acontecer se a proteção de rota estiver funcionando
+                console.log("Nenhum usuário logado em initializeGameAssets. Redirecionando...");
+                window.location.href = 'index.html';
+            }
+        }
+
+        function getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        async function spinReels() {
+            if (isSpinning) return; 
+            if (credits < spinCost) {
+                showModal("SEM CRÉDITOS", "Você não tem créditos suficientes para girar."); 
+                return;
+            }
+            isSpinning = true;
+            spinButton.disabled = true;
+            
+            valorCofre += 0.50; 
+            credits -= spinCost;
+            
+            if (currentUserId && db) {
+                // Salva os créditos e o cofre após cada giro
+                // Considerar fazer isso de forma menos frequente para otimizar escritas no Firestore,
+                // por exemplo, a cada X giros ou ao sair do jogo. Por ora, faremos por giro.
+                await saveGameData(currentUserId); 
+            }
+            console.log(`[ADMIN] Valor no cofre: R$ ${formatAsReal(valorCofre)}`); 
+
+            updateCredits();
+            messageDisplay.textContent = 'GIRANDO...';
+            messageDisplay.style.color = '#a78bfa';
+
+            if (valorCofre >= valorCofreParaPremio && !forcarTrincaPeloCofre) {
+                forcarTrincaPeloCofre = true;
+                simboloTrincaCofre = getRandomSymbol(); // Sorteia uma fruta para a trinca premiada
+                console.log(`COFRE ATINGIU R$ ${formatAsReal(valorCofreParaPremio)}! Próximo giro será prêmio de ${simboloTrincaCofre.name}.`);
+            }
+
+            reelElements.forEach(reel => {
+                reel.container.classList.add('spinning');
+                reel.isStillSpinning = true;
+                reel.finalSymbol = null; 
+            });
+            
+            const reelStopTimes = [2000, 3000, 4000]; 
+            let spinningReelsCount = reelElements.length;
+            let elapsedTimes = [0, 0, 0]; 
+
+            function animateReel(index) {
+                if (!reelElements[index].isStillSpinning) return;
+                const randomSymbolForAnimation = getRandomSymbol();
+                if (randomSymbolForAnimation && randomSymbolForAnimation.imageSrc) { 
+                    reelElements[index].img.src = randomSymbolForAnimation.imageSrc;
+                } else {
+                    reelElements[index].img.src = defaultImageSrc; 
+                }
+                elapsedTimes[index] += 80; 
+                if (elapsedTimes[index] >= reelStopTimes[index]) {
+                    reelElements[index].isStillSpinning = false;
+                    reelElements[index].finalSymbol = forcarTrincaPeloCofre ? simboloTrincaCofre : getRandomSymbol(); 
+                    if (reelElements[index].finalSymbol && reelElements[index].finalSymbol.imageSrc) {
+                        reelElements[index].img.src = reelElements[index].finalSymbol.imageSrc;
+                    } else {
+                        reelElements[index].img.src = defaultImageSrc;
+                    }
+                    reelElements[index].container.classList.remove('spinning');
+                    spinningReelsCount--;
+                    if (spinningReelsCount === 0) {
+                        finishSpin();
+                    }
+                } else {
+                    setTimeout(() => animateReel(index), 80);
+                }
+            }
+            reelElements.forEach((_, index) => animateReel(index));
+        }
+
+        function finishSpin() {
+            let results;
+            if (forcarTrincaPeloCofre && simboloTrincaCofre) {
+                results = [simboloTrincaCofre, simboloTrincaCofre, simboloTrincaCofre];
+                reelElements.forEach(reel => reel.img.src = simboloTrincaCofre.imageSrc);
+            } else {
+                results = reelElements.map(reel => reel.finalSymbol || getRandomSymbol()); 
+                results.forEach((symbol, index) => {
+                    if (symbol && symbol.imageSrc) {
+                        reelElements[index].img.src = symbol.imageSrc;
+                    } else {
+                        reelElements[index].img.src = defaultImageSrc;
+                    }
+                });
+            }
+            checkWin(results);
+            isSpinning = false;
+            if (credits >= spinCost) { 
+                spinButton.disabled = false;
+            } else {
+                spinButton.disabled = true; 
+                setTimeout(() => {
+                    if(credits < spinCost) { 
+                         showModal("FIM DE JOGO!", "Você ficou sem créditos."); 
+                    }
+                }, 1000);
+            }
+        }
+
+        function checkWin(results) {
+            if (!results || results.length < 3 || !results[0] || !results[1] || !results[2] ||
+                results.some(r => !r || typeof r.value === 'undefined' || typeof r.payout === 'undefined')) { 
+                console.error("Resultados inválidos em checkWin:", results);
+                messageDisplay.textContent = "Erro ao verificar. Tente novamente.";
+                messageDisplay.style.color = '#f87171'; 
+                return;
+            }
+            const [s1, s2, s3] = results;
+            let winAmount = 0;
+            let winningSymbol = null; 
+            let winMessage = "TENTE NOVAMENTE!";
+
+            if (s1.value === s2.value && s2.value === s3.value) { 
+                winAmount = s1.payout.three; 
+                if (winAmount > 0) { 
+                   winningSymbol = s1;
+                   // Todos os prêmios de trinca são em R$
+                   winMessage = `Você Ganhou! R$ ${formatAsReal(winAmount)} Reais`;
+                }
+            }
+
+            if (winAmount > 0) {
+                if (forcarTrincaPeloCofre && winningSymbol && winAmount === premioDoCofre) {
+                    valorCofre -= premioDoCofre; 
+                    console.log(`[ADMIN] Prêmio de R$ ${formatAsReal(premioDoCofre)} pago pelo cofre. Novo valor do cofre (interno): R$ ${formatAsReal(valorCofre)}`);
+                    forcarTrincaPeloCofre = false; 
+                    simboloTrincaCofre = null;
+                    if(currentUserId && db) { 
+                        saveGameData(currentUserId); 
+                    }
+                }
+                // Prêmios em R$ não são adicionados aos créditos do jogador
+                messageDisplay.textContent = winMessage;
+                messageDisplay.style.color = '#34d399';
+            } else {
+                messageDisplay.textContent = "TENTE NOVAMENTE!"; 
+                messageDisplay.style.color = '#f87171';
+            }
+            updateCredits(); // Atualiza apenas a exibição dos créditos, não o valor se for prêmio em R$
+
+            if (credits < spinCost && winAmount === 0) { 
+                 setTimeout(() => {
+                    if(credits < spinCost) {
+                        showModal("FIM DE JOGO!", "Você ficou sem créditos."); 
+                        spinButton.disabled = true;
+                    }
+                }, 1500);
+            }
+        }
+
+        function updateCredits() {
+            creditsDisplay.textContent = credits; 
+        }
+
+        function showModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessageElement.textContent = message; 
+            gameOverModal.style.display = 'flex';
+        }
+
+        function hideModal() {
+            gameOverModal.style.display = 'none';
+        }
+
+        function resetGame() {
+            credits = 100; 
+            // Não resetamos o valorCofre aqui, pois ele deve persistir para o usuário
+            // Se quiser resetar o cofre ao clicar em "Jogar Novamente", descomente a linha abaixo
+            // valorCofre = 0;
+            // console.log("Jogo resetado. Cofre zerado (interno)."); 
+            forcarTrincaPeloCofre = false;
+            simboloTrincaCofre = null;
+            updateCredits();
+            // updateCofreDisplay(); // Removido
+            messageDisplay.textContent = 'BOA SORTE!';
+            messageDisplay.style.color = '#e5e7eb';
+            
+            reelElements.forEach(reel => reel.img.src = defaultImageSrc);
+            
+            if (credits >= spinCost) { 
+                 spinButton.disabled = false;
+            }
+            hideModal();
+        }
+        
+        logoutButton.addEventListener('click', async () => {
+            if (!auth) return;
+            try {
+                // Salva os dados do jogo ANTES de deslogar
+                if (currentUserId && db) {
+                    await saveGameData(currentUserId);
+                }
+                await signOut(auth);
+                console.log("Usuário deslogado.");
+                // Redireciona para a página de login
+                window.location.href = 'index.html'; 
+            } catch (error) {
+                console.error("Erro ao fazer logout:", error);
+                alert("Erro ao sair. Tente novamente.");
+            }
+        });
+
+        spinButton.addEventListener('click', spinReels);
+        resetButton.addEventListener('click', resetGame);
+
+        // Verifica o estado de autenticação ao carregar a página do jogo
+        if (auth) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // Usuário está logado
+                    currentUserId = user.uid;
+                    console.log("Usuário logado na página do jogo:", currentUserId);
+                    gameScreen.classList.remove('hidden'); // Mostra a tela do jogo
+                    initializeGameAssets(); // Inicializa os assets e carrega dados do usuário
+                } else {
+                    // Usuário não está logado, redireciona para a página de login
+                    console.log("Nenhum usuário logado, redirecionando para index.html");
+                    window.location.href = 'index.html';
+                }
+            });
+        } else {
+            // Se o Firebase não inicializou corretamente, impede o acesso ao jogo
+            console.error("Firebase não inicializado na página do jogo. Redirecionando para login.");
+            // Idealmente, mostrar uma mensagem de erro mais amigável antes de redirecionar
+            // ou ter uma página de erro dedicada.
+            // window.location.href = 'index.html'; // Pode causar loop se index.html também falhar
+            document.body.innerHTML = "<p style='color:white; text-align:center; padding-top: 50px; font-size: 1.5rem;'>Erro de configuração. Não é possível carregar o jogo. <a href='index.html' style='color: #a78bfa;'>Voltar</a></p>";
+        }
+
+    </script>
+</body>
+</html>
