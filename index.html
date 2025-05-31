@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caça-Frutas (Créditos)</title>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap)" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem; 
+            color: #e5e7eb;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 100%; 
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        #authScreen { 
+            background-color: rgba(30, 30, 50, 0.85); 
+            /* Removida a imagem de fundo daqui, será aplicada via JS se existir, senão o gradiente do body prevalece ou a cor acima */
+            background-size: cover;
+            background-position: center;
+            backdrop-filter: blur(8px); 
+            padding: 2rem; 
+            border-radius: 28px; 
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255,255,255,0.05);
+            text-align: left;
+            border: 1px solid rgba(139, 92, 246, 0.3); 
+            position: relative; 
+        }
+
+        .auth-logo-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        #authLogo { 
+            max-width: 220px; 
+            height: auto;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.6)); 
+        }
+        .text-logo { 
+            font-family: 'Russo One', sans-serif;
+            font-size: clamp(2rem, 7vw, 2.8rem);
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px #8b5cf6, 0 0 10px #8b5cf6, 0 0 15px #ec4899, 0 0 20px #ec4899;
+        }
+
+        #registrationScreen h2, #loginScreen h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1.4rem, 4.5vw, 1.8rem); 
+            font-weight: 700;
+            color: #e0e0e0; 
+            margin-bottom: 1.5rem; 
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1rem; 
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.375rem; 
+            font-weight: 600;
+            font-size: 0.8rem; 
+            color: #a5b4fc; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem; 
+            border-radius: 10px; 
+            border: 1px solid #4a5568; 
+            background-color: rgba(23, 30, 48, 0.7); 
+            color: #e5e7eb;
+            font-size: 0.9rem; 
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-group input::placeholder {
+            color: #9ca3af;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #a78bfa; 
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4), 0 0 10px rgba(167, 139, 250, 0.3); 
+        }
+        .address-grid {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 0.625rem; 
+        }
+         .address-grid .form-group.full-width {
+            grid-column: span 1; 
+        }
+        .switch-auth-link {
+            text-align: center;
+            margin-top: 1.5rem; 
+            font-size: 0.875rem; 
+        }
+        .switch-auth-link a {
+            color: #c4b5fd; 
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .switch-auth-link a:hover {
+            color: #fff;
+        }
+        .submit-button { 
+            margin-top: 1.5rem; 
+            width: 100%; 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(to right, #7c3aed, #db2777); 
+            color: white; 
+            padding: 0.8rem 1.5rem; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: clamp(0.9rem, 3.5vw, 1.1rem); 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 15px rgba(219, 39, 119, 0.4); 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+        .submit-button:hover {
+            background: linear-gradient(to right, #8b5cf6, #ec4899);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 25px rgba(219, 39, 119, 0.6);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .slot-machine { background-color: rgba(55, 65, 81, 0.8); backdrop-filter: blur(12px); padding: 1.5rem; border-radius: 24px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); text-align: center; position: relative; }
+        .title { font-family: 'Poppins', sans-serif; font-size: clamp(1.8rem, 6vw, 2.5rem); font-weight: 800; margin-bottom: 1.5rem; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3), 0 0 20px rgba(255,255,255,0.2); }
+        .reels { display: flex; justify-content: space-around; margin-bottom: 1.875rem; background-color: rgba(31, 41, 55, 0.7); padding: 1.25rem; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); }
+        .reel { width: clamp(60px, 20vw, 90px); height: clamp(80px, 25vw, 110px); background-color: #4b5563; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; box-shadow: inset 0 2px 8px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.1); transition: box-shadow 0.3s ease; }
+        .reel-image { max-width: 80%; max-height: 80%; object-fit: contain; transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out; }
+        .reel.spinning .reel-image { animation: modernSpinImageAnimation 0.08s linear infinite; box-shadow: none; }
+        .reel.spinning { box-shadow: inset 0 0 15px rgba(167, 139, 250, 0.5), 0 0 10px rgba(167, 139, 250, 0.3); }
+        @keyframes modernSpinImageAnimation { 0% { transform: translateY(-10px) scale(0.95); opacity: 0.7; } 50% { transform: translateY(10px) scale(1); opacity: 1; } 100% { transform: translateY(-10px) scale(0.95); opacity: 0.7; } } 
+        .controls button { font-family: 'Poppins', sans-serif; background: linear-gradient(to right, #8b5cf6, #ec4899); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 12px; font-size: clamp(1rem, 4vw, 1.25rem); font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(236, 72, 153, 0.4); text-transform: uppercase; letter-spacing: 1px; }
+        .controls button:hover { background: linear-gradient(to right, #a78bfa, #f472b6); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 30px rgba(236, 72, 153, 0.6); transform: translateY(-3px) scale(1.05); }
+        .controls button:active { transform: translateY(0) scale(1); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 0 15px rgba(236, 72, 153, 0.3); }
+        .controls button:disabled { background: #4b5563; cursor: not-allowed; opacity: 0.6; box-shadow: none; transform: none; }
+        .info { margin-top: 1.25rem; font-size: clamp(0.9rem, 3vw, 1.1rem); }
+        .info p { margin: 0.5rem 0; background-color: rgba(31, 41, 55, 0.5); padding: 0.625rem; border-radius: 10px; }
+        .message { font-weight: 600; min-height: 1.75rem; font-size: clamp(1rem, 3.5vw, 1.15rem); transition: color 0.3s ease; }
+        .paytable { margin-top: 1.25rem; background-color: rgba(31, 41, 55, 0.5); padding: 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .paytable h3 { font-family: 'Poppins', sans-serif; font-size: clamp(1.2rem, 4vw, 1.4rem); font-weight: 700; color: #fff; margin-bottom: 0.625rem; text-shadow: 0 0 8px rgba(255,255,255,0.2); }
+        #paytableContent { }
+        .paytable-item { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.3125rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: clamp(0.8rem, 2.5vw, 0.9rem); }
+        .paytable-item:last-child { border-bottom: none; }
+        .paytable-symbol-info { display: flex; align-items: center; }
+        .paytable-symbol-image { width: clamp(30px, 8vw, 35px); height: clamp(30px, 8vw, 35px); object-fit: contain; margin-right: 0.5rem; background-color: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px; }
+        .paytable-payouts { text-align: right; }
+        .paytable-payouts span { display: block; line-height: 1.3; font-size: clamp(0.75rem, 2.2vw, 0.85rem); }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(17, 24, 39, 0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
+        .modal-content { background-color: #374151; color: #d1d5db; margin: auto; padding: 1.875rem; border: none; border-radius: 16px; width: 85%; max-width: 420px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .modal-content h2 { font-family: 'Poppins', sans-serif; font-weight: 700; margin-top: 0; margin-bottom: 1rem; color: #fff; font-size: clamp(1.5rem, 5vw, 1.8rem); }
+        .modal-content p { font-size: clamp(0.9rem, 3vw, 1.1rem); margin-bottom: 1.5rem; }
+        .modal-button { font-family: 'Poppins', sans-serif; background: linear-gradient(to right, #8b5cf6, #ec4899); color: white; padding: 0.75rem 1.25rem; border: none; border-radius: 10px; font-size: clamp(0.9rem, 3.5vw, 1.1rem); font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .modal-button:hover { background: linear-gradient(to right, #a78bfa, #f472b6); box-shadow: 0 6px 15px rgba(0,0,0,0.3); transform: translateY(-2px); }
+        #loadingOverlayGame { position: absolute; inset: 0; background-color: rgba(31, 41, 55, 0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 50; border-radius: 24px; }
+        .loader { border-top-color: #8b5cf6; animation: spinner 1.2s linear infinite; border: 8px solid #4b5563; border-top-width: 8px; border-top-style: solid; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hidden { display: none !important; } 
+        .submit-button { margin-top: 1.5rem; width: 100%; } 
+
+        @media (min-width: 420px) { 
+            .address-grid {
+                grid-template-columns: repeat(2, 1fr); 
+            }
+            .address-grid .form-group.full-width {
+                grid-column: span 2; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="authScreen">
+            <div id="authContent"> 
+                <div class="auth-logo-container">
+                    <img id="authLogo" src="imagens_interface/logo-caca-frutas.png" alt="CAÇA-FRUTAS" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
+                    <div id="textLogoFallback" class="text-logo hidden">CAÇA-FRUTAS</div>
+                </div>
+                <div id="registrationScreen" class="hidden"> 
+                    <h2>Cadastro de Jogador</h2>
+                    <form id="registrationForm">
+                        <div class="form-group"> <label for="fullName">Nome Completo</label> <input type="text" id="fullName" name="fullName" required> </div>
+                        <div class="form-group"> <label for="phone">Telefone (com DDD)</label> <input type="tel" id="phone" name="phone" placeholder="(XX) XXXXX-XXXX" required> </div>
+                        <div class="form-group"> <label for="cpf">CPF</label> <input type="text" id="cpf" name="cpf" placeholder="XXX.XXX.XXX-XX" required> </div>
+                        <p class="text-sm text-gray-400 mb-2">Endereço:</p>
+                        <div class="form-group"> <label for="street">Rua / Logradouro</label> <input type="text" id="street" name="street" required> </div>
+                        <div class="address-grid">
+                            <div class="form-group"> <label for="number">Número</label> <input type="text" id="number" name="number" required> </div>
+                            <div class="form-group"> <label for="neighborhood">Bairro</label> <input type="text" id="neighborhood" name="neighborhood" required> </div>
+                        </div>
+                        <div class="address-grid">
+                            <div class="form-group"> <label for="city">Cidade</label> <input type="text" id="city" name="city" required> </div>
+                            <div class="form-group"> <label for="state">Estado (UF)</label> <input type="text" id="state" name="state" maxlength="2" placeholder="Ex: SP" required> </div>
+                        </div>
+                        <div class="form-group full-width"> <label for="zip">CEP</label> <input type="text" id="zip" name="zip" placeholder="XXXXX-XXX" required> </div>
+                        <button type="submit" class="submit-button">Cadastrar e Jogar</button>
+                    </form>
+                    <p class="switch-auth-link">Já tem uma conta? <a href="#" id="showLoginLink">Faça login</a></p>
+                </div>
+                <div id="loginScreen"> 
+                    <h2>Login</h2>
+                    <form id="loginForm">
+                        <div class="form-group"> <label for="loginIdentifier">CPF, Email ou Telefone</label> <input type="text" id="loginIdentifier" name="loginIdentifier" required> </div>
+                        <div class="form-group"> <label for="loginPassword">Senha</label> <input type="password" id="loginPassword" name="loginPassword" required> </div>
+                        <button type="submit" class="submit-button">Entrar</button>
+                    </form>
+                    <p class="switch-auth-link">Não tem conta? <a href="#" id="showRegisterLink">Cadastre-se</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="slot-machine hidden">
+            <div id="loadingOverlayGame" class="hidden"> 
+                <div class="loader ease-linear rounded-full h-24 w-24 mb-4"></div>
+                <p id="loadingMessageGame" class="text-white text-xl font-semibold text-center px-4">A carregar imagens locais...</p>
+            </div>
+            <h1 class="title">CAÇA-FRUTAS</h1>
+            <div class="reels">
+                <div class="reel" id="reel1Container"><img src="" alt="Símbolo do rolo 1" class="reel-image" id="reel1Image"></div>
+                <div class="reel" id="reel2Container"><img src="" alt="Símbolo do rolo 2" class="reel-image" id="reel2Image"></div>
+                <div class="reel" id="reel3Container"><img src="" alt="Símbolo do rolo 3" class="reel-image" id="reel3Image"></div>
+            </div>
+            <div class="controls"> <button id="spinButton" disabled>Girar</button> </div>
+            <div class="info">
+                <p>Créditos: <span id="credits">100</span></p> 
+                <p class="message" id="message">A carregar...</p>
+            </div>
+            <div class="paytable" id="paytableContainer">
+                <h3>Tabela de Prêmios</h3>
+                <div id="paytableContent"></div>
+            </div>
+        </div>
+
+        <div id="gameOverModal" class="modal">
+            <div class="modal-content">
+                <h2 id="modalTitle">FIM DE JOGO!</h2>
+                <p id="modalMessage">Você ficou sem créditos.</p> 
+                <button id="resetButton" class="modal-button">JOGAR NOVAMENTE</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const authScreen = document.getElementById('authScreen');
+        const authContent = document.getElementById('authContent'); // Conteúdo principal da tela de auth
+        const authLogoImg = document.getElementById('authLogo');
+        const textLogoFallback = document.getElementById('textLogoFallback');
+        const registrationScreen = document.getElementById('registrationScreen');
+        const registrationForm = document.getElementById('registrationForm');
+        const loginScreen = document.getElementById('loginScreen');
+        const loginForm = document.getElementById('loginForm');
+        const showLoginLink = document.getElementById('showLoginLink');
+        const showRegisterLink = document.getElementById('showRegisterLink');
+        const gameScreen = document.getElementById('gameScreen');
+        const loadingOverlayGame = document.getElementById('loadingOverlayGame'); 
+        const loadingMessageGame = document.getElementById('loadingMessageGame'); 
+
+        // --- Lógica do Jogo ---
+        let symbols = [ 
+            { name: 'Limão', emojiForMessage: '🍋', value: 'LEMON', imageSrc: 'imagens_frutas/limao.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Maca', emojiForMessage: '🍎', value: 'APPLE', imageSrc: 'imagens_frutas/Maca.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Laranja', emojiForMessage: '🍊', value: 'ORANGE', imageSrc: 'imagens_frutas/Laranja.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Uva', emojiForMessage: '🍇', value: 'GRAPE', imageSrc: 'imagens_frutas/uva.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Melancia', emojiForMessage: '🍉', value: 'WATERMELON', imageSrc: 'imagens_frutas/melancia.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Abacate', emojiForMessage: '🥑', value: 'AVOCADO', imageSrc: 'imagens_frutas/Abacate.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' },  
+            { name: 'Morango', emojiForMessage: '🍓', value: 'STRAWBERRY', imageSrc: 'imagens_frutas/Morango.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Banana', emojiForMessage: '🍌', value: 'BANANA', imageSrc: 'imagens_frutas/Banana.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }  
+        ];
+        const defaultImageSrc = 'imagens_frutas/Trevo.png'; 
+
+        const reel1Image = document.getElementById('reel1Image');
+        const reel2Image = document.getElementById('reel2Image');
+        const reel3Image = document.getElementById('reel3Image');
+        const reelElements = [ 
+            { img: reel1Image, container: document.getElementById('reel1Container'), finalSymbol: null, isStillSpinning: false },
+            { img: reel2Image, container: document.getElementById('reel2Container'), finalSymbol: null, isStillSpinning: false },
+            { img: reel3Image, container: document.getElementById('reel3Container'), finalSymbol: null, isStillSpinning: false }
+        ];
+
+        const spinButton = document.getElementById('spinButton');
+        const creditsDisplay = document.getElementById('credits'); 
+        const messageDisplay = document.getElementById('message');
+        const paytableContent = document.getElementById('paytableContent'); 
+        const gameOverModal = document.getElementById('gameOverModal');
+        const resetButton = document.getElementById('resetButton');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        
+        let credits = 100; 
+        const spinCost = 1; // CUSTO DO GIRO ALTERADO PARA 1 CRÉDITO
+        let isSpinning = false;
+        let valorCofre = 0; 
+        const valorCofreParaPremio = 15000;
+        const premioDoCofre = 5000; 
+        let forcarTrincaPeloCofre = false;
+        let simboloTrincaCofre = null;
+
+        function formatAsReal(value) {
+            return value.toFixed(2).replace('.', ',');
+        }
+
+        function populatePaytable() {
+            paytableContent.innerHTML = ''; 
+            symbols.forEach(symbol => {
+                if (symbol.payout.three > 0) { 
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'paytable-item';
+                    const symbolInfoDiv = document.createElement('div');
+                    symbolInfoDiv.className = 'paytable-symbol-info';
+                    const img = document.createElement('img');
+                    img.src = symbol.imageSrc;
+                    img.alt = symbol.name;
+                    img.className = 'paytable-symbol-image';
+                    symbolInfoDiv.appendChild(img);
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = symbol.name;
+                    symbolInfoDiv.appendChild(nameSpan);
+                    itemDiv.appendChild(symbolInfoDiv); 
+                    const payoutsDiv = document.createElement('div');
+                    payoutsDiv.className = 'paytable-payouts';
+                    const threePayoutSpan = document.createElement('span');
+                    threePayoutSpan.textContent = `3x = R$ ${formatAsReal(symbol.payout.three)}`;
+                    payoutsDiv.appendChild(threePayoutSpan);
+                    itemDiv.appendChild(payoutsDiv); 
+                    paytableContent.appendChild(itemDiv);
+                }
+            });
+        }
+
+        function initializeGameAssets() {
+            loadingOverlayGame.classList.remove('hidden');
+            loadingOverlayGame.style.display = 'flex';
+            spinButton.disabled = true;
+            loadingMessageGame.textContent = 'A carregar imagens locais...';
+            valorCofre = 0; 
+            forcarTrincaPeloCofre = false;
+            simboloTrincaCofre = null;
+
+            reelElements.forEach(reel => reel.img.src = defaultImageSrc);
+
+            updateCredits(); 
+            populatePaytable(); 
+
+            setTimeout(() => {
+                loadingOverlayGame.style.display = 'none';
+                if (credits >= spinCost) {
+                    spinButton.disabled = false;
+                } else {
+                    spinButton.disabled = true; 
+                    showModal("SEM CRÉDITOS", "Você não tem créditos suficientes para o primeiro giro. Reinicie para jogar."); 
+                }
+                messageDisplay.textContent = credits >= spinCost ? 'CLIQUE EM GIRAR!' : 'SEM CRÉDITOS'; 
+            }, 500); 
+        }
+
+        function getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        async function spinReels() {
+            if (isSpinning) return; 
+            if (credits < spinCost) {
+                showModal("SEM CRÉDITOS", "Você não tem créditos suficientes para girar."); 
+                return;
+            }
+            isSpinning = true;
+            spinButton.disabled = true;
+            
+            // Cada giro de 1 crédito adiciona R$ 0,50 ao cofre (R$ 5,00 = 10 créditos)
+            valorCofre += 0.50; // ACÚMULO NO COFRE AJUSTADO
+            // console.log(`Valor no cofre: R$ ${formatAsReal(valorCofre)}`); 
+
+            credits -= spinCost;
+            updateCredits();
+            messageDisplay.textContent = 'GIRANDO...';
+            messageDisplay.style.color = '#a78bfa';
+
+            if (valorCofre >= valorCofreParaPremio && !forcarTrincaPeloCofre) {
+                forcarTrincaPeloCofre = true;
+                simboloTrincaCofre = getRandomSymbol(); 
+                console.log(`COFRE ATINGIU R$ ${formatAsReal(valorCofreParaPremio)}! Próximo giro será prêmio de ${simboloTrincaCofre.name}.`);
+            }
+
+            reelElements.forEach(reel => {
+                reel.container.classList.add('spinning');
+                reel.isStillSpinning = true;
+                reel.finalSymbol = null; 
+            });
+            
+            const reelStopTimes = [2000, 3000, 4000]; 
+            let spinningReelsCount = reelElements.length;
+            let elapsedTimes = [0, 0, 0]; 
+
+            function animateReel(index) {
+                if (!reelElements[index].isStillSpinning) return;
+                const randomSymbolForAnimation = getRandomSymbol();
+                if (randomSymbolForAnimation && randomSymbolForAnimation.imageSrc) { 
+                    reelElements[index].img.src = randomSymbolForAnimation.imageSrc;
+                } else {
+                    reelElements[index].img.src = defaultImageSrc; 
+                }
+                elapsedTimes[index] += 80; 
+                if (elapsedTimes[index] >= reelStopTimes[index]) {
+                    reelElements[index].isStillSpinning = false;
+                    reelElements[index].finalSymbol = forcarTrincaPeloCofre ? simboloTrincaCofre : getRandomSymbol(); 
+                    if (reelElements[index].finalSymbol && reelElements[index].finalSymbol.imageSrc) {
+                        reelElements[index].img.src = reelElements[index].finalSymbol.imageSrc;
+                    } else {
+                        reelElements[index].img.src = defaultImageSrc;
+                    }
+                    reelElements[index].container.classList.remove('spinning');
+                    spinningReelsCount--;
+                    if (spinningReelsCount === 0) {
+                        finishSpin();
+                    }
+                } else {
+                    setTimeout(() => animateReel(index), 80);
+                }
+            }
+            reelElements.forEach((_, index) => animateReel(index));
+        }
+
+        function finishSpin() {
+            let results;
+            if (forcarTrincaPeloCofre && simboloTrincaCofre) {
+                results = [simboloTrincaCofre, simboloTrincaCofre, simboloTrincaCofre];
+                reelElements.forEach(reel => reel.img.src = simboloTrincaCofre.imageSrc);
+            } else {
+                results = reelElements.map(reel => reel.finalSymbol || getRandomSymbol()); 
+                results.forEach((symbol, index) => {
+                    if (symbol && symbol.imageSrc) {
+                        reelElements[index].img.src = symbol.imageSrc;
+                    } else {
+                        reelElements[index].img.src = defaultImageSrc;
+                    }
+                });
+            }
+            checkWin(results);
+            isSpinning = false;
+            if (credits >= spinCost) { 
+                spinButton.disabled = false;
+            } else {
+                spinButton.disabled = true; 
+                setTimeout(() => {
+                    if(credits < spinCost) { 
+                         showModal("FIM DE JOGO!", "Você ficou sem créditos."); 
+                    }
+                }, 1000);
+            }
+        }
+
+        function checkWin(results) {
+            if (!results || results.length < 3 || !results[0] || !results[1] || !results[2] ||
+                results.some(r => !r || typeof r.value === 'undefined' || typeof r.payout === 'undefined')) { 
+                console.error("Resultados inválidos em checkWin:", results);
+                messageDisplay.textContent = "Erro ao verificar. Tente novamente.";
+                messageDisplay.style.color = '#f87171'; 
+                return;
+            }
+            const [s1, s2, s3] = results;
+            let winAmount = 0;
+            let winningSymbol = null; 
+            let winMessage = "TENTE NOVAMENTE!";
+
+            if (s1.value === s2.value && s2.value === s3.value) { 
+                winAmount = s1.payout.three; 
+                if (winAmount > 0) { 
+                   winningSymbol = s1;
+                   winMessage = `Você Ganhou! R$ ${formatAsReal(winAmount)} Reais`;
+                }
+            }
+
+            if (winAmount > 0) {
+                if (forcarTrincaPeloCofre && winningSymbol && winAmount === premioDoCofre) {
+                    valorCofre -= premioDoCofre; 
+                    console.log(`Prêmio de R$ ${formatAsReal(premioDoCofre)} pago pelo cofre. Novo valor do cofre (interno): R$ ${formatAsReal(valorCofre)}`);
+                    forcarTrincaPeloCofre = false; 
+                    simboloTrincaCofre = null;
+                }
+                messageDisplay.textContent = winMessage;
+                messageDisplay.style.color = '#34d399';
+            } else {
+                messageDisplay.textContent = "TENTE NOVAMENTE!"; 
+                messageDisplay.style.color = '#f87171';
+            }
+            updateCredits(); 
+
+            if (credits < spinCost && winAmount === 0) { 
+                 setTimeout(() => {
+                    if(credits < spinCost) {
+                        showModal("FIM DE JOGO!", "Você ficou sem créditos."); 
+                        spinButton.disabled = true;
+                    }
+                }, 1500);
+            }
+        }
+
+        function updateCredits() {
+            creditsDisplay.textContent = credits; 
+        }
+
+        function showModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            gameOverModal.style.display = 'flex';
+        }
+
+        function hideModal() {
+            gameOverModal.style.display = 'none';
+        }
+
+        function resetGame() {
+            credits = 100; 
+            valorCofre = 0; 
+            forcarTrincaPeloCofre = false;
+            simboloTrincaCofre = null;
+            updateCredits();
+            console.log("Jogo resetado. Cofre zerado (interno).");
+            messageDisplay.textContent = 'BOA SORTE!';
+            messageDisplay.style.color = '#e5e7eb';
+            
+            reelElements.forEach(reel => reel.img.src = defaultImageSrc);
+            
+            if (credits >= spinCost) { 
+                 spinButton.disabled = false;
+            }
+            hideModal();
+        }
+
+        // --- Lógica de Autenticação ---
+        showLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            registrationScreen.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+        });
+
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginScreen.classList.add('hidden');
+            registrationScreen.classList.remove('hidden');
+        });
+
+        registrationForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                cpf: document.getElementById('cpf').value,
+                street: document.getElementById('street').value,
+                number: document.getElementById('number').value,
+                neighborhood: document.getElementById('neighborhood').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                zip: document.getElementById('zip').value,
+            };
+             if (!formData.fullName || !formData.phone || !formData.cpf || !formData.street || !formData.number || !formData.neighborhood || !formData.city || !formData.state || !formData.zip) {
+                alert("Por favor, preencha todos os campos obrigatórios do cadastro.");
+                return;
+            }
+            console.log("Dados do Cadastro:", formData);
+            alert(`Cadastro (simulado) bem-sucedido para: ${formData.fullName}! Iniciando o jogo.`);
+            authScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            initializeGameAssets();
+        });
+
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const loginIdentifier = document.getElementById('loginIdentifier').value;
+            const loginPassword = document.getElementById('loginPassword').value;
+
+            if (!loginIdentifier || !loginPassword) {
+                alert("Por favor, preencha o identificador e a senha.");
+                return;
+            }
+            console.log("Tentativa de Login com:", loginIdentifier);
+            alert(`Login (simulado) bem-sucedido para: ${loginIdentifier}! Iniciando o jogo.`);
+            authScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            initializeGameAssets();
+        });
+        
+        // Inicialização Padrão: Mostrar tela de autenticação (login primeiro)
+        authScreen.classList.remove('hidden'); 
+        loginScreen.classList.remove('hidden'); 
+        registrationScreen.classList.add('hidden'); 
+        gameScreen.classList.add('hidden');
+
+        spinButton.addEventListener('click', spinReels);
+        resetButton.addEventListener('click', resetGame);
+
+    </script>
+</body>
+</html>
