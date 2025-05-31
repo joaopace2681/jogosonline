@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caça-Frutas - Autenticação</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>GAME FUN - Autenticação</title> <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
     <style>
@@ -32,7 +31,7 @@
         
         #authScreen { 
             background-color: rgba(30, 30, 50, 0.85); 
-            background-image: url('imagens_interface/fundo-auth.png'); /* Certifique-se que este arquivo existe ou remova/altere */
+            background-image: url('imagens_interface/fundo-auth.png'); 
             background-size: cover;
             background-position: center;
             backdrop-filter: blur(8px); 
@@ -49,7 +48,7 @@
             margin-bottom: 1rem; 
         }
         #authLogo { 
-            max-width: 160px; 
+            max-width: 200px; /* Ajustado para o novo nome, se necessário */
             height: auto;
             margin-bottom: 0.25rem; 
             filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5)); 
@@ -178,9 +177,8 @@
         <div id="authScreen">
             <div id="authContent"> 
                 <div class="auth-logo-container">
-                    <img id="authLogo" src="imagens_interface/logo-caca-frutas.png" alt="CAÇA-FRUTAS" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
-                    <div id="textLogoFallback" class="text-logo hidden">CAÇA-FRUTAS</div>
-                </div>
+                    <img id="authLogo" src="imagens_interface/logo-game-fun.png" alt="GAME FUN Logo" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
+                    <div id="textLogoFallback" class="text-logo hidden">GAME FUN</div> </div>
                 <p id="firebaseError" class="auth-message error text-center mb-4 hidden"></p> 
                 
                 <div id="loginScreen"> 
@@ -294,17 +292,24 @@
         const registerAuthMessage = document.getElementById('registerAuthMessage');
         const firebaseErrorElement = document.getElementById('firebaseError');
 
-        authLogoImg.onerror = () => {
-            authLogoImg.classList.add('hidden');
-            textLogoFallback.classList.remove('hidden');
-        };
-        if (authLogoImg.getAttribute('src') && authLogoImg.complete && authLogoImg.naturalHeight !== 0) {
-             authLogoImg.classList.remove('hidden');
-             textLogoFallback.classList.add('hidden');
-        } else if (!authLogoImg.getAttribute('src')) { 
-            authLogoImg.classList.add('hidden');
-            textLogoFallback.classList.remove('hidden');
+        // Lógica para exibir logo em imagem ou texto
+        const logoImageElement = document.getElementById('authLogo'); // Renomeado para evitar conflito
+        const logoTextElement = document.getElementById('textLogoFallback'); // Renomeado para evitar conflito
+        if (logoImageElement) {
+            logoImageElement.onerror = () => {
+                logoImageElement.classList.add('hidden');
+                if(logoTextElement) logoTextElement.classList.remove('hidden');
+            };
+            // Checa se o src está definido e se a imagem carregou, senão mostra o texto
+            if (logoImageElement.getAttribute('src') === 'imagens_interface/logo-game-fun.png' && logoImageElement.complete && logoImageElement.naturalHeight !== 0) { // Verifica o src correto
+                logoImageElement.classList.remove('hidden');
+                 if(logoTextElement) logoTextElement.classList.add('hidden');
+            } else if (!logoImageElement.getAttribute('src') || logoImageElement.getAttribute('src') !== 'imagens_interface/logo-game-fun.png') {
+                logoImageElement.classList.add('hidden');
+                if(logoTextElement) logoTextElement.classList.remove('hidden');
+            }
         }
+
 
         function displayAuthMessage(element, message, isError = true) {
             if (!element) return;
@@ -329,14 +334,13 @@
                 auth = getAuth(app);
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso!");
 
-                // Inicializar App Check
                 try {
-                    // @ts-ignore  // Para ignorar o erro do TypeScript sobre 'self' no ambiente do Studio
+                    // @ts-ignore 
                     // eslint-disable-next-line no-undef
-                    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // APENAS PARA TESTE LOCAL, REMOVA EM PRODUÇÃO OU QUANDO FOR PARA GITHUB PAGES REAL
+                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // DESCOMENTE APENAS PARA TESTE LOCAL NO SEU AMBIENTE
                     
                     const appCheck = initializeAppCheck(app, {
-                        provider: new ReCaptchaEnterpriseProvider('6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'), // SUA NOVA CHAVE DE SITE reCAPTCHA Enterprise
+                        provider: new ReCaptchaEnterpriseProvider('6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'), 
                         isTokenAutoRefreshEnabled: true
                     });
                     console.log("Firebase App Check inicializado.");
@@ -458,16 +462,31 @@
                 } catch (error) {
                     console.error("Erro ao registrar:", error);
                     let friendlyMessage = "Erro ao registrar. Tente novamente.";
-                    if (error.code === 'auth/email-already-in-use') {
-                        friendlyMessage = "Este email já está em uso.";
-                    } else if (error.code === 'auth/weak-password') {
-                        friendlyMessage = "A senha é muito fraca.";
-                    } else if (error.code === 'auth/invalid-email') {
-                        friendlyMessage = "Formato de email inválido.";
-                    } else if (error.code === 'auth/operation-not-allowed' || error.code === 'auth/project-not-found' || error.code === 'auth/api-key-not-valid' || error.code === 'auth/configuration-not-found') {
-                        friendlyMessage = "Problema na configuração do Firebase. Contate o suporte.";
-                    } else if (error.code === 'auth/app-check-token-is-invalid') {
-                        friendlyMessage = "Falha na verificação do aplicativo. Tente recarregar a página ou contate o suporte.";
+                    if (error && error.code) {
+                        switch (error.code) {
+                            case 'auth/email-already-in-use':
+                                friendlyMessage = "Este email já está em uso.";
+                                break;
+                            case 'auth/weak-password':
+                                friendlyMessage = "A senha é muito fraca.";
+                                break;
+                            case 'auth/invalid-email':
+                                friendlyMessage = "Formato de email inválido.";
+                                break;
+                            case 'auth/operation-not-allowed':
+                            case 'auth/project-not-found':
+                            case 'auth/api-key-not-valid':
+                            case 'auth/configuration-not-found':
+                                friendlyMessage = "Problema na configuração do Firebase. Contate o suporte.";
+                                break;
+                            case 'auth/app-check-token-is-invalid':
+                                friendlyMessage = "Falha na verificação do aplicativo. Tente recarregar a página ou contate o suporte.";
+                                break;
+                            default:
+                                friendlyMessage = `Erro ao registrar: ${error.message}`;
+                        }
+                    } else if (error) {
+                        friendlyMessage = `Erro ao registrar: ${error.message || 'Detalhes não disponíveis'}`;
                     }
                     displayAuthMessage(registerAuthMessage, friendlyMessage);
                 } finally {
@@ -510,19 +529,37 @@
 
                 } catch (error) {
                     console.error("Erro ao fazer login:", error);
-                    let friendlyMessage = "Email ou senha incorretos.";
-                     if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                        friendlyMessage = "Email ou senha inválidos.";
-                    } else if (error.code === 'auth/invalid-email') {
-                        friendlyMessage = "Formato de email inválido.";
-                    } else if (error.code === 'auth/operation-not-allowed' || error.code === 'auth/project-not-found' || error.code === 'auth/api-key-not-valid' || error.code === 'auth/configuration-not-found') {
-                        friendlyMessage = "Problema na configuração do Firebase ou serviço indisponível.";
-                    } else if (error.code === 'auth/network-request-failed') {
-                        friendlyMessage = "Erro de rede. Verifique sua conexão.";
-                    } else if (error.code === 'auth/too-many-requests') {
-                        friendlyMessage = "Muitas tentativas de login. Tente novamente mais tarde.";
-                    } else if (error.code === 'auth/app-check-token-is-invalid') {
-                        friendlyMessage = "Falha na verificação do aplicativo. Tente recarregar a página ou contate o suporte.";
+                    let friendlyMessage = "Erro desconhecido ao fazer login. Tente novamente.";
+                     if (error && error.code) {
+                        switch (error.code) {
+                            case 'auth/invalid-credential':
+                            case 'auth/user-not-found':
+                            case 'auth/wrong-password':
+                                friendlyMessage = "Email ou senha inválidos.";
+                                break;
+                            case 'auth/invalid-email':
+                                friendlyMessage = "Formato de email inválido.";
+                                break;
+                            case 'auth/operation-not-allowed':
+                            case 'auth/project-not-found':
+                            case 'auth/api-key-not-valid':
+                            case 'auth/configuration-not-found':
+                                friendlyMessage = "Problema na configuração do Firebase ou serviço indisponível.";
+                                break;
+                            case 'auth/network-request-failed':
+                                friendlyMessage = "Erro de rede. Verifique sua conexão.";
+                                break;
+                            case 'auth/too-many-requests':
+                                friendlyMessage = "Muitas tentativas de login. Tente novamente mais tarde.";
+                                break;
+                            case 'auth/app-check-token-is-invalid':
+                                friendlyMessage = "Falha na verificação do aplicativo. Tente recarregar a página ou contate o suporte.";
+                                break;
+                            default:
+                                friendlyMessage = `Erro ao fazer login: ${error.message}`;
+                        }
+                    } else if (error) {
+                         friendlyMessage = `Erro ao fazer login: ${error.message || 'Detalhes não disponíveis'}`;
                     }
                     displayAuthMessage(loginAuthMessage, friendlyMessage);
                 } finally {
