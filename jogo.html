@@ -149,7 +149,7 @@
             signOut, 
             onAuthStateChanged 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
+        import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js"; // Importação do App Check
 
 
         let firebaseConfig;
@@ -177,17 +177,18 @@
         if (!firebaseConfig) { 
             console.warn("Usando configuração Firebase hardcoded como fallback em jogo.html.");
             firebaseConfig = { 
-                apiKey: "AIzaSyB4_yBB6BPjOZrCsZ0_TMkmVBRk3WWMAFE", 
-                authDomain: "jogosonlie-461ae.firebaseapp.com",
-                projectId: "jogosonlie-461ae",
-                storageBucket: "jogosonlie-461ae.firebasestorage.app", 
-                messagingSenderId: "113950581434",
-                appId: "1:113950581434:web:8af6396a43f829ed739883",
-                measurementId: "G-S18H8MRX4T"
+                apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8", 
+                authDomain: "jogosonlie-fadc2.firebaseapp.com",
+                projectId: "jogosonlie-fadc2",
+                storageBucket: "jogosonlie-fadc2.appspot.com", 
+                messagingSenderId: "998401435610",
+                appId: "1:998401435610:web:COLOQUE_O_RESTANTE_DO_SEU_APP_ID_AQUI", // ATENÇÃO: SUBSTITUA PELO SEU APP ID COMPLETO
+                measurementId: "G-S18H8MRX4T" // VERIFIQUE SE ESTE É O CORRETO PARA O PROJETO jogosonlie-fadc2
             };
         }
         
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'caca-frutas-default'; 
+        // const appId = typeof __app_id !== 'undefined' ? __app_id : 'caca-frutas-default'; // Esta variável appId não é a mesma coisa que o firebaseConfig.appId
+
 
         let app, db, auth, currentUserId = null;
         let currentUserData = null; 
@@ -201,49 +202,47 @@
         const firebaseErrorMessage = document.getElementById('firebaseErrorMessage');
 
         try {
-            if (firebaseConfig && firebaseConfig.apiKey) {
+            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.appId && !firebaseConfig.appId.includes("xxxxxxxxxxxxxx")) {
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso na página do jogo!");
 
-                // Inicializar App Check
                 try {
-                    // @ts-ignore
-                    // eslint-disable-next-line no-undef
-                    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // APENAS PARA TESTE LOCAL, REMOVA EM PRODUÇÃO OU QUANDO FOR PARA GITHUB PAGES REAL
+                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // COMENTE OU REMOVA PARA GITHUB PAGES
                     
+                    const appCheckSiteKey = '6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'; 
+                    console.log(`[AppCheck] Inicializando com a chave do site: ${appCheckSiteKey} em jogo.html`);
+
                     const appCheck = initializeAppCheck(app, {
-                        provider: new ReCaptchaV3Provider('6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'), // SUA CHAVE reCAPTCHA
+                        provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey), 
                         isTokenAutoRefreshEnabled: true
                     });
                     console.log("Firebase App Check inicializado na página do jogo.");
                 } catch (appCheckError) {
                     console.error("Erro ao inicializar Firebase App Check em jogo.html:", appCheckError);
-                    // Não tratar como erro fatal para a inicialização do Firebase Auth/Firestore,
-                    // mas logar o erro. O App Check pode falhar se o reCAPTCHA não estiver configurado
-                    // corretamente para o domínio no Google Cloud Console.
+                    // Não impede a inicialização do Firebase Auth/Firestore, mas loga o erro.
                 }
                 firebaseInitialized = true;
             } else {
-                throw new Error("Configuração final do Firebase inválida ou apiKey ausente em jogo.html.");
+                throw new Error("Configuração final do Firebase inválida, apiKey ou appId ausente/incompleto em jogo.html.");
             }
         } catch (error) {
             console.error("Erro crítico ao inicializar Firebase em jogo.html:", error);
+            if (gameScreen) gameScreen.classList.add('hidden'); 
+            if (loadingOverlayGame) loadingOverlayGame.classList.add('hidden');
             if (firebaseErrorContainer) {
                 firebaseErrorContainer.classList.remove('hidden');
-                firebaseErrorContainer.style.display = 'flex'; 
+                firebaseErrorContainer.style.display = 'flex';
             }
             if (firebaseErrorMessage) firebaseErrorMessage.textContent = "Erro de configuração do Firebase. O jogo não pode ser carregado. Por favor, contate o suporte ou tente recarregar a página.";
-            if (gameScreen) gameScreen.classList.add('hidden');
-            if (loadingOverlayGame) loadingOverlayGame.classList.add('hidden');
         }
 
 
         let symbols = [ 
             { name: 'Limão', emojiForMessage: '🍋', value: 'LEMON', imageSrc: 'imagens_frutas/limao.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Maca', emojiForMessage: '🍎', value: 'APPLE', imageSrc: 'imagens_frutas/Maca.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
-            { name: 'Laranja', emojiForMessage: '�', value: 'ORANGE', imageSrc: 'imagens_frutas/Laranja.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Laranja', emojiForMessage: '🍊', value: 'ORANGE', imageSrc: 'imagens_frutas/Laranja.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Uva', emojiForMessage: '🍇', value: 'GRAPE', imageSrc: 'imagens_frutas/uva.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Melancia', emojiForMessage: '🍉', value: 'WATERMELON', imageSrc: 'imagens_frutas/melancia.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Abacate', emojiForMessage: '🥑', value: 'AVOCADO', imageSrc: 'imagens_frutas/Abacate.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' },  
@@ -349,12 +348,13 @@
                     console.log(`Nenhum perfil encontrado para ${userId} em jogo.html. Criando perfil com valores padrão.`);
                     credits = 100; 
                     valorCofre = 0; 
-                    await setDoc(userDocRef, { 
+                    const userData = {
                         credits: credits, 
                         valorCofre: valorCofre,
-                        email: auth.currentUser ? auth.currentUser.email : 'não disponível',
-                        fullName: auth.currentUser ? auth.currentUser.displayName : 'Jogador'
-                    }, { merge: true });
+                        email: auth && auth.currentUser ? auth.currentUser.email : 'não disponível',
+                        fullName: auth && auth.currentUser ? auth.currentUser.displayName : 'Jogador'
+                    };
+                    await setDoc(userDocRef, userData, { merge: true });
                 }
                 updateCredits();
             } catch (error) {
@@ -390,7 +390,11 @@
         function initializeGameAssets() {
             if (!loadingOverlayGame || !spinButton || !messageDisplay || !reelElements.every(r => r.img)) {
                 console.error("Elementos essenciais do jogo não encontrados no DOM.");
-                if (firebaseErrorContainer) firebaseErrorContainer.classList.remove('hidden');
+                 if (gameScreen) gameScreen.classList.add('hidden');
+                if (firebaseErrorContainer) {
+                     firebaseErrorContainer.classList.remove('hidden');
+                     firebaseErrorContainer.style.display = 'flex';
+                }
                 if (firebaseErrorMessage) firebaseErrorMessage.textContent = "Erro interno ao carregar o jogo. Elementos faltando.";
                 return;
             }
@@ -610,7 +614,7 @@
             if (currentUserId && db) { 
                 saveGameData(currentUserId);
             } else { 
-                valorCofre = 0;
+                valorCofre = 0; 
             }
 
             messageDisplay.textContent = 'BOA SORTE!';
@@ -674,4 +678,3 @@
     </script>
 </body>
 </html>
-�
