@@ -24,20 +24,20 @@
         }
         .container {
             width: 100%; 
-            max-width: 480px;
+            max-width: 400px; /* Reduzido de 480px para 400px */
             margin-left: auto;
             margin-right: auto;
         }
         
         #authScreen { 
             background-color: rgba(30, 30, 50, 0.85); 
-            background-image: url('imagens_interface/fundo-auth.jpg'); /* Caminho para sua imagem de fundo local */
+            background-image: url('imagens_interface/fundo-auth.jpg'); 
             background-size: cover;
             background-position: center;
             backdrop-filter: blur(8px); 
-            padding: 2rem; 
-            border-radius: 28px; 
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255,255,255,0.05);
+            padding: 1.5rem; /* Reduzido de 2rem para 1.5rem */
+            border-radius: 24px; /* Mantido arredondamento */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255,255,255,0.03); /* Sombra ajustada */
             text-align: left;
             border: 1px solid rgba(139, 92, 246, 0.3); 
             position: relative; 
@@ -45,51 +45,51 @@
 
         .auth-logo-container {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem; /* Ajustado */
         }
         #authLogo { 
-            max-width: 220px; 
+            max-width: 180px; /* Reduzido de 220px */
             height: auto;
             margin-bottom: 0.5rem;
-            filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.6)); 
+            filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5)); 
         }
         .text-logo { 
             font-family: 'Russo One', sans-serif;
-            font-size: clamp(2rem, 7vw, 2.8rem);
+            font-size: clamp(1.8rem, 6vw, 2.5rem); /* Ajustado */
             color: #fff;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 5px #8b5cf6, 0 0 10px #8b5cf6, 0 0 15px #ec4899, 0 0 20px #ec4899;
+            letter-spacing: 1.5px; /* Ajustado */
+            text-shadow: 0 0 4px #8b5cf6, 0 0 8px #8b5cf6, 0 0 12px #ec4899, 0 0 16px #ec4899; /* Ajustado */
         }
 
         #registrationScreen h2, #loginScreen h2 {
             font-family: 'Poppins', sans-serif;
-            font-size: clamp(1.4rem, 4.5vw, 1.8rem); 
+            font-size: clamp(1.3rem, 4vw, 1.7rem); /* Ajustado */
             font-weight: 700;
             color: #e0e0e0; 
-            margin-bottom: 1.5rem; 
+            margin-bottom: 1.25rem; /* Ajustado */
             text-align: center;
         }
         .form-group {
-            margin-bottom: 1rem; 
+            margin-bottom: 0.875rem; /* Ajustado */
         }
         .form-group label {
             display: block;
-            margin-bottom: 0.375rem; 
+            margin-bottom: 0.25rem; /* Ajustado */
             font-weight: 600;
-            font-size: 0.8rem; 
+            font-size: 0.75rem; /* Ajustado */
             color: #a5b4fc; 
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .form-group input {
             width: 100%;
-            padding: 0.75rem; 
-            border-radius: 10px; 
+            padding: 0.625rem; /* Ajustado */
+            border-radius: 8px; /* Mantido */
             border: 1px solid #4a5568; 
             background-color: rgba(23, 30, 48, 0.7); 
             color: #e5e7eb;
-            font-size: 0.9rem; 
+            font-size: 0.875rem; /* Ajustado */
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .form-group input::placeholder {
@@ -110,7 +110,7 @@
         }
         .switch-auth-link {
             text-align: center;
-            margin-top: 1.5rem; 
+            margin-top: 1.25rem; /* Ajustado */
             font-size: 0.875rem; 
         }
         .switch-auth-link a {
@@ -123,15 +123,15 @@
             color: #fff;
         }
         .submit-button { 
-            margin-top: 1.5rem; 
+            margin-top: 1.25rem; /* Ajustado */
             width: 100%; 
             font-family: 'Poppins', sans-serif; 
             background: linear-gradient(to right, #7c3aed, #db2777); 
             color: white; 
-            padding: 0.8rem 1.5rem; 
+            padding: 0.75rem 1.5rem; /* Ajustado */
             border: none; 
             border-radius: 10px; 
-            font-size: clamp(0.9rem, 3.5vw, 1.1rem); 
+            font-size: clamp(0.9rem, 3.5vw, 1.0rem); /* Ajustado */
             font-weight: 700; 
             cursor: pointer; 
             transition: all 0.3s ease; 
@@ -166,12 +166,20 @@
         .hidden { display: none !important; } 
 
         @media (min-width: 420px) { 
+            /* A grade de endereço só terá 2 colunas se o container for maior que 400px. 
+               Como o max-width do container é 400px, esta regra não será aplicada 
+               a menos que o max-width do container seja aumentado.
+               Se a intenção é ter 2 colunas no formulário em telas um pouco maiores que 400px,
+               o max-width do .container precisaria ser maior que o breakpoint aqui.
+               Por ora, com max-width: 400px, o address-grid sempre será 1 coluna.
+            */
             .address-grid {
-                grid-template-columns: repeat(2, 1fr); 
+                /* Mantém 1 coluna por padrão, ou ajuste o breakpoint se o container for maior */
+                /* grid-template-columns: repeat(2, 1fr);  */
             }
-            .address-grid .form-group.full-width {
+            /* .address-grid .form-group.full-width {
                 grid-column: span 2; 
-            }
+            } */
         }
     </style>
 </head>
@@ -258,16 +266,15 @@
                 } else {
                     console.warn("Configuração do Firebase recebida, mas apiKey está ausente.");
                     displayAuthMessage(loginAuthMessage, "Erro de configuração do servidor.", true);
-                    displayAuthMessage(registerAuthMessage, "Erro de configuração do servidor.", true);
+                    if(registerAuthMessage) displayAuthMessage(registerAuthMessage, "Erro de configuração do servidor.", true);
                 }
             } catch (error) {
                 console.error("Erro ao parsear ou inicializar Firebase com __firebase_config:", error);
                 displayAuthMessage(loginAuthMessage, "Erro de configuração do servidor.", true);
-                displayAuthMessage(registerAuthMessage, "Erro de configuração do servidor.", true);
+                if(registerAuthMessage) displayAuthMessage(registerAuthMessage, "Erro de configuração do servidor.", true);
             }
         } else {
             console.warn("Variável __firebase_config não definida. Login/Cadastro não funcionarão.");
-            // Não mostra alert aqui, pois o usuário pode estar apenas testando o HTML localmente sem Firebase.
         }
         
         const authScreen = document.getElementById('authScreen');
@@ -278,7 +285,7 @@
         const registrationForm = document.getElementById('registrationForm');
         const loginScreen = document.getElementById('loginScreen');
         const loginForm = document.getElementById('loginForm');
-        const showLoginLinkFromRegister = document.getElementById('showLoginLink'); // Corrigido para o ID correto no HTML de cadastro
+        const showLoginLinkFromRegisterElement = document.getElementById('showLoginLinkFromRegister'); 
         const showRegisterLink = document.getElementById('showRegisterLink');
         const loginAuthMessage = document.getElementById('loginAuthMessage');
         const registerAuthMessage = document.getElementById('registerAuthMessage');
@@ -317,14 +324,16 @@
             if(loginAuthMessage) loginAuthMessage.textContent = '';
         }
 
-        if (showLoginLink) { // Verifica se o elemento existe antes de adicionar o listener
-            showLoginLink.addEventListener('click', (e) => {
+        // Corrigido: o ID do link na tela de cadastro é 'showLoginLink'
+        const showLoginLinkElement = document.getElementById('showLoginLink');
+        if (showLoginLinkElement) { 
+            showLoginLinkElement.addEventListener('click', (e) => {
                 e.preventDefault();
                 switchToLoginScreen();
             });
         }
         
-        if (showRegisterLink) { // Verifica se o elemento existe
+        if (showRegisterLink) { 
             showRegisterLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 switchToRegisterScreen();
@@ -478,7 +487,6 @@
         authScreen.classList.remove('hidden'); 
         loginScreen.classList.remove('hidden'); 
         registrationScreen.classList.add('hidden'); 
-        // gameScreen.classList.add('hidden'); // gameScreen não está nesta página
 
         // Verifica se o usuário já está logado ao carregar a página
         if (auth) {
@@ -488,13 +496,11 @@
                     window.location.href = 'jogo.html';
                 } else {
                     console.log("Nenhum usuário logado. Exibindo tela de login.");
-                    // Garante que o conteúdo de autenticação seja visível se não houver usuário
-                    authContent.classList.remove('hidden');
+                    authContent.classList.remove('hidden'); // Garante que o conteúdo de autenticação seja visível
                 }
             });
         } else {
-             // Se Firebase não inicializou, apenas mostra o conteúdo de autenticação
-             authContent.classList.remove('hidden');
+             authContent.classList.remove('hidden'); // Garante visibilidade se Firebase não carregar
              loginScreen.classList.remove('hidden');
              registrationScreen.classList.add('hidden');
         }
