@@ -180,7 +180,9 @@
                     <img id="authLogo" src="imagens_interface/logo-caca-frutas.png" alt="CAÇA-FRUTAS" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
                     <div id="textLogoFallback" class="text-logo hidden">CAÇA-FRUTAS</div>
                 </div>
-                <p id="firebaseError" class="auth-message error text-center mb-4 hidden"></p> <div id="loginScreen"> 
+                <p id="firebaseError" class="auth-message error text-center mb-4 hidden"></p> 
+                
+                <div id="loginScreen"> 
                     <h2>Login do Jogador</h2>
                     <form id="loginForm">
                         <div class="form-group">
@@ -276,15 +278,18 @@
             setTimeout(() => { if(element) element.textContent = ''; }, 7000);
         }
         
-        function displayGlobalAuthError(message) {
+        function displayGlobalFirebaseError(message) {
             if (firebaseErrorElement) {
                 firebaseErrorElement.textContent = message;
                 firebaseErrorElement.classList.remove('hidden');
             }
+            // Desabilita botões de formulário se o Firebase falhar
             if (loginForm) loginForm.querySelector('button[type="submit"]').disabled = true;
             if (registrationForm) registrationForm.querySelector('button[type="submit"]').disabled = true;
-            if(showLoginLinkFromRegisterElement && showLoginLinkFromRegisterElement.parentElement) showLoginLinkFromRegisterElement.parentElement.classList.add('hidden');
-            if(showRegisterLink && showRegisterLink.parentElement) showRegisterLink.parentElement.classList.add('hidden');
+            
+            // Opcional: esconder os links de alternância se o sistema está totalmente indisponível
+            // if(showLoginLinkFromRegisterElement && showLoginLinkFromRegisterElement.parentElement) showLoginLinkFromRegisterElement.parentElement.classList.add('hidden');
+            // if(showRegisterLink && showRegisterLink.parentElement) showRegisterLink.parentElement.classList.add('hidden');
         }
 
 
@@ -297,17 +302,18 @@
                     auth = getAuth(app);
                     firebaseInitialized = true;
                     console.log("Firebase inicializado com sucesso na página de autenticação!");
+                    if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden'); // Esconde erro global se inicializou
                 } else {
                     console.warn("Configuração do Firebase recebida, mas apiKey está ausente.");
-                    displayGlobalAuthError("Erro de configuração do servidor. Funcionalidades de login/cadastro indisponíveis.");
+                    displayGlobalFirebaseError("Erro de configuração do servidor. Tente novamente mais tarde.");
                 }
             } catch (error) {
                 console.error("Erro ao parsear ou inicializar Firebase com __firebase_config:", error);
-                displayGlobalAuthError("Erro crítico na configuração do Firebase. Funcionalidades de login/cadastro indisponíveis.");
+                displayGlobalFirebaseError("Erro crítico na configuração do Firebase. Tente novamente mais tarde.");
             }
         } else {
             console.warn("Variável __firebase_config não definida. Login/Cadastro não funcionarão.");
-            displayGlobalAuthError("Configuração do servidor não encontrada. Login/Cadastro indisponíveis.");
+            displayGlobalFirebaseError("Configuração do servidor não encontrada. Tente novamente mais tarde.");
         }
         
         function switchToLoginScreen() {
@@ -324,6 +330,7 @@
             if(loginAuthMessage) loginAuthMessage.textContent = '';
         }
         
+        // Corrigido para usar o ID correto do link na tela de cadastro
         if (showLoginLinkFromRegisterElement) { 
             showLoginLinkFromRegisterElement.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -338,11 +345,12 @@
             });
         }
         
+
         if (registrationForm) {
             registrationForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
                 if (!firebaseInitialized) {
-                    displayAuthMessage(registerAuthMessage, "Serviço de autenticação indisponível.");
+                    displayAuthMessage(registerAuthMessage, "Serviço de autenticação indisponível. Verifique sua conexão ou tente mais tarde.");
                     return;
                 }
                 if(registerAuthMessage) registerAuthMessage.textContent = '';
@@ -365,19 +373,19 @@
 
                 if (!fullName || !email || !password || !phone || !cpf || !street || !number || !neighborhood || !city || !state || !zip) {
                     displayAuthMessage(registerAuthMessage, "Por favor, preencha todos os campos obrigatórios.");
-                    submitButton.disabled = false;
+                    if (firebaseInitialized) submitButton.disabled = false;
                     submitButton.textContent = 'Cadastrar e Jogar';
                     return;
                 }
                 if (password !== confirmPassword) {
                     displayAuthMessage(registerAuthMessage, "As senhas não coincidem!");
-                    submitButton.disabled = false;
+                    if (firebaseInitialized) submitButton.disabled = false;
                     submitButton.textContent = 'Cadastrar e Jogar';
                     return;
                 }
                 if (password.length < 6) {
                     displayAuthMessage(registerAuthMessage, "A senha deve ter pelo menos 6 caracteres.");
-                    submitButton.disabled = false;
+                    if (firebaseInitialized) submitButton.disabled = false;
                     submitButton.textContent = 'Cadastrar e Jogar';
                     return;
                 }
@@ -421,7 +429,7 @@
                     }
                     displayAuthMessage(registerAuthMessage, friendlyMessage);
                 } finally {
-                    submitButton.disabled = false;
+                    if (firebaseInitialized) submitButton.disabled = false;
                     submitButton.textContent = 'Cadastrar e Jogar';
                 }
             });
@@ -431,7 +439,7 @@
             loginForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
                  if (!firebaseInitialized) {
-                    displayAuthMessage(loginAuthMessage, "Serviço de autenticação indisponível.");
+                    displayAuthMessage(loginAuthMessage, "Serviço de autenticação indisponível. Verifique sua conexão ou tente mais tarde.");
                     return;
                 }
                 if(loginAuthMessage) loginAuthMessage.textContent = '';
@@ -444,7 +452,7 @@
 
                 if (!identifier || !password) {
                     displayAuthMessage(loginAuthMessage, "Por favor, preencha o email e a senha.");
-                    submitButton.disabled = false;
+                    if (firebaseInitialized) submitButton.disabled = false;
                     submitButton.textContent = 'Entrar';
                     return;
                 }
@@ -468,7 +476,7 @@
                     }
                     displayAuthMessage(loginAuthMessage, friendlyMessage);
                 } finally {
-                    submitButton.disabled = false;
+                    if (firebaseInitialized) submitButton.disabled = false;
                     submitButton.textContent = 'Entrar';
                 }
             });
@@ -476,7 +484,7 @@
         
         // Inicialização Padrão: Mostrar tela de autenticação (login primeiro)
         authScreen.classList.remove('hidden'); 
-        authContent.classList.remove('hidden'); // Mostra o conteúdo principal da auth
+        authContent.classList.remove('hidden'); 
 
         if (firebaseInitialized && auth) {
             onAuthStateChanged(auth, (user) => {
@@ -487,11 +495,12 @@
                     console.log("Nenhum usuário logado. Exibindo tela de login.");
                     loginScreen.classList.remove('hidden'); 
                     registrationScreen.classList.add('hidden'); 
+                    if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
                 }
             });
         } else {
-             // Se Firebase não inicializou, já mostramos o erro global. 
-             // Apenas garantimos que o login seja a tela padrão.
+             // Se Firebase não inicializou, displayGlobalFirebaseError já foi chamado e desabilitou botões.
+             // Apenas garante que a tela de login seja a padrão visível dentro do authContent.
              loginScreen.classList.remove('hidden');
              registrationScreen.classList.add('hidden');
         }
