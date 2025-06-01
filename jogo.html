@@ -6,7 +6,7 @@
     <title>GAME FUN - Jogo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
-    <!-- Script do reCAPTCHA Enterprise comentado, pois App Check está desativado para teste local
+    <!-- Script do reCAPTCHA Enterprise comentado para teste local
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
     -->
     <style>
@@ -133,13 +133,6 @@
                 <button id="resetButton" class="modal-button">JOGAR NOVAMENTE</button>
             </div>
         </div>
-         <div id="firebaseErrorContainer" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-            <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center">
-                <h2 class="text-xl font-bold mb-4">Erro de Configuração</h2>
-                <p id="firebaseErrorMessage" class="mb-4">Não foi possível conectar aos serviços do jogo. Por favor, tente novamente mais tarde.</p>
-                <a href="index.html" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Voltar para Login</a>
-            </div>
-        </div>
     </div>
 
     <script type="module">
@@ -164,11 +157,11 @@
         if (firebaseConfigFromStudio) {
             try {
                 const parsedConfig = JSON.parse(firebaseConfigFromStudio);
-                if (parsedConfig.apiKey && parsedConfig.projectId === "jogosonlie-fadc2" && parsedConfig.appId && !parsedConfig.appId.includes("YOUR_SPECIFIC_APP_ID_SUFFIX")) { 
+                 if (parsedConfig.apiKey && parsedConfig.projectId === "jogosonlie-fadc2" && parsedConfig.appId && parsedConfig.appId === "1:998401435610:web:f4c99f5e8cd92bee0702e3") { 
                     firebaseConfig = parsedConfig;
                      console.log("Usando configuração Firebase do Studio em jogo.html.");
                 } else {
-                    console.warn("Configuração do Firebase do Studio inválida ou para projeto errado em jogo.html. Usando fallback hardcoded.");
+                    console.warn("Configuração do Firebase do Studio inválida, para projeto errado, ou appId não corresponde em jogo.html. Usando fallback hardcoded.");
                     firebaseConfig = null; 
                 }
             } catch (e) {
@@ -183,16 +176,13 @@
                 apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8", 
                 authDomain: "jogosonlie-fadc2.firebaseapp.com",
                 projectId: "jogosonlie-fadc2",
-                storageBucket: "jogosonlie-fadc2.appspot.com", 
+                storageBucket: "jogosonlie-fadc2.firebasestorage.app", 
                 messagingSenderId: "998401435610", 
-                // !!!!!!!!!! IMPORTANTE !!!!!!!!!!!!!!
-                // VOCÊ PRECISA COLOCAR O SEU APP ID COMPLETO AQUI.
-                // Vá em: Console do Firebase > Projeto 'jogosonlie-fadc2' > Configurações do Projeto > Seus apps > SDK setup and configuration > Config.
-                // Exemplo: "1:998401435610:web:abcdef1234567890abcdef"
                 appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3", // USANDO O APP ID COMPLETO QUE VOCÊ FORNECEU
                 measurementId: "G-7SF242R7P0" // USANDO O MEASUREMENT ID QUE VOCÊ FORNECEU
             };
         }
+        console.log("Firebase Config a ser usada (jogo.html):", JSON.parse(JSON.stringify(firebaseConfig)));
         
         let app, db, auth, currentUserId = null;
         let currentUserData = null; 
@@ -204,14 +194,12 @@
         const logoutButton = document.getElementById('logoutButton');
         
         try {
-            // Verificação mais robusta para o appId no fallback
-            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.appId && firebaseConfig.projectId && !firebaseConfig.appId.includes("YOUR_SPECIFIC_APP_ID_SUFFIX")) {
+            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.appId && firebaseConfig.projectId) {
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
                 firebaseInitialized = true; 
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso na página do jogo!");
-                console.log("Usando App ID para jogo.html:", firebaseConfig.appId);
 
                 // App Check comentado para teste local. 
                 /*
@@ -229,12 +217,9 @@
                 */
             } else {
                 let errorMsg = "Configuração final do Firebase inválida em jogo.html.";
-                if (!firebaseConfig || !firebaseConfig.apiKey) errorMsg += " apiKey ausente.";
-                if (!firebaseConfig || !firebaseConfig.appId || firebaseConfig.appId.includes("YOUR_SPECIFIC_APP_ID_SUFFIX")) {
-                     errorMsg += " appId ausente ou incompleto. Por favor, substitua 'YOUR_SPECIFIC_APP_ID_SUFFIX' pelo valor correto no código.";
-                } else if (!firebaseConfig.projectId) {
-                    errorMsg += " projectId ausente."
-                }
+                if (!firebaseConfig?.apiKey) errorMsg += " apiKey ausente.";
+                if (!firebaseConfig?.appId) errorMsg += " appId ausente.";
+                if (!firebaseConfig?.projectId) errorMsg += " projectId ausente.";
                 console.error(errorMsg, firebaseConfig);
                 throw new Error(errorMsg);
             }
@@ -246,7 +231,7 @@
             const errorDiv = document.createElement('div');
             errorDiv.className = 'text-center text-red-400 p-8 bg-gray-800 rounded-lg shadow-xl fixed inset-0 flex flex-col items-center justify-center z-50';
             errorDiv.innerHTML = `<h2 class="text-2xl font-bold mb-4">Erro de Configuração</h2>
-                                  <p class="mb-4">Não foi possível conectar aos serviços do jogo. Verifique o console para detalhes.</p>
+                                  <p class="mb-4">Não foi possível conectar aos serviços do jogo. Verifique o console para detalhes e certifique-se que a configuração Firebase está correta.</p>
                                   <a href="${indexPageUrl}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Voltar para Login</a>`;
             if(document.body) { 
                 document.body.innerHTML = ''; 
@@ -285,13 +270,14 @@
         const modalTitle = document.getElementById('modalTitle');
         const modalMessageElement = document.getElementById('modalMessage');
         
-        let currentCredits = 100; 
-        const currentSpinCost = 1; 
-        let currentIsSpinning = false; 
-        let currentValorCofre = 0; 
-        
-        let currentForcarTrincaPeloCofre = false;
-        let currentSimboloTrincaCofre = null;
+        let gameCredits = 100; 
+        const gameSpinCost = 1; 
+        let gameIsSpinning = false; 
+        let gameValorCofre = 0; 
+        const valorCofreParaPremio = 15000; 
+        const premioDoCofre = 5000; 
+        let gameForcarTrincaPeloCofre = false;
+        let gameSimboloTrincaCofre = null;
 
         function formatAsReal(value) {
             return value.toFixed(2).replace('.', ',');
@@ -346,8 +332,8 @@
         async function loadUserData(userId) {
             if (!db || !firebaseInitialized) { 
                 console.log("DB não inicializado ou Firebase não pronto, usando valores padrão para créditos e cofre.");
-                currentCredits = 100;
-                currentValorCofre = 0; 
+                gameCredits = 100;
+                gameValorCofre = 0; 
                 updateCreditsDisplay(); 
                 return;
             }
@@ -356,16 +342,16 @@
                 const docSnap = await getDoc(userDocRef);
                 if (docSnap.exists()) {
                     currentUserData = docSnap.data();
-                    currentCredits = currentUserData.credits !== undefined ? currentUserData.credits : 100;
-                    currentValorCofre = currentUserData.valorCofre !== undefined ? currentUserData.valorCofre : 0;
-                    console.log(`Dados carregados para ${userId}: Créditos=${currentCredits}, Cofre (interno)=R$${formatAsReal(currentValorCofre)}`);
+                    gameCredits = currentUserData.credits !== undefined ? currentUserData.credits : 100;
+                    gameValorCofre = currentUserData.valorCofre !== undefined ? currentUserData.valorCofre : 0;
+                    console.log(`Dados carregados para ${userId}: Créditos=${gameCredits}, Cofre (interno)=R$${formatAsReal(gameValorCofre)}`);
                 } else {
                     console.log(`Nenhum perfil encontrado para ${userId} em jogo.html. Criando perfil com valores padrão.`);
-                    currentCredits = 100; 
-                    currentValorCofre = 0; 
+                    gameCredits = 100; 
+                    gameValorCofre = 0; 
                     const userData = {
-                        credits: currentCredits, 
-                        valorCofre: currentValorCofre,
+                        credits: gameCredits, 
+                        valorCofre: gameValorCofre,
                         email: auth && auth.currentUser ? auth.currentUser.email : 'não disponível',
                         fullName: auth && auth.currentUser ? auth.currentUser.displayName : 'Jogador'
                     };
@@ -379,8 +365,8 @@
                 } else {
                      console.error("Erro desconhecido ao carregar dados, usando fallback.");
                 }
-                currentCredits = 100; 
-                currentValorCofre = 0; 
+                gameCredits = 100; 
+                gameValorCofre = 0; 
                 updateCreditsDisplay(); 
             }
         }
@@ -390,8 +376,8 @@
             const userDocRef = doc(db, "users", userIdToSave);
             try {
                 await setDoc(userDocRef, { 
-                    credits: currentCredits, 
-                    valorCofre: currentValorCofre 
+                    credits: gameCredits, 
+                    valorCofre: gameValorCofre 
                 }, { merge: true });
                 console.log(`Dados do jogo (créditos e cofre) salvos para o usuário: ${userIdToSave}`);
             } catch (error) {
@@ -411,10 +397,10 @@
             spinButton.disabled = true;
             loadingMessageGame.textContent = 'A carregar dados...'; 
             
-            currentForcarTrincaPeloCofre = false;
-            currentSimboloTrincaCofre = null;
+            gameForcarTrincaPeloCofre = false;
+            gameSimboloTrincaCofre = null;
 
-            reelElements.forEach(reel => reel.img.src = defaultImageSrc);
+            reelElements.forEach(reel => { if(reel.img) reel.img.src = defaultImageSrc; });
             
             populatePaytable(); 
 
@@ -422,20 +408,20 @@
                 loadUserData(currentUserId).then(() => {
                      setTimeout(() => {
                         loadingOverlayGame.style.display = 'none';
-                        if (currentCredits >= spinCost) { 
+                        if (gameCredits >= gameSpinCost) { 
                             spinButton.disabled = false;
                         } else {
                             spinButton.disabled = true; 
                             showModal("SEM CRÉDITOS", "Você não tem créditos suficientes para o primeiro giro. Reinicie para jogar."); 
                         }
-                        messageDisplay.textContent = currentCredits >= spinCost ? 'CLIQUE EM GIRAR!' : 'SEM CRÉDITOS'; 
+                        messageDisplay.textContent = gameCredits >= gameSpinCost ? 'CLIQUE EM GIRAR!' : 'SEM CRÉDITOS'; 
                     }, 500); 
                 });
             } else {
                 console.log("Condição inesperada em initializeGamePage. Firebase init:", firebaseInitialized, "UserID:", currentUserId);
                 loadingOverlayGame.style.display = 'none';
-                messageDisplay.textContent = 'Erro ao carregar. Tente o login.';
-                spinButton.disabled = true;
+                if(messageDisplay) messageDisplay.textContent = 'Erro ao carregar. Tente o login.';
+                if(spinButton) spinButton.disabled = true;
                 if (!currentUserId && firebaseInitialized) { 
                     window.location.href = indexPageUrl;
                 }
@@ -447,34 +433,34 @@
         }
 
         async function spinReels() {
-            if (currentIsSpinning) return; 
-            if (currentCredits < spinCost) {
+            if (gameIsSpinning) return; 
+            if (gameCredits < gameSpinCost) {
                 showModal("SEM CRÉDITOS", "Você não tem créditos suficientes para girar."); 
                 return;
             }
-            currentIsSpinning = true;
+            gameIsSpinning = true;
             spinButton.disabled = true;
             
-            currentValorCofre += 0.50; 
-            currentCredits -= spinCost;
+            gameValorCofre += 0.50; 
+            gameCredits -= gameSpinCost;
             
             if (currentUserId && db && firebaseInitialized) { 
                 await saveGameData(currentUserId); 
             }
-            // console.log(`[ADMIN] Valor no cofre: R$ ${formatAsReal(currentValorCofre)}`); 
+            // console.log(`[ADMIN] Valor no cofre: R$ ${formatAsReal(gameValorCofre)}`); 
 
             updateCreditsDisplay();
             messageDisplay.textContent = 'GIRANDO...';
             messageDisplay.style.color = '#a78bfa';
 
-            if (currentValorCofre >= valorCofreParaPremio && !currentForcarTrincaPeloCofre) {
-                currentForcarTrincaPeloCofre = true;
-                currentSimboloTrincaCofre = getRandomSymbol(); 
-                console.log(`COFRE ATINGIU R$ ${formatAsReal(valorCofreParaPremio)}! Próximo giro será prêmio de ${currentSimboloTrincaCofre.name}.`);
+            if (gameValorCofre >= valorCofreParaPremio && !gameForcarTrincaPeloCofre) {
+                gameForcarTrincaPeloCofre = true;
+                gameSimboloTrincaCofre = getRandomSymbol(); 
+                console.log(`COFRE ATINGIU R$ ${formatAsReal(valorCofreParaPremio)}! Próximo giro será prêmio de ${gameSimboloTrincaCofre.name}.`);
             }
 
             reelElements.forEach(reel => {
-                reel.container.classList.add('spinning');
+                if (reel.container) reel.container.classList.add('spinning');
                 reel.isStillSpinning = true;
                 reel.finalSymbol = null; 
             });
@@ -486,21 +472,25 @@
             function animateReel(index) {
                 if (!reelElements[index].isStillSpinning) return;
                 const randomSymbolForAnimation = getRandomSymbol();
-                if (randomSymbolForAnimation && randomSymbolForAnimation.imageSrc) { 
-                    reelElements[index].img.src = randomSymbolForAnimation.imageSrc;
-                } else {
-                    reelElements[index].img.src = defaultImageSrc; 
+                if (reelElements[index].img) {
+                    if (randomSymbolForAnimation && randomSymbolForAnimation.imageSrc) { 
+                        reelElements[index].img.src = randomSymbolForAnimation.imageSrc;
+                    } else {
+                        reelElements[index].img.src = defaultImageSrc; 
+                    }
                 }
                 elapsedTimes[index] += 80; 
                 if (elapsedTimes[index] >= reelStopTimes[index]) {
                     reelElements[index].isStillSpinning = false;
-                    reelElements[index].finalSymbol = currentForcarTrincaPeloCofre ? currentSimboloTrincaCofre : getRandomSymbol(); 
-                    if (reelElements[index].finalSymbol && reelElements[index].finalSymbol.imageSrc) {
-                        reelElements[index].img.src = reelElements[index].finalSymbol.imageSrc;
-                    } else {
-                        reelElements[index].img.src = defaultImageSrc;
+                    reelElements[index].finalSymbol = gameForcarTrincaPeloCofre ? gameSimboloTrincaCofre : getRandomSymbol(); 
+                    if (reelElements[index].img) {
+                        if (reelElements[index].finalSymbol && reelElements[index].finalSymbol.imageSrc) {
+                            reelElements[index].img.src = reelElements[index].finalSymbol.imageSrc;
+                        } else {
+                            reelElements[index].img.src = defaultImageSrc;
+                        }
                     }
-                    reelElements[index].container.classList.remove('spinning');
+                    if(reelElements[index].container) reelElements[index].container.classList.remove('spinning');
                     spinningReelsCount--;
                     if (spinningReelsCount === 0) {
                         finishSpin();
@@ -514,30 +504,34 @@
 
         function finishSpin() {
             let results;
-            if (currentForcarTrincaPeloCofre && currentSimboloTrincaCofre) {
-                results = [currentSimboloTrincaCofre, currentSimboloTrincaCofre, currentSimboloTrincaCofre];
-                reelElements.forEach(reel => reel.img.src = currentSimboloTrincaCofre.imageSrc);
+            if (gameForcarTrincaPeloCofre && gameSimboloTrincaCofre) {
+                results = [gameSimboloTrincaCofre, gameSimboloTrincaCofre, gameSimboloTrincaCofre];
+                reelElements.forEach(reel => { if(reel.img) reel.img.src = gameSimboloTrincaCofre.imageSrc; });
             } else {
                 results = reelElements.map(reel => reel.finalSymbol || getRandomSymbol()); 
                 results.forEach((symbol, index) => {
-                    if (symbol && symbol.imageSrc) {
-                        reelElements[index].img.src = symbol.imageSrc;
-                    } else {
-                        reelElements[index].img.src = defaultImageSrc;
+                    if (reelElements[index].img) {
+                        if (symbol && symbol.imageSrc) {
+                            reelElements[index].img.src = symbol.imageSrc;
+                        } else {
+                            reelElements[index].img.src = defaultImageSrc;
+                        }
                     }
                 });
             }
             checkWin(results);
-            currentIsSpinning = false;
-            if (currentCredits >= spinCost) { 
-                spinButton.disabled = false;
-            } else {
-                spinButton.disabled = true; 
-                setTimeout(() => {
-                    if(currentCredits < spinCost) { 
-                         showModal("FIM DE JOGO!", "Você ficou sem créditos."); 
-                    }
-                }, 1000);
+            gameIsSpinning = false;
+            if (spinButton) {
+                if (gameCredits >= gameSpinCost) { 
+                    spinButton.disabled = false;
+                } else {
+                    spinButton.disabled = true; 
+                    setTimeout(() => {
+                        if(gameCredits < gameSpinCost) { 
+                             showModal("FIM DE JOGO!", "Você ficou sem créditos."); 
+                        }
+                    }, 1000);
+                }
             }
         }
 
@@ -545,8 +539,10 @@
             if (!results || results.length < 3 || !results[0] || !results[1] || !results[2] ||
                 results.some(r => !r || typeof r.value === 'undefined' || typeof r.payout === 'undefined')) { 
                 console.error("Resultados inválidos em checkWin:", results);
-                messageDisplay.textContent = "Erro ao verificar. Tente novamente.";
-                messageDisplay.style.color = '#f87171'; 
+                if(messageDisplay) {
+                    messageDisplay.textContent = "Erro ao verificar. Tente novamente.";
+                    messageDisplay.style.color = '#f87171'; 
+                }
                 return;
             }
             const [s1, s2, s3] = results;
@@ -563,42 +559,46 @@
             }
 
             if (winAmount > 0) {
-                if (currentForcarTrincaPeloCofre && winningSymbol && winAmount === premioDoCofre) {
-                    currentValorCofre -= premioDoCofre; 
-                    console.log(`[ADMIN] Prêmio de R$ ${formatAsReal(premioDoCofre)} pago pelo cofre. Novo valor do cofre (interno): R$ ${formatAsReal(currentValorCofre)}`);
-                    currentForcarTrincaPeloCofre = false; 
-                    currentSimboloTrincaCofre = null;
+                if (gameForcarTrincaPeloCofre && winningSymbol && winAmount === premioDoCofre) {
+                    gameValorCofre -= premioDoCofre; 
+                    console.log(`[ADMIN] Prêmio de R$ ${formatAsReal(premioDoCofre)} pago pelo cofre. Novo valor do cofre (interno): R$ ${formatAsReal(gameValorCofre)}`);
+                    gameForcarTrincaPeloCofre = false; 
+                    gameSimboloTrincaCofre = null;
                     if(currentUserId && db && firebaseInitialized) { 
                         saveGameData(currentUserId); 
                     }
                 }
-                messageDisplay.textContent = winMessage;
-                messageDisplay.style.color = '#34d399';
+                if(messageDisplay) {
+                    messageDisplay.textContent = winMessage;
+                    messageDisplay.style.color = '#34d399';
+                }
             } else {
-                messageDisplay.textContent = "TENTE NOVAMENTE!"; 
-                messageDisplay.style.color = '#f87171';
+                if(messageDisplay) {
+                    messageDisplay.textContent = "TENTE NOVAMENTE!"; 
+                    messageDisplay.style.color = '#f87171';
+                }
             }
             updateCreditsDisplay(); 
 
-            if (currentCredits < spinCost && winAmount === 0) { 
+            if (gameCredits < gameSpinCost && winAmount === 0) { 
                  setTimeout(() => {
-                    if(currentCredits < spinCost) {
+                    if(gameCredits < gameSpinCost) {
                         showModal("FIM DE JOGO!", "Você ficou sem créditos."); 
-                        spinButton.disabled = true;
+                        if(spinButton) spinButton.disabled = true;
                     }
                 }, 1500);
             }
         }
 
         function updateCreditsDisplay() { 
-            if(creditsDisplay) creditsDisplay.textContent = currentCredits; 
+            if(creditsDisplay) creditsDisplay.textContent = gameCredits; 
         }
 
         function showModal(title, message) {
-            if (!modalTitle || !modalMessageElement) return; 
+            if (!modalTitle || !modalMessageElement || !gameOverModal) return; 
             modalTitle.textContent = title;
             modalMessageElement.textContent = message; 
-            if (gameOverModal) gameOverModal.style.display = 'flex';
+            gameOverModal.style.display = 'flex';
         }
 
         function hideModal() {
@@ -606,14 +606,14 @@
         }
 
         function resetGame() {
-            currentCredits = 100; 
-            currentForcarTrincaPeloCofre = false;
-            currentSimboloTrincaCofre = null;
+            gameCredits = 100; 
+            gameForcarTrincaPeloCofre = false;
+            gameSimboloTrincaCofre = null;
             updateCreditsDisplay();
             if (currentUserId && db) { 
                 saveGameData(currentUserId); 
             } else { 
-                currentValorCofre = 0; 
+                gameValorCofre = 0; 
                 console.log("Jogo resetado. Cofre zerado (sessão local).");
             }
 
@@ -626,7 +626,7 @@
                 if(reel.img) reel.img.src = defaultImageSrc;
             });
             
-            if (spinButton && currentCredits >= spinCost) { 
+            if (spinButton && gameCredits >= gameSpinCost) { 
                  spinButton.disabled = false;
             }
             hideModal();
@@ -665,10 +665,9 @@
                 }
             });
         } else if (!firebaseInitialized) {
-            // A mensagem de erro já foi tratada no bloco try...catch da inicialização do Firebase
-            console.log("Firebase não inicializado, jogo não pode carregar (onAuthStateChanged não será configurado).");
-        } else { // firebaseInitialized é true, mas auth é nulo (não deveria acontecer)
-             console.log("Objeto Auth não disponível, mas Firebase foi sinalizado como inicializado. Redirecionando para login.");
+            console.log("Firebase não inicializado, jogo.html não pode carregar (onAuthStateChanged não será configurado).");
+        } else { 
+             console.log("Objeto Auth não disponível em jogo.html, mas Firebase foi sinalizado como inicializado. Redirecionando para login.");
              window.location.href = indexPageUrl; 
         }
 
