@@ -341,7 +341,7 @@
                 projectId: "jogosonlie-fadc2",
                 storageBucket: "jogosonlie-fadc2.firebasestorage.app", 
                 messagingSenderId: "998401435610", 
-                appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3", // APP ID COMPLETO E CORRETO
+                appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3", 
                 measurementId: "G-7SF242R7P0" 
             };
         }
@@ -776,6 +776,8 @@
                 }
             });
         } else {
+             // Se o Firebase não inicializou, a mensagem de erro global já foi exibida.
+             // Garante que a tela de login seja a padrão.
              authScreen.classList.remove('hidden');
              loginScreen.classList.remove('hidden');
              registrationScreen.classList.add('hidden');
