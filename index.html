@@ -71,16 +71,14 @@
 </head>
 <body>
     <div class="container">
-        <div id="authScreen" class="hidden">
-            <div id="authContent">
+        <div id="authScreen" class="hidden"> <div id="authContent">
                 <div class="auth-logo-container">
                     <img id="authLogo" src="imagens_interface/logo-game-fun.png" alt="GAME FUN Logo">
                     <div id="textLogoFallback" class="text-logo hidden">GAME FUN</div>
                 </div>
                 <p id="firebaseError" class="auth-message error text-center mb-4 hidden"></p>
 
-                <div id="loginScreen" class="screen hidden">
-                    <h2 class="screen-title">Login do Jogador</h2>
+                <div id="loginScreen" class="screen hidden"> <h2 class="screen-title">Login do Jogador</h2>
                     <form id="loginForm">
                         <div class="form-group">
                             <label for="loginEmail">Email</label>
@@ -96,8 +94,7 @@
                     <p class="switch-auth-link">Não tem conta? <a href="#" id="showRegisterLink">Cadastre-se aqui</a></p>
                 </div>
 
-                <div id="registrationScreen" class="screen hidden">
-                    <h2 class="screen-title">Cadastro de Jogador</h2>
+                <div id="registrationScreen" class="screen hidden"> <h2 class="screen-title">Cadastro de Jogador</h2>
                     <form id="registrationForm">
                         <div class="form-group"> <label for="fullName">Nome Completo</label> <input type="text" id="fullName" name="fullName" required> </div>
                         <div class="form-group"> <label for="regEmail">Email</label> <input type="email" id="regEmail" name="regEmail" required> </div>
@@ -122,8 +119,7 @@
                     <p class="switch-auth-link">Já tem uma conta? <a href="#" id="showLoginLinkFromRegister">Faça login</a></p>
                 </div>
 
-                <div id="paymentScreen" class="screen hidden">
-                    <h2 class="screen-title">Comprar Créditos</h2>
+                <div id="paymentScreen" class="screen hidden"> <h2 class="screen-title">Comprar Créditos</h2>
                     <p id="paymentUserInfo" class="text-center mb-4"></p>
                     <div id="paymentOptions">
                         <div class="form-group">
@@ -157,7 +153,7 @@
         // Firebase SDK Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         // import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js"; // App Check (comentado)
 
         // --- Application State ---
@@ -212,9 +208,9 @@
                         console.log("Usando configuração Firebase do Studio (index.html).");
                         return parsed;
                     }
-                    console.warn("Configuração Firebase do Studio inválida ou para projeto/appId errado. Usando fallback.");
+                    console.warn("Configuração Firebase do Studio inválida ou para projeto/appId errado (index.html). Usando fallback.");
                 } catch (e) {
-                    console.error("Erro ao parsear __firebase_config, usando fallback:", e);
+                    console.error("Erro ao parsear __firebase_config (index.html), usando fallback:", e);
                 }
             }
             console.warn("Usando configuração Firebase hardcoded (index.html).");
@@ -222,7 +218,7 @@
                 apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8", // Sua API Key
                 authDomain: "jogosonlie-fadc2.firebaseapp.com",
                 projectId: "jogosonlie-fadc2",
-                storageBucket: "jogosonlie-fadc2.appspot.com", // Corrigido: geralmente .appspot.com
+                storageBucket: "jogosonlie-fadc2.appspot.com", 
                 messagingSenderId: "998401435610",
                 appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3",
                 measurementId: "G-7SF242R7P0"
@@ -260,9 +256,9 @@
         }
 
         function clearAuthMessages() {
-            DOMElements.loginAuthMessage.textContent = '';
-            DOMElements.registerAuthMessage.textContent = '';
-            DOMElements.paymentMessage.textContent = '';
+            if(DOMElements.loginAuthMessage) DOMElements.loginAuthMessage.textContent = '';
+            if(DOMElements.registerAuthMessage) DOMElements.registerAuthMessage.textContent = '';
+            if(DOMElements.paymentMessage) DOMElements.paymentMessage.textContent = '';
         }
 
         function formatAsReal(value) {
@@ -270,11 +266,11 @@
         }
 
         function setupLogo() {
+            if (!DOMElements.authLogo) return;
             DOMElements.authLogo.onerror = () => {
                 DOMElements.authLogo.classList.add('hidden');
                 DOMElements.textLogoFallback?.classList.remove('hidden');
             };
-            // Forçar verificação, caso a imagem já esteja em cache e o evento onerror não dispare
             const img = new Image();
             img.src = DOMElements.authLogo.src;
             img.onload = () => { DOMElements.authLogo.classList.remove('hidden'); DOMElements.textLogoFallback?.classList.add('hidden'); };
@@ -293,9 +289,6 @@
                 fbAuth = getAuth(fbApp);
                 fbDb = getFirestore(fbApp);
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso!");
-                // App Check (descomente e configure se necessário)
-                // initializeAppCheck(fbApp, { provider: new ReCaptchaEnterpriseProvider("YOUR_RECAPTCHA_SITE_KEY"), isTokenAutoRefreshEnabled: true });
-                // console.log("Firebase App Check inicializado.");
                 DOMElements.firebaseError?.classList.add('hidden');
                 disableForms(false);
                 return true;
@@ -321,7 +314,6 @@
             const confirmPassword = data.get('confirmPassword');
             const phone = data.get('phone').trim();
             const cpf = data.get('cpf').trim();
-            // Endereço
             const street = data.get('street').trim();
             const number = data.get('number').trim();
             const neighborhood = data.get('neighborhood').trim();
@@ -335,13 +327,18 @@
                 submitButton.textContent = 'Cadastrar e Jogar';
                 return;
             }
-            // Adicionar mais validações se necessário (CPF, Telefone, etc.)
+            if (password.length < 6) {
+                 displayMessage(DOMElements.registerAuthMessage, "A senha deve ter no mínimo 6 caracteres.");
+                submitButton.disabled = false;
+                submitButton.textContent = 'Cadastrar e Jogar';
+                return;
+            }
+
 
             try {
                 const userCredential = await createUserWithEmailAndPassword(fbAuth, email, password);
                 const user = userCredential.user;
-                currentUserID = user.uid;
-                currentUserDisplayName = fullName;
+                // currentUserID e currentUserDisplayName serão definidos pelo onAuthStateChanged após este login bem-sucedido
 
                 await updateProfile(user, { displayName: fullName });
 
@@ -354,9 +351,9 @@
                 await setDoc(doc(fbDb, "users", user.uid), userProfileData);
                 
                 console.log("Usuário cadastrado e perfil salvo:", user.uid);
-                displayMessage(DOMElements.registerAuthMessage, "Cadastro realizado! Prossiga para comprar créditos.", false);
-                setTimeout(() => showScreen('paymentScreen'), 2000);
-                updatePaymentScreenUserInfo();
+                // O onAuthStateChanged irá lidar com o direcionamento para a tela de pagamento.
+                // displayMessage(DOMElements.registerAuthMessage, "Cadastro realizado! Você será direcionado para a tela de pagamento.", false);
+                // Não precisa de timeout ou showScreen aqui, onAuthStateChanged cuidará disso.
 
             } catch (error) {
                 console.error("Erro ao registrar:", error);
@@ -379,16 +376,11 @@
             const password = DOMElements.loginPasswordInput.value;
 
             try {
-                const userCredential = await signInWithEmailAndPassword(fbAuth, email, password);
-                currentUserID = userCredential.user.uid;
-                currentUserDisplayName = userCredential.user.displayName || email;
-                
-                console.log("Login bem-sucedido:", currentUserID);
-                displayMessage(DOMElements.loginAuthMessage, "Login bem-sucedido! Carregando...", false);
-                // O onAuthStateChanged cuidará de mostrar a tela de pagamento ou jogo.
-                // Se já for para a tela de pagamento:
-                setTimeout(() => showScreen('paymentScreen'), 1500);
-                updatePaymentScreenUserInfo();
+                await signInWithEmailAndPassword(fbAuth, email, password);
+                // currentUserID e currentUserDisplayName serão definidos pelo onAuthStateChanged
+                console.log("Tentativa de login bem-sucedida para:", email);
+                // O onAuthStateChanged irá lidar com o direcionamento para a tela de pagamento.
+                // displayMessage(DOMElements.loginAuthMessage, "Login bem-sucedido! Carregando...", false);
 
             } catch (error) {
                 console.error("Erro ao fazer login:", error);
@@ -409,14 +401,13 @@
                 case 'auth/wrong-password':
                 case 'auth/invalid-credential': return "Email ou senha inválidos.";
                 case 'auth/too-many-requests': return "Muitas tentativas de login. Tente novamente mais tarde.";
-                // Adicione outros códigos de erro conforme necessário
                 default: return `Erro: ${error.message || 'Ocorreu um problema.'}`;
             }
         }
 
         // --- Payment Logic ---
         function updatePaymentScreenUserInfo() {
-            DOMElements.paymentUserInfo.textContent = `Olá, ${currentUserDisplayName}! Escolha um valor para adicionar créditos:`;
+            DOMElements.paymentUserInfo.textContent = `Olá, ${currentUserDisplayName || 'Jogador'}! Escolha um valor:`;
             DOMElements.paymentOptionsDiv.classList.remove('hidden');
             DOMElements.pixInfoContainer.classList.add('hidden');
             DOMElements.paymentMessage.textContent = '';
@@ -452,7 +443,7 @@
                 return;
             }
             const selectedValue = parseFloat(DOMElements.paymentAmountSelect.value);
-            const creditsToGive = selectedValue * 2; // Regra: R$1 = 2 créditos
+            const creditsToGive = selectedValue * 2; 
 
             displayMessage(DOMElements.paymentMessage, `Confirmando pagamento de ${formatAsReal(selectedValue)}...`, false);
             DOMElements.paymentConfirmedButton.disabled = true;
@@ -465,7 +456,6 @@
                 const userDocRef = doc(fbDb, "users", currentUserID);
                 await updateDoc(userDocRef, { credits: increment(creditsToGive) });
                 console.log(`${creditsToGive} créditos adicionados para ${currentUserID}`);
-                // Redirecionar para a página do jogo
                 window.location.href = gamePageUrl;
             } catch (error) {
                 console.error("Erro ao atualizar créditos:", error);
@@ -483,7 +473,7 @@
                 DOMElements.copyFeedback.textContent = 'Erro ao copiar.';
                 console.error('Erro ao copiar chave PIX: ', err);
             });
-            setTimeout(() => { DOMElements.copyFeedback.textContent = ''; }, 2000);
+            setTimeout(() => { if(DOMElements.copyFeedback) DOMElements.copyFeedback.textContent = ''; }, 2000);
         }
 
         // --- Event Listeners ---
@@ -508,46 +498,48 @@
             const firebaseReady = await initializeFirebase();
             if (!firebaseReady) {
                 // Mensagem de erro global já foi exibida, forms desabilitados.
-                // Poderia mostrar uma tela de erro mais proeminente se desejado.
                 return; 
             }
+
+            // !!!!! NOVA LÓGICA PARA INVALIDAR SESSÃO AO CARREGAR INDEX.HTML !!!!!
+            if (fbAuth.currentUser) { // Verifica se há um usuário logado sincronicamente
+                console.log("Usuário encontrado na carga de index.html. Invalidando sessão (signOut)...");
+                try {
+                    await signOut(fbAuth); // Efetua o logout
+                    console.log("Sessão Firebase invalidada com sucesso ao carregar index.html.");
+                } catch (error) {
+                    console.error("Erro ao invalidar sessão na carga de index.html:", error);
+                    // Mesmo com erro no signOut, o onAuthStateChanged deverá pegar o estado correto
+                    // ou o usuário não conseguirá prosseguir se o signOut falhar criticamente.
+                }
+            }
+            // !!!!! FIM DA NOVA LÓGICA !!!!!
+
+            // Mostrar tela de login por padrão.
+            // Após o signOut acima (se ocorreu), o estado de autenticação será 'não logado'.
+            showScreen('loginScreen');
 
             setupEventListeners();
 
             onAuthStateChanged(fbAuth, (user) => {
+                // 'user' aqui será null na carga inicial (devido ao signOut se havia sessão)
+                // ou se o usuário realmente não estiver logado.
+                // Ele só será 'truthy' APÓS um login bem-sucedido NESTA SESSÃO da página.
                 if (user) {
                     currentUserID = user.uid;
-                    currentUserDisplayName = user.displayName || user.email; // Preferir displayName
-                    console.log("Usuário conectado:", currentUserID, ". Verificando dados...");
+                    currentUserDisplayName = user.displayName || user.email; 
+                    console.log("Usuário LOGADO NESTA SESSÃO (após login explícito):", currentUserID);
                     
-                    // Verifica se o usuário tem créditos, se não, vai para pagamento.
-                    // Se tiver créditos, pode ir direto para o jogo (opcional, aqui está indo para pagamento por padrão após login/registro).
-                    getDoc(doc(fbDb, "users", user.uid)).then(docSnap => {
-                        if (docSnap.exists() && docSnap.data().credits > 0) {
-                            // Opção: Se já tem créditos, talvez ir direto para o jogo?
-                            // window.location.href = gamePageUrl; 
-                            // Por ora, o fluxo padrão leva à tela de pagamento após login.
-                            console.log("Usuário tem créditos, mas fluxo atual leva para tela de pagamento.");
-                            showScreen('paymentScreen');
-                            updatePaymentScreenUserInfo();
-                        } else {
-                            console.log("Usuário sem créditos ou novo, exibindo tela de pagamento.");
-                            showScreen('paymentScreen');
-                            updatePaymentScreenUserInfo();
-                        }
-                    }).catch(error => {
-                        console.error("Erro ao buscar dados do usuário:", error);
-                        showScreen('paymentScreen'); // Fallback para tela de pagamento
-                        updatePaymentScreenUserInfo();
-                    });
+                    // Após um login BEM-SUCEDIDO nesta sessão, ir para a tela de pagamento.
+                    showScreen('paymentScreen');
+                    updatePaymentScreenUserInfo();
 
                 } else {
                     currentUserID = null;
                     currentUserDisplayName = '';
-                    console.log("Nenhum usuário conectado. Exibindo tela de login.");
-                    showScreen('loginScreen');
+                    console.log("Nenhum usuário conectado ou sessão foi invalidada. Exibindo tela de login.");
+                    showScreen('loginScreen'); // Garante que fique (ou volte) para o login
                 }
-                DOMElements.authScreen.classList.remove('hidden'); // Garante que a tela principal de autenticação está visível
             });
         }
 
