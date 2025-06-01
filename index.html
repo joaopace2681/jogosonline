@@ -6,7 +6,9 @@
     <title>GAME FUN - Autenticação</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
+    <!-- Script do reCAPTCHA Enterprise comentado para teste local
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
+    -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -213,8 +215,7 @@
 </head>
 <body>
     <div class="container">
-        <div id="authScreen">
-            <div id="authContent"> 
+        <div id="authScreen"> <div id="authContent"> 
                 <div class="auth-logo-container">
                     <img id="authLogo" src="imagens_interface/logo-game-fun.png" alt="GAME FUN Logo" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
                     <div id="textLogoFallback" class="text-logo hidden">GAME FUN</div>
@@ -306,7 +307,8 @@
             onAuthStateChanged,
             updateProfile 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
+        // App Check import comentado para desativar temporariamente
+        // import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
 
 
         let firebaseConfig;
@@ -378,7 +380,7 @@
         const registerAuthMessage = document.getElementById('registerAuthMessage');
         const firebaseErrorElement = document.getElementById('firebaseError');
 
-        authLogoImg.src = "imagens_interface/logo-game-fun.png"; // Alterado para o novo nome do logo
+        authLogoImg.src = "imagens_interface/logo-game-fun.png"; 
         authLogoImg.onerror = () => {
             authLogoImg.classList.add('hidden');
             if(textLogoFallback) textLogoFallback.classList.remove('hidden');
@@ -420,13 +422,12 @@
                 firebaseInitialized = true; 
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso!");
                 
-                // Inicializar App Check - DESCOMENTE PARA PRODUÇÃO NO GITHUB PAGES
+                // App Check comentado para teste local. 
+                /*
                 try {
-                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // APENAS PARA TESTE LOCAL NO SEU AMBIENTE, NÃO PARA GITHUB PAGES
-                    
+                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = "COLOQUE_SEU_TOKEN_DE_DEBUG_AQUI_PARA_LOCALHOST"; 
                     const appCheckSiteKey = '6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'; 
                     console.log(`[AppCheck] Inicializando com a chave do site reCAPTCHA: ${appCheckSiteKey}`);
-
                     const appCheck = initializeAppCheck(app, {
                         provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey), 
                         isTokenAutoRefreshEnabled: true
@@ -437,6 +438,7 @@
                     displayAuthMessage(loginAuthMessage, "Aviso: Problema na verificação do app (App Check).", true); 
                     if(registerAuthMessage) displayAuthMessage(registerAuthMessage, "Aviso: Problema na verificação do app (App Check).", true); 
                 }
+                */
                 
                 if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
             } else {
@@ -773,8 +775,6 @@
                 }
             });
         } else {
-             // Se o Firebase não inicializou, a mensagem de erro global já foi exibida.
-             // Garante que a tela de login seja a padrão.
              authScreen.classList.remove('hidden');
              loginScreen.classList.remove('hidden');
              registrationScreen.classList.add('hidden');
@@ -785,9 +785,7 @@
 </html>
 ```
 
-**2. `jogo.html` (Página do Jogo)**
-Este arquivo também foi atualizado para usar a configuração completa do Firebase.
-
+**Arquivo `jogo.html` (Página do Jogo)**
 
 ```html
 <!DOCTYPE html>
@@ -798,9 +796,7 @@ Este arquivo também foi atualizado para usar a configuração completa do Fireb
     <title>GAME FUN - Jogo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
-    <!-- Script do reCAPTCHA Enterprise comentado
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
-    -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -936,8 +932,7 @@ Este arquivo também foi atualizado para usar a configuração completa do Fireb
             signOut, 
             onAuthStateChanged 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // App Check import comentado para desativar temporariamente
-        // import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
+        import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
 
 
         let firebaseConfig;
@@ -993,11 +988,13 @@ Este arquivo também foi atualizado para usar a configuração completa do Fireb
                 firebaseInitialized = true; 
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso na página do jogo!");
 
-                // App Check comentado para teste local. 
-                /*
+                // Inicializar App Check - DESCOMENTE PARA PRODUÇÃO NO GITHUB PAGES
                 try {
-                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; 
+                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // APENAS PARA TESTE LOCAL NO SEU AMBIENTE, NÃO PARA GITHUB PAGES
+                    
                     const appCheckSiteKey = '6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'; 
+                    console.log(`[AppCheck] Inicializando com a chave do site reCAPTCHA: ${appCheckSiteKey} em jogo.html`);
+
                     const appCheck = initializeAppCheck(app, {
                         provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey), 
                         isTokenAutoRefreshEnabled: true
@@ -1005,8 +1002,11 @@ Este arquivo também foi atualizado para usar a configuração completa do Fireb
                     console.log("Firebase App Check inicializado na página do jogo.");
                 } catch (appCheckError) {
                     console.error("Erro ao inicializar Firebase App Check em jogo.html:", appCheckError);
+                    // Pode-se adicionar um feedback visual para o usuário aqui, se necessário,
+                    // mas para o jogo.html, se o App Check falhar, as chamadas ao Firestore podem falhar silenciosamente
+                    // ou com erros de permissão se a imposição estiver ativa.
                 }
-                */
+                
             } else {
                 let errorMsg = "Configuração final do Firebase inválida em jogo.html.";
                 if (!firebaseConfig?.apiKey) errorMsg += " apiKey ausente.";
