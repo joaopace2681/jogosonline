@@ -215,7 +215,8 @@
 </head>
 <body>
     <div class="container">
-        <div id="authScreen"> <div id="authContent"> 
+        <div id="authScreen">
+            <div id="authContent"> 
                 <div class="auth-logo-container">
                     <img id="authLogo" src="imagens_interface/logo-game-fun.png" alt="GAME FUN Logo" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
                     <div id="textLogoFallback" class="text-logo hidden">GAME FUN</div>
@@ -340,7 +341,7 @@
                 projectId: "jogosonlie-fadc2",
                 storageBucket: "jogosonlie-fadc2.firebasestorage.app", 
                 messagingSenderId: "998401435610", 
-                appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3", 
+                appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3", // APP ID COMPLETO E CORRETO
                 measurementId: "G-7SF242R7P0" 
             };
         }
@@ -586,7 +587,7 @@
                             case 'auth/invalid-email': friendlyMessage = "Formato de email inválido."; break;
                             case 'auth/operation-not-allowed': case 'auth/project-not-found': case 'auth/api-key-not-valid': case 'auth/configuration-not-found':
                                 friendlyMessage = "Problema na configuração do Firebase. Contate o suporte."; break;
-                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Verifique as configurações do reCAPTCHA e App Check no console do Firebase/Google Cloud."; break;
+                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo (App Check desativado para teste local)."; break;
                             default: friendlyMessage = `Erro ao registrar: ${error.message || 'Verifique o console.'}`;
                         }
                     } else if (error && typeof error === 'object' && error.message) { 
@@ -646,7 +647,7 @@
                                 friendlyMessage = "Problema na configuração do Firebase ou serviço indisponível."; break;
                             case 'auth/network-request-failed': friendlyMessage = "Erro de rede. Verifique sua conexão."; break;
                             case 'auth/too-many-requests': friendlyMessage = "Muitas tentativas de login. Tente novamente mais tarde."; break;
-                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Verifique as configurações do reCAPTCHA e App Check no console do Firebase/Google Cloud."; break; 
+                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo (App Check desativado para teste local)."; break; 
                             default: friendlyMessage = `Erro ao fazer login: ${error.message || 'Verifique o console.'}`;
                         }
                     } else if (error && error.message) { 
@@ -796,7 +797,9 @@
     <title>GAME FUN - Jogo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
+    <!-- Script do reCAPTCHA Enterprise comentado
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
+    -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -932,7 +935,8 @@
             signOut, 
             onAuthStateChanged 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
+        // App Check import comentado para desativar temporariamente
+        // import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
 
 
         let firebaseConfig;
@@ -988,13 +992,11 @@
                 firebaseInitialized = true; 
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso na página do jogo!");
 
-                // Inicializar App Check - DESCOMENTE PARA PRODUÇÃO NO GITHUB PAGES
+                // App Check comentado para teste local. 
+                /*
                 try {
-                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // APENAS PARA TESTE LOCAL NO SEU AMBIENTE, NÃO PARA GITHUB PAGES
-                    
+                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; 
                     const appCheckSiteKey = '6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'; 
-                    console.log(`[AppCheck] Inicializando com a chave do site reCAPTCHA: ${appCheckSiteKey} em jogo.html`);
-
                     const appCheck = initializeAppCheck(app, {
                         provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey), 
                         isTokenAutoRefreshEnabled: true
@@ -1002,11 +1004,8 @@
                     console.log("Firebase App Check inicializado na página do jogo.");
                 } catch (appCheckError) {
                     console.error("Erro ao inicializar Firebase App Check em jogo.html:", appCheckError);
-                    // Pode-se adicionar um feedback visual para o usuário aqui, se necessário,
-                    // mas para o jogo.html, se o App Check falhar, as chamadas ao Firestore podem falhar silenciosamente
-                    // ou com erros de permissão se a imposição estiver ativa.
                 }
-                
+                */
             } else {
                 let errorMsg = "Configuração final do Firebase inválida em jogo.html.";
                 if (!firebaseConfig?.apiKey) errorMsg += " apiKey ausente.";
