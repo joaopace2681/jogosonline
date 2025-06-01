@@ -12,115 +12,114 @@
             background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             background-size: cover; background-position: center; background-attachment: fixed;
             display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; margin: 0; padding: 0.75rem; /* Padding geral reduzido */
+            min-height: 100vh; margin: 0; padding: 0.75rem;
             color: #e5e7eb; overflow-x: hidden;
         }
         .container {
             width: 100%;
-            max-width: 380px; /* Reduzido um pouco o max-width para um visual mais compacto */
+            max-width: 380px; 
             margin-left: auto;
             margin-right: auto;
         }
         #authScreen {
-            background-color: rgba(30, 30, 50, 0.75); /* Levemente mais transparente */
+            background-color: rgba(30, 30, 50, 0.75); 
             background-image: url('imagens_interface/fundo-auth.png'); background-size: cover; background-position: center;
-            backdrop-filter: blur(6px); /* Blur um pouco mais suave */
-            padding: 0.875rem; /* Padding base reduzido (14px) */
-            border-radius: 16px; /* Raio de borda um pouco menor */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25), inset 0 0 6px rgba(255,255,255,0.02); /* Sombra mais suave */
-            text-align: left; border: 1px solid rgba(139, 92, 246, 0.2); /* Borda mais suave */
+            backdrop-filter: blur(6px); 
+            padding: 0.875rem; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25), inset 0 0 6px rgba(255,255,255,0.02); 
+            text-align: left; border: 1px solid rgba(139, 92, 246, 0.2); 
             position: relative;
         }
         .auth-logo-container { text-align: center; margin-bottom: 0.6rem; }
         #authLogo {
-            max-width: 100px; /* Logo menor */
+            max-width: 100px; 
             height: auto; margin-bottom: 0.2rem;
-            filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.4)); /* Sombra do logo mais suave */
+            filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.4)); 
         }
-        .text-logo { /* "GAME FUN" */
+        .text-logo {
             font-family: 'Russo One', sans-serif;
-            font-size: clamp(1.4rem, 4vw, 1.6rem); /* Reduzido */
+            font-size: clamp(1.4rem, 4vw, 1.6rem); 
             color: #fff; text-transform: uppercase; letter-spacing: 1.2px;
-            text-shadow: 0 0 2px #8b5cf6, 0 0 4px #8b5cf6, 0 0 8px #ec4899, 0 0 12px #ec4899; /* Text shadow mais contido */
+            text-shadow: 0 0 2px #8b5cf6, 0 0 4px #8b5cf6, 0 0 8px #ec4899, 0 0 12px #ec4899; 
         }
-        h2.screen-title { /* "Cadastro de Jogador", "Login", etc. */
+        h2.screen-title {
             font-family: 'Poppins', sans-serif;
-            font-size: clamp(1rem, 3vw, 1.1rem); /* Reduzido */
+            font-size: clamp(1rem, 3vw, 1.1rem); 
             font-weight: 700; color: #e0e0e0; margin-bottom: 0.8rem; text-align: center;
         }
         .form-group { margin-bottom: 0.6rem; } 
         .form-group label {
             display: block; margin-bottom: 0.2rem; 
             font-weight: 600;
-            font-size: 0.6rem; /* Label bem pequena */
+            font-size: 0.6rem; 
             color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.4px;
         }
         .form-group input, .form-group select {
-            width: 100%; padding: 0.5rem 0.4rem; /* Padding interno do input reduzido */
-            border-radius: 6px; /* Borda do input mais suave */
-            border: 1px solid #424a58; /* Borda do input um pouco mais clara */
-            background-color: rgba(18, 24, 38, 0.6); /* Fundo do input mais escuro e sutil */
+            width: 100%; padding: 0.5rem 0.4rem; 
+            border-radius: 6px; 
+            border: 1px solid #424a58; 
+            background-color: rgba(18, 24, 38, 0.6); 
             color: #dde1e6;
-            font-size: 0.75rem; /* Fonte do input reduzida */
+            font-size: 0.75rem; 
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
         .form-group input::placeholder { color: #8a93a2; }
         .form-group input:focus, .form-group select:focus {
-            outline: none; border-color: #9370db; /* Cor de foco mais suave */
-            box-shadow: 0 0 0 2px rgba(147, 112, 219, 0.3), 0 0 8px rgba(147, 112, 219, 0.2); /* Sombra de foco mais suave */
+            outline: none; border-color: #9370db; 
+            box-shadow: 0 0 0 2px rgba(147, 112, 219, 0.3), 0 0 8px rgba(147, 112, 219, 0.2); 
         }
         .address-grid { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
         
-        .switch-auth-link { text-align: center; margin-top: 0.8rem; font-size: 0.7rem; } /* Reduzido */
-        .switch-auth-link a { color: #b0a4fc; font-weight: 600; } /* Cor do link mais suave */
+        .switch-auth-link { text-align: center; margin-top: 0.8rem; font-size: 0.7rem; } 
+        .switch-auth-link a { color: #b0a4fc; font-weight: 600; } 
         .switch-auth-link a:hover { color: #fff; }
 
         .submit-button, .payment-button, .pix-confirm-button {
             margin-top: 0.8rem; width: 100%; font-family: 'Poppins', sans-serif;
-            background: linear-gradient(to right, #702bbf, #c41d68); /* Gradiente um pouco mais escuro/sutil */
+            background: linear-gradient(to right, #702bbf, #c41d68); 
             color: white;
-            padding: 0.6rem 1rem; /* Padding do botão reduzido */
-            border: none; border-radius: 8px; /* Borda do botão mais suave */
-            font-size: clamp(0.75rem, 2.5vw, 0.85rem); /* Fonte do botão reduzida */
+            padding: 0.6rem 1rem; 
+            border: none; border-radius: 8px; 
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem); 
             font-weight: 700; cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2), 0 0 8px rgba(196, 29, 104, 0.3); /* Sombra do botão mais suave */
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2), 0 0 8px rgba(196, 29, 104, 0.3); 
             text-transform: uppercase; letter-spacing: 0.8px;
         }
         .submit-button:hover, .payment-button:hover, .pix-confirm-button:hover {
             background: linear-gradient(to right, #813ed4, #dd2e7d);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25), 0 0 12px rgba(221, 46, 125, 0.4);
-            transform: translateY(-1px) scale(1.01); /* Efeito hover mais sutil */
+            transform: translateY(-1px) scale(1.01); 
         }
         .submit-button:disabled { background: #3b4252 !important; cursor: not-allowed; opacity: 0.5; box-shadow: none; transform: none; }
 
-        .auth-message { text-align: center; margin-top: 0.6rem; font-size: 0.7rem; min-height: 0.9rem; } /* Reduzido */
-        .auth-message.error { color: #e57373; } /* Vermelho mais suave */
-        .auth-message.success { color: #81c784; } /* Verde mais suave */
+        .auth-message { text-align: center; margin-top: 0.6rem; font-size: 0.7rem; min-height: 0.9rem; } 
+        .auth-message.error { color: #e57373; } 
+        .auth-message.success { color: #81c784; } 
 
         .hidden { display: none !important; }
 
-        #pixInfoContainer { margin-top: 0.8rem; padding: 0.6rem; background-color: rgba(255, 255, 255, 0.05); border-radius: 8px; } /* Fundo mais sutil */
-        #pixQrCode { width: 120px; height: 120px; margin: 0 auto 0.6rem; background-color: white; padding: 4px; border-radius: 6px; } /* QR Code menor */
-        #pixKeyDisplay { font-weight: 600; padding: 0.4rem; border-radius: 4px; margin-bottom: 0.4rem; font-size: 0.7rem;} /* Reduzido */
-        .copy-feedback { font-size: 0.65rem; min-height: 0.8rem; margin-top: 0.2rem; margin-bottom: 0.5rem; } /* Reduzido */
+        #pixInfoContainer { margin-top: 0.8rem; padding: 0.6rem; background-color: rgba(255, 255, 255, 0.05); border-radius: 8px; } 
+        #pixQrCode { width: 120px; height: 120px; margin: 0 auto 0.6rem; background-color: white; padding: 4px; border-radius: 6px; } 
+        #pixKeyDisplay { font-weight: 600; padding: 0.4rem; border-radius: 4px; margin-bottom: 0.4rem; font-size: 0.7rem;} 
+        .copy-feedback { font-size: 0.65rem; min-height: 0.8rem; margin-top: 0.2rem; margin-bottom: 0.5rem; } 
 
-        /* Media Query para telas maiores (tablets em paisagem, desktops) */
         @media (min-width: 768px) { 
             .container {
-                max-width: 400px; /* Pode voltar para 400px se 380px for muito pequeno, ou até um pouco mais */
+                max-width: 400px; 
             }
             #authScreen {
-                padding: 1.5rem; /* Padding um pouco maior para desktop */
+                padding: 1.5rem; 
             }
             #authLogo {
-                max-width: 120px; /* Mantém o logo mais contido */
+                max-width: 120px; /* Mantido menor para um look mais clean no desktop também */
             }
             .text-logo { 
-                font-size: 1.8rem; /* Tamanho do logo de texto para desktop */
+                font-size: 1.8rem; 
             }
             h2.screen-title { 
-                font-size: 1.2rem; /* Título da seção */
+                font-size: 1.2rem; 
                 margin-bottom: 1rem;
             }
             .form-group {
@@ -282,21 +281,22 @@
             if (configFromStudio) {
                 try {
                     const parsed = JSON.parse(configFromStudio);
-                    if (parsed.apiKey && parsed.projectId === "jogosonlie-fadc2" && parsed.appId === "1:998401435610:web:f4c99f5e8cd92bee0702e3") {
-                        console.log("Usando configuração Firebase do Studio (index.html).");
+                    if (parsed.apiKey && parsed.projectId === "jogosonline-fadc2" && parsed.appId === "1:998401435610:web:f4c99f5e8cd92bee0702e3") {
+                        console.log("Usando configuração Firebase do Studio (ou ambiente similar).");
                         return parsed;
                     }
-                    console.warn("Configuração Firebase do Studio inválida ou para projeto/appId errado (index.html). Usando fallback.");
+                    console.warn("Configuração Firebase do Studio inválida ou para projeto/appId errado. Usando fallback.");
                 } catch (e) {
-                    console.error("Erro ao parsear __firebase_config (index.html), usando fallback:", e);
+                    console.error("Erro ao parsear __firebase_config, usando fallback:", e);
                 }
             }
-            console.warn("Usando configuração Firebase hardcoded (index.html).");
+            console.warn("Usando configuração Firebase hardcoded (fallback).");
+            // OBJETO FIREBASECONFIG CORRIGIDO AQUI:
             return {
                 apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8",
-                authDomain: "jogosonlie-fadc2.firebaseapp.com",
-                projectId: "jogosonlie-fadc2",
-                storageBucket: "jogosonlie-fadc2.appspot.com", 
+                authDomain: "jogosonline-fadc2.firebaseapp.com", // CORRIGIDO
+                projectId: "jogosonline-fadc2",                 // CORRIGIDO
+                storageBucket: "jogosonline-fadc2.firebasestorage.app", // CORRIGIDO
                 messagingSenderId: "998401435610",
                 appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3",
                 measurementId: "G-7SF242R7P0"
@@ -496,22 +496,41 @@
         }
 
         async function handlePaymentConfirmation() {
+            console.log("handlePaymentConfirmation: INÍCIO da função.");
             if (!currentUserID) {
-                displayMessage(DOMElements.paymentMessage, "Erro: Usuário não autenticado.");
+                displayMessage(DOMElements.paymentMessage, "Erro: Usuário não autenticado para processar pagamento.");
+                console.error("handlePaymentConfirmation: ERRO - currentUserID é nulo ou indefinido.");
+                DOMElements.paymentConfirmedButton.disabled = false;
+                DOMElements.paymentConfirmedButton.textContent = 'Já Paguei / Continuar';
                 return;
             }
+            console.log(`handlePaymentConfirmation: Processando para currentUserID = ${currentUserID}`);
+
             const selectedValue = parseFloat(DOMElements.paymentAmountSelect.value);
             const creditsToGive = selectedValue * 2; 
+
             displayMessage(DOMElements.paymentMessage, `Confirmando ${formatAsReal(selectedValue)}...`, false);
             DOMElements.paymentConfirmedButton.disabled = true;
             DOMElements.paymentConfirmedButton.textContent = 'Confirmando...';
+
             console.warn("ALERTA: Adição de créditos no CLIENT-SIDE. Inseguro para produção.");
+            console.log(`Tentando adicionar ${creditsToGive} créditos para o usuário ${currentUserID}.`);
+
             try {
-                await updateDoc(doc(fbDb, "users", currentUserID), { credits: increment(creditsToGive) });
+                const userDocRef = doc(fbDb, "users", currentUserID);
+                console.log("handlePaymentConfirmation: Referência do documento (userDocRef.path):", userDocRef.path);
+
+                await updateDoc(userDocRef, { credits: increment(creditsToGive) });
+                console.log(`SUCESSO: ${creditsToGive} créditos foram processados para ${currentUserID} no Firestore.`);
+                
+                console.log("Redirecionando para a página do jogo:", gamePageUrl);
                 window.location.href = gamePageUrl;
+
             } catch (error) {
-                displayMessage(DOMElements.paymentMessage, "Erro ao processar. Tente novamente.", true);
-            } finally {
+                console.error("ERRO CRÍTICO ao atualizar créditos ou durante o processo de redirecionamento:", error); 
+                console.error("Detalhes do erro - Código:", error.code, "Mensagem:", error.message);
+                displayMessage(DOMElements.paymentMessage, `Erro (${error.code || 'desconhecido'}) ao processar pagamento. Tente novamente.`, true);
+                
                 DOMElements.paymentConfirmedButton.disabled = false;
                 DOMElements.paymentConfirmedButton.textContent = 'Já Paguei / Continuar';
             }
