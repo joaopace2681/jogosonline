@@ -306,8 +306,7 @@
             onAuthStateChanged,
             updateProfile 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // App Check import comentado para desativar temporariamente
-        // import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
+        import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
 
 
         let firebaseConfig;
@@ -339,8 +338,8 @@
                 projectId: "jogosonlie-fadc2",
                 storageBucket: "jogosonlie-fadc2.firebasestorage.app", 
                 messagingSenderId: "998401435610", 
-                appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3", // USANDO O APP ID COMPLETO QUE VOCÊ FORNECEU
-                measurementId: "G-7SF242R7P0" // USANDO O MEASUREMENT ID QUE VOCÊ FORNECEU
+                appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3", 
+                measurementId: "G-7SF242R7P0" 
             };
         }
         console.log("Firebase Config a ser usada (index.html):", JSON.parse(JSON.stringify(firebaseConfig)));
@@ -379,7 +378,7 @@
         const registerAuthMessage = document.getElementById('registerAuthMessage');
         const firebaseErrorElement = document.getElementById('firebaseError');
 
-        authLogoImg.src = "imagens_interface/logo-game-fun.png"; 
+        authLogoImg.src = "imagens_interface/logo-game-fun.png"; // Alterado para o novo nome do logo
         authLogoImg.onerror = () => {
             authLogoImg.classList.add('hidden');
             if(textLogoFallback) textLogoFallback.classList.remove('hidden');
@@ -421,13 +420,13 @@
                 firebaseInitialized = true; 
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso!");
                 
-                // App Check comentado para teste local. 
-                // Quando for para produção no GitHub Pages, descomente e configure corretamente.
-                /*
+                // Inicializar App Check - DESCOMENTE PARA PRODUÇÃO NO GITHUB PAGES
                 try {
-                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = "COLOQUE_SEU_TOKEN_DE_DEBUG_AQUI_PARA_LOCALHOST"; 
+                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // APENAS PARA TESTE LOCAL NO SEU AMBIENTE, NÃO PARA GITHUB PAGES
+                    
                     const appCheckSiteKey = '6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'; 
                     console.log(`[AppCheck] Inicializando com a chave do site reCAPTCHA: ${appCheckSiteKey}`);
+
                     const appCheck = initializeAppCheck(app, {
                         provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey), 
                         isTokenAutoRefreshEnabled: true
@@ -438,13 +437,12 @@
                     displayAuthMessage(loginAuthMessage, "Aviso: Problema na verificação do app (App Check).", true); 
                     if(registerAuthMessage) displayAuthMessage(registerAuthMessage, "Aviso: Problema na verificação do app (App Check).", true); 
                 }
-                */
                 
                 if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
             } else {
                 let errorMsg = "Configuração do Firebase inválida ou incompleta.";
                 if (!firebaseConfig?.apiKey) errorMsg += " apiKey ausente.";
-                if (!firebaseConfig?.appId) errorMsg += " appId ausente. Verifique se o appId está completo na configuração.";
+                if (!firebaseConfig?.appId) errorMsg += " appId ausente.";
                 if (!firebaseConfig?.projectId) errorMsg += " projectId ausente.";
                 console.error(errorMsg, firebaseConfig); 
                 throw new Error(errorMsg);
@@ -586,7 +584,7 @@
                             case 'auth/invalid-email': friendlyMessage = "Formato de email inválido."; break;
                             case 'auth/operation-not-allowed': case 'auth/project-not-found': case 'auth/api-key-not-valid': case 'auth/configuration-not-found':
                                 friendlyMessage = "Problema na configuração do Firebase. Contate o suporte."; break;
-                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo (App Check desativado para teste local)."; break;
+                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Verifique as configurações do reCAPTCHA e App Check no console do Firebase/Google Cloud."; break;
                             default: friendlyMessage = `Erro ao registrar: ${error.message || 'Verifique o console.'}`;
                         }
                     } else if (error && typeof error === 'object' && error.message) { 
@@ -646,7 +644,7 @@
                                 friendlyMessage = "Problema na configuração do Firebase ou serviço indisponível."; break;
                             case 'auth/network-request-failed': friendlyMessage = "Erro de rede. Verifique sua conexão."; break;
                             case 'auth/too-many-requests': friendlyMessage = "Muitas tentativas de login. Tente novamente mais tarde."; break;
-                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo (App Check desativado para teste local)."; break; 
+                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo. Verifique as configurações do reCAPTCHA e App Check no console do Firebase/Google Cloud."; break; 
                             default: friendlyMessage = `Erro ao fazer login: ${error.message || 'Verifique o console.'}`;
                         }
                     } else if (error && error.message) { 
@@ -760,7 +758,7 @@
                 if (user) {
                     currentUserId = user.uid;
                     currentUser = user; 
-                    console.log("Usuário já logado:", currentUserId, ". Redirecionando para tela de pagamento.");
+                    console.log("Usuário já logado:", currentUserId, ". Exibindo tela de pagamento.");
                     authScreen.classList.remove('hidden'); 
                     showPaymentScreen(user); 
                 } else {
@@ -787,7 +785,9 @@
 </html>
 ```
 
-**Arquivo `jogo.html` (Página do Jogo)**
+**2. `jogo.html` (Página do Jogo)**
+Este arquivo também foi atualizado para usar a configuração completa do Firebase.
+
 
 ```html
 <!DOCTYPE html>
@@ -974,6 +974,7 @@
                 measurementId: "G-7SF242R7P0" // USANDO O MEASUREMENT ID QUE VOCÊ FORNECEU
             };
         }
+        console.log("Firebase Config a ser usada (jogo.html):", JSON.parse(JSON.stringify(firebaseConfig)));
         
         let app, db, auth, currentUserId = null;
         let currentUserData = null; 
@@ -991,7 +992,6 @@
                 auth = getAuth(app);
                 firebaseInitialized = true; 
                 console.log("Firebase (Auth/Firestore) inicializado com sucesso na página do jogo!");
-                console.log("Usando App ID para jogo.html:", firebaseConfig.appId);
 
                 // App Check comentado para teste local. 
                 /*
@@ -1023,7 +1023,7 @@
             const errorDiv = document.createElement('div');
             errorDiv.className = 'text-center text-red-400 p-8 bg-gray-800 rounded-lg shadow-xl fixed inset-0 flex flex-col items-center justify-center z-50';
             errorDiv.innerHTML = `<h2 class="text-2xl font-bold mb-4">Erro de Configuração</h2>
-                                  <p class="mb-4">Não foi possível conectar aos serviços do jogo. Verifique o console para detalhes e certifique-se que o appId no código está correto.</p>
+                                  <p class="mb-4">Não foi possível conectar aos serviços do jogo. Verifique o console para detalhes e certifique-se que a configuração Firebase está correta.</p>
                                   <a href="${indexPageUrl}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Voltar para Login</a>`;
             if(document.body) { 
                 document.body.innerHTML = ''; 
@@ -1033,7 +1033,7 @@
 
 
         let symbols = [ 
-            { name: 'Limão', emojiForMessage: '�', value: 'LEMON', imageSrc: 'imagens_frutas/limao.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
+            { name: 'Limão', emojiForMessage: '🍋', value: 'LEMON', imageSrc: 'imagens_frutas/limao.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Maca', emojiForMessage: '🍎', value: 'APPLE', imageSrc: 'imagens_frutas/Maca.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Laranja', emojiForMessage: '🍊', value: 'ORANGE', imageSrc: 'imagens_frutas/Laranja.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
             { name: 'Uva', emojiForMessage: '🍇', value: 'GRAPE', imageSrc: 'imagens_frutas/uva.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
@@ -1458,7 +1458,6 @@
             });
         } else if (!firebaseInitialized) {
             console.log("Firebase não inicializado, jogo.html não pode carregar (onAuthStateChanged não será configurado).");
-            // A mensagem de erro e o redirecionamento já são tratados no bloco catch da inicialização do Firebase.
         } else { 
              console.log("Objeto Auth não disponível em jogo.html, mas Firebase foi sinalizado como inicializado. Redirecionando para login.");
              window.location.href = indexPageUrl; 
@@ -1467,4 +1466,3 @@
     </script>
 </body>
 </html>
-�
