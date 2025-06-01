@@ -6,225 +6,81 @@
     <title>GAME FUN - Autenticação</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
-    <!-- Script do reCAPTCHA Enterprise comentado para teste local
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
-    -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 1rem; 
-            color: #e5e7eb;
-            overflow-x: hidden;
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; padding: 1rem; color: #e5e7eb; overflow-x: hidden;
         }
-        .container {
-            width: 100%; 
-            max-width: 400px; 
-            margin-left: auto;
-            margin-right: auto;
+        .container { width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; }
+        #authScreen {
+            background-color: rgba(30, 30, 50, 0.85);
+            background-image: url('imagens_interface/fundo-auth.png'); background-size: cover; background-position: center;
+            backdrop-filter: blur(8px); padding: 1.25rem; border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255,255,255,0.03);
+            text-align: left; border: 1px solid rgba(139, 92, 246, 0.25); position: relative;
         }
-        
-        #authScreen { 
-            background-color: rgba(30, 30, 50, 0.85); 
-            background-image: url('imagens_interface/fundo-auth.png'); 
-            background-size: cover;
-            background-position: center;
-            backdrop-filter: blur(8px); 
-            padding: 1.25rem; 
-            border-radius: 20px; 
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255,255,255,0.03); 
-            text-align: left;
-            border: 1px solid rgba(139, 92, 246, 0.25); 
-            position: relative; 
-        }
-
-        .auth-logo-container {
-            text-align: center;
-            margin-bottom: 1rem; 
-        }
-        #authLogo { 
-            max-width: 160px; 
-            height: auto;
-            margin-bottom: 0.25rem; 
-            filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5)); 
-        }
-        .text-logo { 
-            font-family: 'Russo One', sans-serif;
-            font-size: clamp(1.7rem, 5.5vw, 2.3rem); 
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 1.5px; 
-            text-shadow: 0 0 3px #8b5cf6, 0 0 6px #8b5cf6, 0 0 10px #ec4899, 0 0 14px #ec4899; 
-        }
-
-        #registrationScreen h2, #loginScreen h2, #paymentScreen h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: clamp(1.2rem, 3.8vw, 1.6rem); 
-            font-weight: 700;
-            color: #e0e0e0; 
-            margin-bottom: 1rem; 
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 0.75rem; 
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.2rem; 
-            font-weight: 600;
-            font-size: 0.7rem; 
-            color: #a5b4fc; 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .auth-logo-container { text-align: center; margin-bottom: 1rem; }
+        #authLogo { max-width: 160px; height: auto; margin-bottom: 0.25rem; filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5)); }
+        .text-logo { font-family: 'Russo One', sans-serif; font-size: clamp(1.7rem, 5.5vw, 2.3rem); color: #fff; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 3px #8b5cf6, 0 0 6px #8b5cf6, 0 0 10px #ec4899, 0 0 14px #ec4899; }
+        h2.screen-title { font-family: 'Poppins', sans-serif; font-size: clamp(1.2rem, 3.8vw, 1.6rem); font-weight: 700; color: #e0e0e0; margin-bottom: 1rem; text-align: center; }
+        .form-group { margin-bottom: 0.75rem; }
+        .form-group label { display: block; margin-bottom: 0.2rem; font-weight: 600; font-size: 0.7rem; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.5px; }
         .form-group input, .form-group select {
-            width: 100%;
-            padding: 0.6rem; 
-            border-radius: 8px; 
-            border: 1px solid #4a5568; 
-            background-color: rgba(23, 30, 48, 0.7); 
-            color: #e5e7eb;
-            font-size: 0.85rem; 
+            width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #4a5568;
+            background-color: rgba(23, 30, 48, 0.7); color: #e5e7eb; font-size: 0.85rem;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        .form-group input::placeholder {
-            color: #9ca3af;
-        }
+        .form-group input::placeholder { color: #9ca3af; }
         .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #a78bfa; 
-            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4), 0 0 10px rgba(167, 139, 250, 0.3); 
+            outline: none; border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4), 0 0 10px rgba(167, 139, 250, 0.3);
         }
-        .address-grid {
-            display: grid;
-            grid-template-columns: 1fr; 
-            gap: 0.5rem; 
-        }
-         .address-grid .form-group.full-width {
-            grid-column: span 1; 
-        }
-        .switch-auth-link {
-            text-align: center;
-            margin-top: 1rem; 
-            font-size: 0.8rem; 
-        }
-        .switch-auth-link a {
-            color: #c4b5fd; 
-            text-decoration: underline;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .switch-auth-link a:hover {
-            color: #fff;
-        }
-        .submit-button, .payment-button, .pix-confirm-button { 
-            margin-top: 1rem; 
-            width: 100%; 
-            font-family: 'Poppins', sans-serif; 
-            background: linear-gradient(to right, #7c3aed, #db2777); 
-            color: white; 
-            padding: 0.7rem 1.4rem; 
-            border: none; 
-            border-radius: 10px; 
-            font-size: clamp(0.85rem, 3.3vw, 1rem); 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 15px rgba(219, 39, 119, 0.4); 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
+        .address-grid { display: grid; grid-template-columns: 1fr; gap: 0.5rem; }
+        .switch-auth-link { text-align: center; margin-top: 1rem; font-size: 0.8rem; }
+        .switch-auth-link a { color: #c4b5fd; text-decoration: underline; cursor: pointer; font-weight: 600; }
+        .switch-auth-link a:hover { color: #fff; }
+        .submit-button, .payment-button, .pix-confirm-button {
+            margin-top: 1rem; width: 100%; font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #7c3aed, #db2777); color: white;
+            padding: 0.7rem 1.4rem; border: none; border-radius: 10px;
+            font-size: clamp(0.85rem, 3.3vw, 1rem); font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 15px rgba(219, 39, 119, 0.4);
+            text-transform: uppercase; letter-spacing: 1px;
         }
         .submit-button:hover, .payment-button:hover, .pix-confirm-button:hover {
             background: linear-gradient(to right, #8b5cf6, #ec4899);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 25px rgba(219, 39, 119, 0.6);
             transform: translateY(-2px) scale(1.02);
         }
-        .submit-button:disabled { 
-            background: #4b5563 !important; 
-            cursor: not-allowed;
-            opacity: 0.6;
-            box-shadow: none;
-            transform: none;
-        }
-        .auth-message {
-            text-align: center;
-            margin-top: 0.875rem; 
-            font-size: 0.8rem; 
-            min-height: 1.1rem; 
-        }
-        .auth-message.error {
-            color: #f87171; 
-        }
-        .auth-message.success {
-            color: #34d399; 
-        }
-        .hidden { display: none !important; } 
-
-        #pixInfoContainer {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            text-align: center;
-        }
-        #pixQrCode {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 1rem;
-            background-color: white; 
-            padding: 5px;
-            border-radius: 8px;
-            display: block; 
-        }
-        #pixKeyDisplay { 
-            font-weight: 600;
-            word-break: break-all;
-            background-color: rgba(0,0,0,0.2);
-            padding: 0.5rem;
-            border-radius: 6px;
-            margin-bottom: 0.5rem; 
-            cursor: pointer;
-            user-select: all; 
-        }
-         #pixKeyDisplay:hover {
-            background-color: rgba(0,0,0,0.4);
-        }
-        .copy-feedback {
-            font-size: 0.75rem;
-            color: #a5b4fc;
-            min-height: 1rem;
-            margin-top: 0.25rem;
-            margin-bottom: 0.75rem; 
-        }
-
-
-        @media (min-width: 420px) { 
-            .address-grid {
-                 grid-template-columns: 1fr; 
-            }
-        }
+        .submit-button:disabled { background: #4b5563 !important; cursor: not-allowed; opacity: 0.6; box-shadow: none; transform: none; }
+        .auth-message { text-align: center; margin-top: 0.875rem; font-size: 0.8rem; min-height: 1.1rem; }
+        .auth-message.error { color: #f87171; }
+        .auth-message.success { color: #34d399; }
+        .hidden { display: none !important; }
+        #pixInfoContainer { margin-top: 1.5rem; padding: 1rem; background-color: rgba(255, 255, 255, 0.1); border-radius: 10px; text-align: center; }
+        #pixQrCode { width: 150px; height: 150px; margin: 0 auto 1rem; background-color: white; padding: 5px; border-radius: 8px; display: block; }
+        #pixKeyDisplay { font-weight: 600; word-break: break-all; background-color: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 6px; margin-bottom: 0.5rem; cursor: pointer; user-select: all; }
+        #pixKeyDisplay:hover { background-color: rgba(0,0,0,0.4); }
+        .copy-feedback { font-size: 0.75rem; color: #a5b4fc; min-height: 1rem; margin-top: 0.25rem; margin-bottom: 0.75rem; }
+        @media (min-width: 420px) { .address-grid { /* Mantido como 1fr, pode ser ajustado para 2 colunas se desejado */ } }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="authScreen">
-            <div id="authContent"> 
+        <div id="authScreen" class="hidden">
+            <div id="authContent">
                 <div class="auth-logo-container">
-                    <img id="authLogo" src="imagens_interface/logo-game-fun.png" alt="GAME FUN Logo" onerror="this.style.display='none'; document.getElementById('textLogoFallback').classList.remove('hidden');">
+                    <img id="authLogo" src="imagens_interface/logo-game-fun.png" alt="GAME FUN Logo">
                     <div id="textLogoFallback" class="text-logo hidden">GAME FUN</div>
                 </div>
-                <p id="firebaseError" class="auth-message error text-center mb-4 hidden"></p> 
-                
-                <div id="loginScreen"> 
-                    <h2>Login do Jogador</h2>
+                <p id="firebaseError" class="auth-message error text-center mb-4 hidden"></p>
+
+                <div id="loginScreen" class="screen hidden">
+                    <h2 class="screen-title">Login do Jogador</h2>
                     <form id="loginForm">
                         <div class="form-group">
                             <label for="loginEmail">Email</label>
@@ -240,8 +96,8 @@
                     <p class="switch-auth-link">Não tem conta? <a href="#" id="showRegisterLink">Cadastre-se aqui</a></p>
                 </div>
 
-                <div id="registrationScreen" class="hidden"> 
-                    <h2>Cadastro de Jogador</h2>
+                <div id="registrationScreen" class="screen hidden">
+                    <h2 class="screen-title">Cadastro de Jogador</h2>
                     <form id="registrationForm">
                         <div class="form-group"> <label for="fullName">Nome Completo</label> <input type="text" id="fullName" name="fullName" required> </div>
                         <div class="form-group"> <label for="regEmail">Email</label> <input type="email" id="regEmail" name="regEmail" required> </div>
@@ -266,8 +122,8 @@
                     <p class="switch-auth-link">Já tem uma conta? <a href="#" id="showLoginLinkFromRegister">Faça login</a></p>
                 </div>
 
-                <div id="paymentScreen" class="hidden">
-                    <h2>Comprar Créditos</h2>
+                <div id="paymentScreen" class="screen hidden">
+                    <h2 class="screen-title">Comprar Créditos</h2>
                     <p id="paymentUserInfo" class="text-center mb-4"></p>
                     <div id="paymentOptions">
                         <div class="form-group">
@@ -279,14 +135,14 @@
                                 <option value="50">R$ 50,00 (100 créditos)</option>
                             </select>
                         </div>
-                        <button id="initiatePixPaymentButton" class="payment-button submit-button">Pagar com PIX</button> 
+                        <button id="initiatePixPaymentButton" class="payment-button submit-button">Pagar com PIX</button>
                     </div>
                     <div id="pixInfoContainer" class="hidden">
-                        <p class="mb-2 text-sm">Escaneie o QR Code abaixo ou copie a chave PIX para efetuar o pagamento:</p>
-                        <img id="pixQrCode" src="imagens_interface/qrcode-pix-placeholder.png" alt="QR Code PIX"> 
-                        <p id="qrCodeErrorMessage" class="text-red-500 text-xs mt-1 hidden">Não foi possível carregar o QR Code. Por favor, use a chave PIX abaixo.</p>
+                        <p class="mb-2 text-sm">Escaneie o QR Code ou copie a chave PIX:</p>
+                        <img id="pixQrCode" src="imagens_interface/qrcode-pix-placeholder.png" alt="QR Code PIX">
+                        <p id="qrCodeErrorMessage" class="text-red-500 text-xs mt-1 hidden">Não foi possível carregar o QR Code. Use a chave PIX abaixo.</p>
                         <p class="mt-2 text-sm">Chave PIX (Email):</p>
-                        <p id="pixKeyDisplay" class="font-mono bg-gray-700 p-2 rounded my-2 text-center text-sm"></p>
+                        <p id="pixKeyDisplay" class="font-mono text-sm"></p>
                         <div id="copyFeedback" class="copy-feedback"></div>
                         <button id="paymentConfirmedButton" class="pix-confirm-button submit-button mt-4">Já Paguei / Continuar</button>
                     </div>
@@ -298,1170 +154,404 @@
     </div>
 
     <script type="module">
-        // Importações do Firebase SDK
+        // Firebase SDK Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { 
-            getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
-            onAuthStateChanged,
-            updateProfile 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // App Check import comentado para desativar temporariamente
-        // import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js"; // App Check (comentado)
 
+        // --- Application State ---
+        let fbApp, fbAuth, fbDb;
+        let currentUserID = null;
+        let currentUserDisplayName = '';
+        const PIX_KEY = "obapremiacoes@gmail.com"; // Mantenha sua chave PIX aqui
 
-        let firebaseConfig;
-        const firebaseConfigFromStudio = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
-        const baseHref = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-        const gamePageUrl = baseHref + 'jogo.html'; 
+        // --- DOM Elements ---
+        const DOMElements = {
+            authScreen: document.getElementById('authScreen'),
+            authLogo: document.getElementById('authLogo'),
+            textLogoFallback: document.getElementById('textLogoFallback'),
+            firebaseError: document.getElementById('firebaseError'),
+            
+            loginScreen: document.getElementById('loginScreen'),
+            loginForm: document.getElementById('loginForm'),
+            loginEmailInput: document.getElementById('loginEmail'),
+            loginPasswordInput: document.getElementById('loginPassword'),
+            loginAuthMessage: document.getElementById('loginAuthMessage'),
+            showRegisterLink: document.getElementById('showRegisterLink'),
 
-        if (firebaseConfigFromStudio) {
-            try {
-                const parsedConfig = JSON.parse(firebaseConfigFromStudio);
-                if (parsedConfig.apiKey && parsedConfig.projectId === "jogosonlie-fadc2" && parsedConfig.appId && parsedConfig.appId === "1:998401435610:web:f4c99f5e8cd92bee0702e3") { 
-                    firebaseConfig = parsedConfig;
-                    console.log("Usando configuração Firebase do Studio para jogosonlie-fadc2 (index.html).");
-                } else {
-                    console.warn("Configuração do Firebase do Studio inválida, para projeto errado, ou appId não corresponde (index.html). Usando fallback hardcoded.");
-                    firebaseConfig = null; 
-                }
-            } catch (e) {
-                console.error("Erro ao parsear __firebase_config em index.html, usando fallback hardcoded:", e);
-                firebaseConfig = null; 
-            }
-        }
+            registrationScreen: document.getElementById('registrationScreen'),
+            registrationForm: document.getElementById('registrationForm'),
+            registerAuthMessage: document.getElementById('registerAuthMessage'),
+            showLoginLinkFromRegister: document.getElementById('showLoginLinkFromRegister'),
+
+            paymentScreen: document.getElementById('paymentScreen'),
+            paymentUserInfo: document.getElementById('paymentUserInfo'),
+            paymentAmountSelect: document.getElementById('paymentAmount'),
+            initiatePixPaymentButton: document.getElementById('initiatePixPaymentButton'),
+            paymentOptionsDiv: document.getElementById('paymentOptions'),
+            pixInfoContainer: document.getElementById('pixInfoContainer'),
+            pixQrCodeImg: document.getElementById('pixQrCode'),
+            qrCodeErrorMessage: document.getElementById('qrCodeErrorMessage'),
+            pixKeyDisplay: document.getElementById('pixKeyDisplay'),
+            copyFeedback: document.getElementById('copyFeedback'),
+            paymentConfirmedButton: document.getElementById('paymentConfirmedButton'),
+            paymentMessage: document.getElementById('paymentMessage'),
+            cancelPaymentLink: document.getElementById('cancelPaymentLink'),
+        };
         
-        if (!firebaseConfig) { 
-            console.warn("Usando configuração Firebase hardcoded para jogosonlie-fadc2 (index.html).");
-            firebaseConfig = { 
-                apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8", 
+        const gamePageUrl = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'jogo.html';
+
+        // --- Firebase Configuration ---
+        function getFirebaseConfig() {
+            const configFromStudio = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+            if (configFromStudio) {
+                try {
+                    const parsed = JSON.parse(configFromStudio);
+                    if (parsed.apiKey && parsed.projectId === "jogosonlie-fadc2" && parsed.appId === "1:998401435610:web:f4c99f5e8cd92bee0702e3") {
+                        console.log("Usando configuração Firebase do Studio (index.html).");
+                        return parsed;
+                    }
+                    console.warn("Configuração Firebase do Studio inválida ou para projeto/appId errado. Usando fallback.");
+                } catch (e) {
+                    console.error("Erro ao parsear __firebase_config, usando fallback:", e);
+                }
+            }
+            console.warn("Usando configuração Firebase hardcoded (index.html).");
+            return {
+                apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8", // Sua API Key
                 authDomain: "jogosonlie-fadc2.firebaseapp.com",
                 projectId: "jogosonlie-fadc2",
-                storageBucket: "jogosonlie-fadc2.firebasestorage.app", 
-                messagingSenderId: "998401435610", 
-                appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3", 
-                measurementId: "G-7SF242R7P0" 
+                storageBucket: "jogosonlie-fadc2.appspot.com", // Corrigido: geralmente .appspot.com
+                messagingSenderId: "998401435610",
+                appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3",
+                measurementId: "G-7SF242R7P0"
             };
         }
-        console.log("Firebase Config a ser usada (index.html):", JSON.parse(JSON.stringify(firebaseConfig)));
+        
+        // --- UI Helper Functions ---
+        function showScreen(screenName) {
+            ['loginScreen', 'registrationScreen', 'paymentScreen'].forEach(id => {
+                DOMElements[id]?.classList.add('hidden');
+            });
+            DOMElements[screenName]?.classList.remove('hidden');
+            clearAuthMessages();
+        }
 
-        let app, db, auth;
-        let firebaseInitialized = false;
-        let currentUserId = null; 
-        let currentUser = null;
-
-        const authScreen = document.getElementById('authScreen');
-        const authContent = document.getElementById('authContent');
-        const authLogoImg = document.getElementById('authLogo');
-        const textLogoFallback = document.getElementById('textLogoFallback');
-        const registrationScreen = document.getElementById('registrationScreen');
-        const registrationForm = document.getElementById('registrationForm');
-        const loginScreen = document.getElementById('loginScreen');
-        const loginForm = document.getElementById('loginForm');
-        const paymentScreen = document.getElementById('paymentScreen');
-        const paymentUserInfo = document.getElementById('paymentUserInfo');
-        const paymentAmountSelect = document.getElementById('paymentAmount');
-        const initiatePixPaymentButton = document.getElementById('initiatePixPaymentButton');
-        const paymentMessage = document.getElementById('paymentMessage');
-        const pixInfoContainer = document.getElementById('pixInfoContainer');
-        const pixQrCodeImg = document.getElementById('pixQrCode');
-        const pixKeyElement = document.getElementById('pixKeyDisplay'); 
-        const paymentConfirmedButton = document.getElementById('paymentConfirmedButton');
-        const paymentOptionsDiv = document.getElementById('paymentOptions');
-        const copyFeedback = document.getElementById('copyFeedback');
-        const cancelPaymentLink = document.getElementById('cancelPaymentLink');
-        const qrCodeErrorMessage = document.getElementById('qrCodeErrorMessage');
-
-
-        const showLoginLinkFromRegisterElement = document.getElementById('showLoginLinkFromRegister'); 
-        const showRegisterLink = document.getElementById('showRegisterLink');
-        const loginAuthMessage = document.getElementById('loginAuthMessage');
-        const registerAuthMessage = document.getElementById('registerAuthMessage');
-        const firebaseErrorElement = document.getElementById('firebaseError');
-
-        authLogoImg.src = "imagens_interface/logo-game-fun.png"; 
-        authLogoImg.onerror = () => {
-            authLogoImg.classList.add('hidden');
-            if(textLogoFallback) textLogoFallback.classList.remove('hidden');
-        };
-        const tempImg = new Image();
-        tempImg.src = authLogoImg.src;
-        tempImg.onload = () => {
-            authLogoImg.classList.remove('hidden');
-            if(textLogoFallback) textLogoFallback.classList.add('hidden');
-        };
-        tempImg.onerror = () => { 
-             authLogoImg.classList.add('hidden');
-            if(textLogoFallback) textLogoFallback.classList.remove('hidden');
-        };
-
-
-        function displayAuthMessage(element, message, isError = true) {
+        function displayMessage(element, message, isError = true) {
             if (!element) return;
             element.textContent = message;
-            element.className = isError ? 'auth-message error' : 'auth-message success';
-            setTimeout(() => { if(element) element.textContent = ''; }, 7000);
+            element.className = `auth-message ${isError ? 'error' : 'success'}`;
+            setTimeout(() => { if (element) element.textContent = ''; }, 7000);
         }
         
         function displayGlobalFirebaseError(message) {
-            if (firebaseErrorElement) {
-                firebaseErrorElement.textContent = message;
-                firebaseErrorElement.classList.remove('hidden');
+            if (DOMElements.firebaseError) {
+                DOMElements.firebaseError.textContent = message;
+                DOMElements.firebaseError.classList.remove('hidden');
             }
-            if (loginForm) loginForm.querySelector('button[type="submit"]').disabled = true;
-            if (registrationForm) registrationForm.querySelector('button[type="submit"]').disabled = true;
-            if (initiatePixPaymentButton) initiatePixPaymentButton.disabled = true;
+            disableForms(true);
         }
 
-        try {
-            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.appId && firebaseConfig.projectId) { 
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                firebaseInitialized = true; 
-                console.log("Firebase (Auth/Firestore) inicializado com sucesso!");
-                
-                // App Check comentado para teste local. 
-                /*
-                try {
-                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = "COLOQUE_SEU_TOKEN_DE_DEBUG_AQUI_PARA_LOCALHOST"; 
-                    const appCheckSiteKey = '6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'; 
-                    console.log(`[AppCheck] Inicializando com a chave do site reCAPTCHA: ${appCheckSiteKey}`);
-                    const appCheck = initializeAppCheck(app, {
-                        provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey), 
-                        isTokenAutoRefreshEnabled: true
-                    });
-                    console.log("Firebase App Check inicializado.");
-                } catch (appCheckError) {
-                    console.error("Erro ao inicializar Firebase App Check:", appCheckError);
-                    displayAuthMessage(loginAuthMessage, "Aviso: Problema na verificação do app (App Check).", true); 
-                    if(registerAuthMessage) displayAuthMessage(registerAuthMessage, "Aviso: Problema na verificação do app (App Check).", true); 
-                }
-                */
-                
-                if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
-            } else {
-                let errorMsg = "Configuração do Firebase inválida ou incompleta.";
-                if (!firebaseConfig?.apiKey) errorMsg += " apiKey ausente.";
-                if (!firebaseConfig?.appId) errorMsg += " appId ausente.";
-                if (!firebaseConfig?.projectId) errorMsg += " projectId ausente.";
-                console.error(errorMsg, firebaseConfig); 
-                throw new Error(errorMsg);
-            }
-        } catch (error) {
-            console.error("Erro crítico ao inicializar Firebase:", error);
-            displayGlobalFirebaseError(`Erro crítico na configuração do Firebase: ${error.message}. Funcionalidades de login/cadastro indisponíveis.`);
-        }
-        
-        function switchToLoginScreen() {
-            if (registrationScreen) registrationScreen.classList.add('hidden');
-            if (paymentScreen) paymentScreen.classList.add('hidden');
-            if (loginScreen) loginScreen.classList.remove('hidden');
-            if(registerAuthMessage) registerAuthMessage.textContent = '';
-            if(loginAuthMessage) loginAuthMessage.textContent = '';
-            if(paymentMessage) paymentMessage.textContent = '';
+        function disableForms(disabled) {
+            DOMElements.loginForm?.querySelector('button[type="submit"]')?.toggleAttribute('disabled', disabled);
+            DOMElements.registrationForm?.querySelector('button[type="submit"]')?.toggleAttribute('disabled', disabled);
+            DOMElements.initiatePixPaymentButton?.toggleAttribute('disabled', disabled);
         }
 
-        function switchToRegisterScreen() {
-            if (loginScreen) loginScreen.classList.add('hidden');
-            if (paymentScreen) paymentScreen.classList.add('hidden');
-            if (registrationScreen) registrationScreen.classList.remove('hidden');
-            if(registerAuthMessage) registerAuthMessage.textContent = '';
-            if(loginAuthMessage) loginAuthMessage.textContent = '';
-            if(paymentMessage) paymentMessage.textContent = '';
+        function clearAuthMessages() {
+            DOMElements.loginAuthMessage.textContent = '';
+            DOMElements.registerAuthMessage.textContent = '';
+            DOMElements.paymentMessage.textContent = '';
         }
-
-        function showPaymentScreen(user) {
-            if(loginScreen) loginScreen.classList.add('hidden');
-            if(registrationScreen) registrationScreen.classList.add('hidden');
-            if(paymentScreen) paymentScreen.classList.remove('hidden');
-            if(paymentOptionsDiv) paymentOptionsDiv.classList.remove('hidden'); 
-            if(pixInfoContainer) pixInfoContainer.classList.add('hidden'); 
-            if (paymentUserInfo) paymentUserInfo.textContent = `Olá, ${user.displayName || user.email}! Escolha um valor para adicionar créditos:`;
-            if (paymentMessage) paymentMessage.textContent = '';
-            if (initiatePixPaymentButton) {
-                initiatePixPaymentButton.disabled = !firebaseInitialized; 
-                initiatePixPaymentButton.textContent = 'Pagar com PIX'; 
-            }
-            if (paymentConfirmedButton) { 
-                paymentConfirmedButton.disabled = !firebaseInitialized; 
-                paymentConfirmedButton.textContent = 'Já Paguei / Continuar';
-            }
-        }
-        
-        if (showLoginLinkFromRegisterElement) { 
-            showLoginLinkFromRegisterElement.addEventListener('click', (e) => {
-                e.preventDefault();
-                switchToLoginScreen();
-            });
-        }
-        
-        if (showRegisterLink) { 
-            showRegisterLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                switchToRegisterScreen();
-            });
-        }
-        
-        if (registrationForm) {
-            registrationForm.addEventListener('submit', async function(event) {
-                event.preventDefault();
-                if (!firebaseInitialized || !auth || !db) { 
-                    displayAuthMessage(registerAuthMessage, "Serviço de autenticação indisponível.");
-                    return;
-                }
-                if(registerAuthMessage) registerAuthMessage.textContent = '';
-                const submitButton = registrationForm.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.textContent = 'Registrando...';
-
-                const fullName = document.getElementById('fullName').value.trim();
-                const email = document.getElementById('regEmail').value.trim();
-                const password = document.getElementById('regPassword').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-                const phone = document.getElementById('phone').value.trim();
-                const cpf = document.getElementById('cpf').value.trim();
-                const street = document.getElementById('street').value.trim();
-                const number = document.getElementById('number').value.trim();
-                const neighborhood = document.getElementById('neighborhood').value.trim();
-                const city = document.getElementById('city').value.trim();
-                const state = document.getElementById('state').value.trim().toUpperCase();
-                const zip = document.getElementById('zip').value.trim();
-
-                if (!fullName || !email || !password || !phone || !cpf || !street || !number || !neighborhood || !city || !state || !zip) {
-                    displayAuthMessage(registerAuthMessage, "Por favor, preencha todos os campos obrigatórios.");
-                    if (firebaseInitialized) submitButton.disabled = false;
-                    submitButton.textContent = 'Cadastrar e Jogar';
-                    return;
-                }
-                if (password !== confirmPassword) {
-                    displayAuthMessage(registerAuthMessage, "As senhas não coincidem!");
-                    if (firebaseInitialized) submitButton.disabled = false;
-                    submitButton.textContent = 'Cadastrar e Jogar';
-                    return;
-                }
-                if (password.length < 6) {
-                    displayAuthMessage(registerAuthMessage, "A senha deve ter pelo menos 6 caracteres.");
-                    if (firebaseInitialized) submitButton.disabled = false;
-                    submitButton.textContent = 'Cadastrar e Jogar';
-                    return;
-                }
-
-                try {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-                    currentUserId = user.uid;
-                    currentUser = user; 
-                    
-                    const userProfileData = {
-                        uid: user.uid,
-                        fullName,
-                        email, 
-                        phone,
-                        cpf,
-                        address: { street, number, neighborhood, city, state, zip },
-                        createdAt: new Date().toISOString(),
-                        credits: 0, 
-                        valorCofre: 0 
-                    };
-                    const userProfileRef = doc(db, "users", user.uid); 
-                    await setDoc(userProfileRef, userProfileData);
-                    await updateProfile(user, { displayName: fullName });
-
-                    console.log("Usuário cadastrado e perfil salvo:", user.uid);
-                    displayAuthMessage(registerAuthMessage, "Cadastro realizado! Prossiga para comprar créditos.", false);
-                    
-                    setTimeout(() => {
-                        showPaymentScreen(user); 
-                    }, 2000);
-
-                } catch (error) {
-                    console.error("Erro ao registrar:", error);
-                    let friendlyMessage = "Erro ao registrar. Tente novamente.";
-                    if (error && error.code) {
-                        switch (error.code) {
-                            case 'auth/email-already-in-use': friendlyMessage = "Este email já está em uso."; break;
-                            case 'auth/weak-password': friendlyMessage = "A senha é muito fraca."; break;
-                            case 'auth/invalid-email': friendlyMessage = "Formato de email inválido."; break;
-                            case 'auth/operation-not-allowed': case 'auth/project-not-found': case 'auth/api-key-not-valid': case 'auth/configuration-not-found':
-                                friendlyMessage = "Problema na configuração do Firebase. Contate o suporte."; break;
-                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo (App Check desativado para teste local)."; break;
-                            default: friendlyMessage = `Erro ao registrar: ${error.message || 'Verifique o console.'}`;
-                        }
-                    } else if (error && typeof error === 'object' && error.message) { 
-                        friendlyMessage = `Erro ao registrar: ${error.message}`;
-                    } else { 
-                        friendlyMessage = "Ocorreu um erro inesperado durante o registro.";
-                    }
-                    displayAuthMessage(registerAuthMessage, friendlyMessage);
-                } finally {
-                    if (firebaseInitialized) submitButton.disabled = false;
-                    submitButton.textContent = 'Cadastrar e Jogar';
-                }
-            });
-        }
-
-        if (loginForm) {
-            loginForm.addEventListener('submit', async function(event) {
-                event.preventDefault();
-                 if (!firebaseInitialized || !auth) { 
-                    displayAuthMessage(loginAuthMessage, "Serviço de autenticação indisponível.");
-                    return;
-                }
-                if(loginAuthMessage) loginAuthMessage.textContent = '';
-                const submitButton = loginForm.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.textContent = 'Entrando...';
-
-                const identifier = document.getElementById('loginEmail').value; 
-                const password = document.getElementById('loginPassword').value;
-
-                if (!identifier || !password) {
-                    displayAuthMessage(loginAuthMessage, "Por favor, preencha o email e a senha.");
-                    if (firebaseInitialized) submitButton.disabled = false;
-                    submitButton.textContent = 'Entrar';
-                    return;
-                }
-                
-                try {
-                    const userCredential = await signInWithEmailAndPassword(auth, identifier, password);
-                    currentUserId = userCredential.user.uid;
-                    currentUser = userCredential.user; 
-                    console.log("Login bem-sucedido:", currentUserId);
-                    displayAuthMessage(loginAuthMessage, "Login bem-sucedido! Escolha um pacote de créditos.", false);
-                    setTimeout(() => {
-                        showPaymentScreen(userCredential.user);
-                    }, 1500);
-
-                } catch (error) {
-                    console.error("Erro ao fazer login:", error);
-                    let friendlyMessage = "Erro desconhecido ao fazer login. Tente novamente.";
-                     if (error && error.code) {
-                        switch (error.code) {
-                            case 'auth/invalid-credential': case 'auth/user-not-found': case 'auth/wrong-password':
-                                friendlyMessage = "Email ou senha inválidos."; break;
-                            case 'auth/invalid-email': friendlyMessage = "Formato de email inválido."; break;
-                            case 'auth/operation-not-allowed': case 'auth/project-not-found': case 'auth/api-key-not-valid': case 'auth/configuration-not-found':
-                                friendlyMessage = "Problema na configuração do Firebase ou serviço indisponível."; break;
-                            case 'auth/network-request-failed': friendlyMessage = "Erro de rede. Verifique sua conexão."; break;
-                            case 'auth/too-many-requests': friendlyMessage = "Muitas tentativas de login. Tente novamente mais tarde."; break;
-                            case 'auth/app-check-token-is-invalid': friendlyMessage = "Falha na verificação do aplicativo (App Check desativado para teste local)."; break; 
-                            default: friendlyMessage = `Erro ao fazer login: ${error.message || 'Verifique o console.'}`;
-                        }
-                    } else if (error && error.message) { 
-                         friendlyMessage = `Erro ao fazer login: ${error.message}`;
-                    } else if (error) { 
-                        friendlyMessage = "Ocorreu um erro inesperado durante o login.";
-                    }
-                    displayAuthMessage(loginAuthMessage, friendlyMessage);
-                } finally {
-                    if (firebaseInitialized) submitButton.disabled = false;
-                    submitButton.textContent = 'Entrar';
-                }
-            });
-        }
-
-        if (initiatePixPaymentButton) {
-            initiatePixPaymentButton.addEventListener('click', () => {
-                if (!firebaseInitialized || !currentUserId || !db) {
-                    displayAuthMessage(paymentMessage, "Erro: Usuário não autenticado ou serviço indisponível.");
-                    return;
-                }
-                const selectedValue = parseFloat(paymentAmountSelect.value);
-                
-                paymentOptionsDiv.classList.add('hidden');
-                pixInfoContainer.classList.remove('hidden');
-                paymentMessage.textContent = 'Escaneie o QR Code ou copie a chave PIX abaixo.';
-                paymentMessage.className = 'auth-message'; 
-
-                const suaChavePix = "obapremiacoes@gmail.com"; 
-                const qrCodeData = `PIX para: ${suaChavePix}, Valor: R$ ${formatAsReal(selectedValue)}`;
-                console.log("Dados para QR Code:", qrCodeData); 
-                pixKeyElement.textContent = suaChavePix;
-                
-                pixQrCodeImg.src = ""; 
-                pixQrCodeImg.alt = "Gerando QR Code...";
-                if(qrCodeErrorMessage) qrCodeErrorMessage.classList.add('hidden');
-
-                pixQrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrCodeData)}`;
-                pixQrCodeImg.classList.remove('hidden');
-                pixQrCodeImg.onerror = () => {
-                    console.error("Erro ao carregar QR Code da API.");
-                    pixQrCodeImg.classList.add('hidden'); 
-                    if(qrCodeErrorMessage) {
-                        qrCodeErrorMessage.textContent = "QR Code indisponível. Use a chave PIX abaixo.";
-                        qrCodeErrorMessage.classList.remove('hidden');
-                    }
-                };
-            });
-        }
-
-        if (pixKeyElement) {
-            pixKeyElement.addEventListener('click', () => {
-                const textToCopy = pixKeyElement.textContent;
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    if(copyFeedback) copyFeedback.textContent = 'Chave PIX copiada!';
-                }).catch(err => {
-                    if(copyFeedback) copyFeedback.textContent = 'Erro ao copiar.';
-                    console.error('Erro ao copiar chave PIX: ', err);
-                });
-                setTimeout(() => { if(copyFeedback) copyFeedback.textContent = ''; }, 2000);
-            });
-        }
-
-        if (paymentConfirmedButton) {
-            paymentConfirmedButton.addEventListener('click', async () => {
-                if (!firebaseInitialized || !currentUserId || !db) {
-                    displayAuthMessage(paymentMessage, "Erro: Usuário não autenticado ou serviço indisponível.");
-                    return;
-                }
-                const selectedValue = parseFloat(paymentAmountSelect.value); 
-                const creditsToGive = selectedValue * 2; 
-
-                displayAuthMessage(paymentMessage, `Confirmando pagamento de R$ ${formatAsReal(selectedValue)}...`, false);
-                paymentConfirmedButton.disabled = true;
-                paymentConfirmedButton.textContent = 'Confirmando...';
-                
-                const adminPhoneNumber = "5511995650925";
-                const whatsappMessage = `Pagamento PIX simulado recebido: Valor R$ ${formatAsReal(selectedValue)}, Chave: obapremiacoes@gmail.com, Usuário: ${currentUser ? (currentUser.displayName || currentUser.email) : 'Desconhecido'}`;
-                console.log(`[SIMULAÇÃO WHATSAPP] Enviando para ${adminPhoneNumber}: ${whatsappMessage}`);
-                
-                try {
-                    const userDocRef = doc(db, "users", currentUserId);
-                    await updateDoc(userDocRef, {
-                        credits: increment(creditsToGive)
-                    });
-
-                    console.log(`${creditsToGive} créditos adicionados para ${currentUserId}`);
-                    window.location.href = gamePageUrl; 
-
-                } catch (error) {
-                    console.error("Erro ao atualizar créditos após confirmação de pagamento:", error);
-                    displayAuthMessage(paymentMessage, "Erro ao processar a confirmação. Tente novamente.", true);
-                     if (firebaseInitialized) paymentConfirmedButton.disabled = false; 
-                     paymentConfirmedButton.textContent = 'Já Paguei / Continuar';
-                } 
-            });
-        }
-
-        if (cancelPaymentLink) {
-            cancelPaymentLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                switchToLoginScreen();
-            });
-        }
-        
-        authScreen.classList.remove('hidden'); 
-        authContent.classList.remove('hidden'); 
-
-        if (firebaseInitialized && auth) {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    currentUserId = user.uid;
-                    currentUser = user; 
-                    console.log("Usuário já logado:", currentUserId, ". Exibindo tela de pagamento.");
-                    authScreen.classList.remove('hidden'); 
-                    showPaymentScreen(user); 
-                } else {
-                    currentUserId = null;
-                    currentUser = null;
-                    console.log("Nenhum usuário logado. Exibindo tela de login.");
-                    authScreen.classList.remove('hidden');
-                    loginScreen.classList.remove('hidden'); 
-                    registrationScreen.classList.add('hidden'); 
-                    paymentScreen.classList.add('hidden');
-                    if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
-                }
-            });
-        } else {
-             // Se o Firebase não inicializou, a mensagem de erro global já foi exibida.
-             // Garante que a tela de login seja a padrão.
-             authScreen.classList.remove('hidden');
-             loginScreen.classList.remove('hidden');
-             registrationScreen.classList.add('hidden');
-             paymentScreen.classList.add('hidden');
-        }
-    </script>
-</body>
-</html>
-
-
-```html
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAME FUN - Jogo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
-    <!-- Script do reCAPTCHA Enterprise comentado
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
-    -->
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 1rem; 
-            color: #e5e7eb;
-            overflow-x: hidden;
-        }
-        .container {
-            width: 100%; 
-            max-width: 480px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .slot-machine {
-            background-color: rgba(55, 65, 81, 0.8);
-            backdrop-filter: blur(12px);
-            padding: 1.5rem; 
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            position: relative; 
-        }
-        .title {
-            font-family: 'Poppins', sans-serif;
-            font-size: clamp(1.8rem, 6vw, 2.5rem); 
-            font-weight: 800;
-            margin-bottom: 1.5rem; 
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3), 0 0 20px rgba(255,255,255,0.2);
-        }
-        .reels { display: flex; justify-content: space-around; margin-bottom: 1.875rem; background-color: rgba(31, 41, 55, 0.7); padding: 1.25rem; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); }
-        .reel { width: clamp(60px, 20vw, 90px); height: clamp(80px, 25vw, 110px); background-color: #4b5563; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; box-shadow: inset 0 2px 8px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.1); transition: box-shadow 0.3s ease; }
-        .reel-image { max-width: 80%; max-height: 80%; object-fit: contain; transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out; }
-        .reel.spinning .reel-image { animation: modernSpinImageAnimation 0.08s linear infinite; box-shadow: none; }
-        .reel.spinning { box-shadow: inset 0 0 15px rgba(167, 139, 250, 0.5), 0 0 10px rgba(167, 139, 250, 0.3); }
-        @keyframes modernSpinImageAnimation { 0% { transform: translateY(-10px) scale(0.95); opacity: 0.7; } 50% { transform: translateY(10px) scale(1); opacity: 1; } 100% { transform: translateY(-10px) scale(0.95); opacity: 0.7; } } 
-        .controls button#spinButton { font-family: 'Poppins', sans-serif; background: linear-gradient(to right, #8b5cf6, #ec4899); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 12px; font-size: clamp(1rem, 4vw, 1.25rem); font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(236, 72, 153, 0.4); text-transform: uppercase; letter-spacing: 1px; }
-        .controls button#spinButton:hover { background: linear-gradient(to right, #a78bfa, #f472b6); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 30px rgba(236, 72, 153, 0.6); transform: translateY(-3px) scale(1.05); }
-        .controls button#spinButton:active { transform: translateY(0) scale(1); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 0 15px rgba(236, 72, 153, 0.3); }
-        .controls button#spinButton:disabled { background: #4b5563; cursor: not-allowed; opacity: 0.6; box-shadow: none; transform: none; }
-        
-        .logout-button {
-            background: linear-gradient(to right, #ef4444, #f97316) !important; 
-            padding: 0.5rem 1rem !important;
-            font-size: 0.875rem !important;
-            margin-top: 0; 
-        }
-        .logout-button:hover {
-            background: linear-gradient(to right, #f87171, #fb923c) !important;
-        }
-
-        .info { margin-top: 1.25rem; font-size: clamp(0.9rem, 3vw, 1.1rem); }
-        .info p { margin: 0.5rem 0; background-color: rgba(31, 41, 55, 0.5); padding: 0.625rem; border-radius: 10px; }
-        .message { font-weight: 600; min-height: 1.75rem; font-size: clamp(1rem, 3.5vw, 1.15rem); transition: color 0.3s ease; }
-        .paytable { margin-top: 1.25rem; background-color: rgba(31, 41, 55, 0.5); padding: 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
-        .paytable h3 { font-family: 'Poppins', sans-serif; font-size: clamp(1.2rem, 4vw, 1.4rem); font-weight: 700; color: #fff; margin-bottom: 0.625rem; text-shadow: 0 0 8px rgba(255,255,255,0.2); }
-        #paytableContent { }
-        .paytable-item { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.3125rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: clamp(0.8rem, 2.5vw, 0.9rem); }
-        .paytable-item:last-child { border-bottom: none; }
-        .paytable-symbol-info { display: flex; align-items: center; }
-        .paytable-symbol-image { width: clamp(30px, 8vw, 35px); height: clamp(30px, 8vw, 35px); object-fit: contain; margin-right: 0.5rem; background-color: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px; }
-        .paytable-payouts { text-align: right; }
-        .paytable-payouts span { display: block; line-height: 1.3; font-size: clamp(0.75rem, 2.2vw, 0.85rem); }
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(17, 24, 39, 0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
-        .modal-content { background-color: #374151; color: #d1d5db; margin: auto; padding: 1.875rem; border: none; border-radius: 16px; width: 85%; max-width: 420px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-        .modal-content h2 { font-family: 'Poppins', sans-serif; font-weight: 700; margin-top: 0; margin-bottom: 1rem; color: #fff; font-size: clamp(1.5rem, 5vw, 1.8rem); }
-        .modal-content p { font-size: clamp(0.9rem, 3vw, 1.1rem); margin-bottom: 1.5rem; }
-        .modal-button { font-family: 'Poppins', sans-serif; background: linear-gradient(to right, #8b5cf6, #ec4899); color: white; padding: 0.75rem 1.25rem; border: none; border-radius: 10px; font-size: clamp(0.9rem, 3.5vw, 1.1rem); font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .modal-button:hover { background: linear-gradient(to right, #a78bfa, #f472b6); box-shadow: 0 6px 15px rgba(0,0,0,0.3); transform: translateY(-2px); }
-        #loadingOverlayGame { position: absolute; inset: 0; background-color: rgba(31, 41, 55, 0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 50; border-radius: 24px; }
-        .loader { border-top-color: #8b5cf6; animation: spinner 1.2s linear infinite; border: 8px solid #4b5563; border-top-width: 8px; border-top-style: solid; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .hidden { display: none !important; } 
-        
-        @media (min-width: 420px) { 
-            .address-grid {
-                grid-template-columns: 1fr; 
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-         <div id="gameScreen" class="slot-machine hidden">
-            <div id="loadingOverlayGame" class="hidden"> 
-                <div class="loader ease-linear rounded-full h-24 w-24 mb-4"></div>
-                <p id="loadingMessageGame" class="text-white text-xl font-semibold text-center px-4">A carregar dados do jogo...</p>
-            </div>
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="title" style="margin-bottom: 0;">GAME FUN</h1> 
-                <button id="logoutButton" class="logout-button controls button">Sair</button>
-            </div>
-            <div class="reels">
-                <div class="reel" id="reel1Container"><img src="" alt="Símbolo do rolo 1" class="reel-image" id="reel1Image"></div>
-                <div class="reel" id="reel2Container"><img src="" alt="Símbolo do rolo 2" class="reel-image" id="reel2Image"></div>
-                <div class="reel" id="reel3Container"><img src="" alt="Símbolo do rolo 3" class="reel-image" id="reel3Image"></div>
-            </div>
-            <div class="controls"> <button id="spinButton" disabled>Girar</button> </div>
-            <div class="info">
-                <p>Créditos: <span id="credits">100</span></p> 
-                <p class="message" id="message">Bem-vindo!</p>
-            </div>
-            <div class="paytable" id="paytableContainer">
-                <h3>Tabela de Prêmios</h3>
-                <div id="paytableContent"></div>
-            </div>
-        </div>
-
-        <div id="gameOverModal" class="modal">
-            <div class="modal-content">
-                <h2 id="modalTitle">FIM DE JOGO!</h2>
-                <p id="modalMessage">Você ficou sem créditos.</p> 
-                <button id="resetButton" class="modal-button">JOGAR NOVAMENTE</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        // Importações do Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { 
-            getAuth, 
-            signOut, 
-            onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // App Check import comentado para desativar temporariamente
-        // import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
-
-
-        let firebaseConfig;
-        const firebaseConfigFromStudio = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
-        const baseHref = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-        const indexPageUrl = baseHref + 'index.html';
-
-
-        if (firebaseConfigFromStudio) {
-            try {
-                const parsedConfig = JSON.parse(firebaseConfigFromStudio);
-                 if (parsedConfig.apiKey && parsedConfig.projectId === "jogosonlie-fadc2" && parsedConfig.appId && parsedConfig.appId === "1:998401435610:web:f4c99f5e8cd92bee0702e3") { 
-                    firebaseConfig = parsedConfig;
-                     console.log("Usando configuração Firebase do Studio em jogo.html.");
-                } else {
-                    console.warn("Configuração do Firebase do Studio inválida, para projeto errado, ou appId não corresponde em jogo.html. Usando fallback hardcoded.");
-                    firebaseConfig = null; 
-                }
-            } catch (e) {
-                console.error("Erro ao parsear __firebase_config em jogo.html, usando fallback hardcoded:", e);
-                firebaseConfig = null; 
-            }
-        }
-        
-        if (!firebaseConfig) { 
-            console.warn("Usando configuração Firebase hardcoded para jogosonlie-fadc2 em jogo.html.");
-            firebaseConfig = { 
-                apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8", 
-                authDomain: "jogosonlie-fadc2.firebaseapp.com",
-                projectId: "jogosonlie-fadc2",
-                storageBucket: "jogosonlie-fadc2.firebasestorage.app", 
-                messagingSenderId: "998401435610", 
-                appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3", 
-                measurementId: "G-7SF242R7P0" 
-            };
-        }
-        console.log("Firebase Config a ser usada (jogo.html):", JSON.parse(JSON.stringify(firebaseConfig)));
-        
-        let app, db, auth, currentUserId = null;
-        let currentUserData = null; 
-        let firebaseInitialized = false;
-
-        const gameScreen = document.getElementById('gameScreen');
-        const loadingOverlayGame = document.getElementById('loadingOverlayGame'); 
-        const loadingMessageGame = document.getElementById('loadingMessageGame'); 
-        const logoutButton = document.getElementById('logoutButton');
-        
-        try {
-            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.appId && firebaseConfig.projectId) {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                firebaseInitialized = true; 
-                console.log("Firebase (Auth/Firestore) inicializado com sucesso na página do jogo!");
-
-                // App Check comentado para teste local. 
-                /*
-                try {
-                    // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; 
-                    const appCheckSiteKey = '6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7'; 
-                    const appCheck = initializeAppCheck(app, {
-                        provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey), 
-                        isTokenAutoRefreshEnabled: true
-                    });
-                    console.log("Firebase App Check inicializado na página do jogo.");
-                } catch (appCheckError) {
-                    console.error("Erro ao inicializar Firebase App Check em jogo.html:", appCheckError);
-                }
-                */
-            } else {
-                let errorMsg = "Configuração final do Firebase inválida em jogo.html.";
-                if (!firebaseConfig?.apiKey) errorMsg += " apiKey ausente.";
-                if (!firebaseConfig?.appId) errorMsg += " appId ausente.";
-                if (!firebaseConfig?.projectId) errorMsg += " projectId ausente.";
-                console.error(errorMsg, firebaseConfig);
-                throw new Error(errorMsg);
-            }
-        } catch (error) {
-            console.error("Erro crítico ao inicializar Firebase em jogo.html:", error.message);
-            if (gameScreen) gameScreen.classList.add('hidden'); 
-            if (loadingOverlayGame) loadingOverlayGame.classList.add('hidden');
-            
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'text-center text-red-400 p-8 bg-gray-800 rounded-lg shadow-xl fixed inset-0 flex flex-col items-center justify-center z-50';
-            errorDiv.innerHTML = `<h2 class="text-2xl font-bold mb-4">Erro de Configuração</h2>
-                                  <p class="mb-4">Não foi possível conectar aos serviços do jogo. Verifique o console para detalhes e certifique-se que a configuração Firebase está correta.</p>
-                                  <a href="${indexPageUrl}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Voltar para Login</a>`;
-            if(document.body) { 
-                document.body.innerHTML = ''; 
-                document.body.appendChild(errorDiv);
-            }
-        }
-
-
-        let symbols = [ 
-            { name: 'Limão', emojiForMessage: '🍋', value: 'LEMON', imageSrc: 'imagens_frutas/limao.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
-            { name: 'Maca', emojiForMessage: '🍎', value: 'APPLE', imageSrc: 'imagens_frutas/Maca.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
-            { name: 'Laranja', emojiForMessage: '🍊', value: 'ORANGE', imageSrc: 'imagens_frutas/Laranja.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
-            { name: 'Uva', emojiForMessage: '🍇', value: 'GRAPE', imageSrc: 'imagens_frutas/uva.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
-            { name: 'Melancia', emojiForMessage: '🍉', value: 'WATERMELON', imageSrc: 'imagens_frutas/melancia.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
-            { name: 'Abacate', emojiForMessage: '🥑', value: 'AVOCADO', imageSrc: 'imagens_frutas/Abacate.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' },  
-            { name: 'Morango', emojiForMessage: '🍓', value: 'STRAWBERRY', imageSrc: 'imagens_frutas/Morango.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }, 
-            { name: 'Banana', emojiForMessage: '🍌', value: 'BANANA', imageSrc: 'imagens_frutas/Banana.png', payout: { three: 5000, two: 0 }, prizeCurrency: 'R$' }  
-        ];
-        const defaultImageSrc = 'imagens_frutas/Trevo.png'; 
-
-        const reel1Image = document.getElementById('reel1Image');
-        const reel2Image = document.getElementById('reel2Image');
-        const reel3Image = document.getElementById('reel3Image');
-        const reelElements = [ 
-            { img: reel1Image, container: document.getElementById('reel1Container'), finalSymbol: null, isStillSpinning: false },
-            { img: reel2Image, container: document.getElementById('reel2Container'), finalSymbol: null, isStillSpinning: false },
-            { img: reel3Image, container: document.getElementById('reel3Container'), finalSymbol: null, isStillSpinning: false }
-        ];
-
-        const spinButton = document.getElementById('spinButton');
-        const creditsDisplay = document.getElementById('credits'); 
-        const messageDisplay = document.getElementById('message');
-        const paytableContent = document.getElementById('paytableContent'); 
-        const gameOverModal = document.getElementById('gameOverModal');
-        const resetButton = document.getElementById('resetButton');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalMessageElement = document.getElementById('modalMessage');
-        
-        let gameCredits = 100; 
-        const gameSpinCost = 1; 
-        let gameIsSpinning = false; 
-        let gameValorCofre = 0; 
-        const valorCofreParaPremio = 15000; 
-        const premioDoCofre = 5000; 
-        let gameForcarTrincaPeloCofre = false;
-        let gameSimboloTrincaCofre = null;
 
         function formatAsReal(value) {
-            return value.toFixed(2).replace('.', ',');
+            return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
-        function populatePaytable() {
-            if (!paytableContent) return;
-            paytableContent.innerHTML = ''; 
-            symbols.forEach(symbol => {
-                if (symbol.payout.three > 0 || symbol.payout.two > 0) {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'paytable-item';
-                    const symbolInfoDiv = document.createElement('div');
-                    symbolInfoDiv.className = 'paytable-symbol-info';
-                    const img = document.createElement('img');
-                    img.src = symbol.imageSrc;
-                    img.alt = symbol.name;
-                    img.className = 'paytable-symbol-image';
-                    symbolInfoDiv.appendChild(img);
-                    const nameSpan = document.createElement('span');
-                    nameSpan.textContent = symbol.name;
-                    symbolInfoDiv.appendChild(nameSpan);
-                    itemDiv.appendChild(symbolInfoDiv); 
-                    const payoutsDiv = document.createElement('div');
-                    payoutsDiv.className = 'paytable-payouts';
-                    
-                    if (symbol.payout.three > 0) {
-                        const threePayoutSpan = document.createElement('span');
-                        if (symbol.prizeCurrency === 'R$') {
-                            threePayoutSpan.textContent = `3x = R$ ${formatAsReal(symbol.payout.three)}`;
-                        } else {
-                            threePayoutSpan.textContent = `3x = ${symbol.payout.three} créditos`;
-                        }
-                        payoutsDiv.appendChild(threePayoutSpan);
-                    }
-
-                    if (symbol.payout.two > 0) { 
-                        const twoPayoutSpan = document.createElement('span');
-                         if (symbol.prizeCurrency === 'R$') {
-                            twoPayoutSpan.textContent = `2x = R$ ${formatAsReal(symbol.payout.two)}`;
-                        } else {
-                            twoPayoutSpan.textContent = `2x = ${symbol.payout.two} créditos`;
-                        }
-                        payoutsDiv.appendChild(twoPayoutSpan);
-                    }
-                    itemDiv.appendChild(payoutsDiv); 
-                    paytableContent.appendChild(itemDiv);
-                }
-            });
+        function setupLogo() {
+            DOMElements.authLogo.onerror = () => {
+                DOMElements.authLogo.classList.add('hidden');
+                DOMElements.textLogoFallback?.classList.remove('hidden');
+            };
+            // Forçar verificação, caso a imagem já esteja em cache e o evento onerror não dispare
+            const img = new Image();
+            img.src = DOMElements.authLogo.src;
+            img.onload = () => { DOMElements.authLogo.classList.remove('hidden'); DOMElements.textLogoFallback?.classList.add('hidden'); };
+            img.onerror = () => { DOMElements.authLogo.classList.add('hidden'); DOMElements.textLogoFallback?.classList.remove('hidden');};
         }
-        
-        async function loadUserData(userId) {
-            if (!db || !firebaseInitialized) { 
-                console.log("DB não inicializado ou Firebase não pronto, usando valores padrão para créditos e cofre.");
-                gameCredits = 100;
-                gameValorCofre = 0; 
-                updateCreditsDisplay(); 
-                return;
+
+        // --- Firebase Initialization ---
+        async function initializeFirebase() {
+            const firebaseConfig = getFirebaseConfig();
+            if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.appId) {
+                displayGlobalFirebaseError("Configuração do Firebase inválida ou incompleta. Verifique apiKey, projectId e appId.");
+                return false;
             }
-            const userDocRef = doc(db, "users", userId);
             try {
-                const docSnap = await getDoc(userDocRef);
-                if (docSnap.exists()) {
-                    currentUserData = docSnap.data();
-                    gameCredits = currentUserData.credits !== undefined ? currentUserData.credits : 100;
-                    gameValorCofre = currentUserData.valorCofre !== undefined ? currentUserData.valorCofre : 0;
-                    console.log(`Dados carregados para ${userId}: Créditos=${gameCredits}, Cofre (interno)=R$${formatAsReal(gameValorCofre)}`);
-                } else {
-                    console.log(`Nenhum perfil encontrado para ${userId} em jogo.html. Criando perfil com valores padrão.`);
-                    gameCredits = 100; 
-                    gameValorCofre = 0; 
-                    const userData = {
-                        credits: gameCredits, 
-                        valorCofre: gameValorCofre,
-                        email: auth && auth.currentUser ? auth.currentUser.email : 'não disponível',
-                        fullName: auth && auth.currentUser ? auth.currentUser.displayName : 'Jogador'
-                    };
-                    await setDoc(userDocRef, userData, { merge: true });
-                }
-                updateCreditsDisplay(); 
+                fbApp = initializeApp(firebaseConfig);
+                fbAuth = getAuth(fbApp);
+                fbDb = getFirestore(fbApp);
+                console.log("Firebase (Auth/Firestore) inicializado com sucesso!");
+                // App Check (descomente e configure se necessário)
+                // initializeAppCheck(fbApp, { provider: new ReCaptchaEnterpriseProvider("YOUR_RECAPTCHA_SITE_KEY"), isTokenAutoRefreshEnabled: true });
+                // console.log("Firebase App Check inicializado.");
+                DOMElements.firebaseError?.classList.add('hidden');
+                disableForms(false);
+                return true;
             } catch (error) {
-                console.error("Erro ao carregar dados do usuário do Firestore:", error);
-                if (error.code === 'permission-denied' || error.code === 'unavailable') {
-                    console.warn("Firestore indisponível ou sem permissão. Usando créditos locais para esta sessão.");
-                } else {
-                     console.error("Erro desconhecido ao carregar dados, usando fallback.");
-                }
-                gameCredits = 100; 
-                gameValorCofre = 0; 
-                updateCreditsDisplay(); 
+                console.error("Erro crítico ao inicializar Firebase:", error);
+                displayGlobalFirebaseError(`Erro Firebase: ${error.message}. Funcionalidades indisponíveis.`);
+                return false;
             }
         }
 
-        async function saveGameData(userIdToSave) {
-            if (!db || !userIdToSave || !firebaseInitialized) return; 
-            const userDocRef = doc(db, "users", userIdToSave);
+        // --- Authentication Logic ---
+        async function handleRegistration(event) {
+            event.preventDefault();
+            const form = event.target;
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Registrando...';
+
+            const data = new FormData(form);
+            const fullName = data.get('fullName').trim();
+            const email = data.get('regEmail').trim();
+            const password = data.get('regPassword');
+            const confirmPassword = data.get('confirmPassword');
+            const phone = data.get('phone').trim();
+            const cpf = data.get('cpf').trim();
+            // Endereço
+            const street = data.get('street').trim();
+            const number = data.get('number').trim();
+            const neighborhood = data.get('neighborhood').trim();
+            const city = data.get('city').trim();
+            const state = data.get('state').trim().toUpperCase();
+            const zip = data.get('zip').trim();
+
+            if (password !== confirmPassword) {
+                displayMessage(DOMElements.registerAuthMessage, "As senhas não coincidem!");
+                submitButton.disabled = false;
+                submitButton.textContent = 'Cadastrar e Jogar';
+                return;
+            }
+            // Adicionar mais validações se necessário (CPF, Telefone, etc.)
+
             try {
-                await setDoc(userDocRef, { 
-                    credits: gameCredits, 
-                    valorCofre: gameValorCofre 
-                }, { merge: true });
-                console.log(`Dados do jogo (créditos e cofre) salvos para o usuário: ${userIdToSave}`);
+                const userCredential = await createUserWithEmailAndPassword(fbAuth, email, password);
+                const user = userCredential.user;
+                currentUserID = user.uid;
+                currentUserDisplayName = fullName;
+
+                await updateProfile(user, { displayName: fullName });
+
+                const userProfileData = {
+                    uid: user.uid, fullName, email, phone, cpf,
+                    address: { street, number, neighborhood, city, state, zip },
+                    createdAt: new Date().toISOString(),
+                    credits: 0, valorCofre: 0
+                };
+                await setDoc(doc(fbDb, "users", user.uid), userProfileData);
+                
+                console.log("Usuário cadastrado e perfil salvo:", user.uid);
+                displayMessage(DOMElements.registerAuthMessage, "Cadastro realizado! Prossiga para comprar créditos.", false);
+                setTimeout(() => showScreen('paymentScreen'), 2000);
+                updatePaymentScreenUserInfo();
+
             } catch (error) {
-                console.error("Erro ao salvar dados do jogo no Firestore:", error);
+                console.error("Erro ao registrar:", error);
+                const friendlyMessage = getFirebaseAuthErrorMessage(error);
+                displayMessage(DOMElements.registerAuthMessage, friendlyMessage);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Cadastrar e Jogar';
             }
         }
 
-        function initializeGamePage() { 
-            if (!loadingOverlayGame || !spinButton || !messageDisplay || !reelElements.every(r => r.img)) {
-                console.error("Elementos essenciais do jogo não encontrados no DOM.");
-                if (gameScreen) gameScreen.classList.add('hidden');
+        async function handleLogin(event) {
+            event.preventDefault();
+            const form = event.target;
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Entrando...';
+
+            const email = DOMElements.loginEmailInput.value.trim();
+            const password = DOMElements.loginPasswordInput.value;
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(fbAuth, email, password);
+                currentUserID = userCredential.user.uid;
+                currentUserDisplayName = userCredential.user.displayName || email;
+                
+                console.log("Login bem-sucedido:", currentUserID);
+                displayMessage(DOMElements.loginAuthMessage, "Login bem-sucedido! Carregando...", false);
+                // O onAuthStateChanged cuidará de mostrar a tela de pagamento ou jogo.
+                // Se já for para a tela de pagamento:
+                setTimeout(() => showScreen('paymentScreen'), 1500);
+                updatePaymentScreenUserInfo();
+
+            } catch (error) {
+                console.error("Erro ao fazer login:", error);
+                const friendlyMessage = getFirebaseAuthErrorMessage(error);
+                displayMessage(DOMElements.loginAuthMessage, friendlyMessage);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Entrar';
+            }
+        }
+
+        function getFirebaseAuthErrorMessage(error) {
+            switch (error.code) {
+                case 'auth/email-already-in-use': return "Este email já está em uso.";
+                case 'auth/weak-password': return "A senha é muito fraca (mínimo 6 caracteres).";
+                case 'auth/invalid-email': return "Formato de email inválido.";
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                case 'auth/invalid-credential': return "Email ou senha inválidos.";
+                case 'auth/too-many-requests': return "Muitas tentativas de login. Tente novamente mais tarde.";
+                // Adicione outros códigos de erro conforme necessário
+                default: return `Erro: ${error.message || 'Ocorreu um problema.'}`;
+            }
+        }
+
+        // --- Payment Logic ---
+        function updatePaymentScreenUserInfo() {
+            DOMElements.paymentUserInfo.textContent = `Olá, ${currentUserDisplayName}! Escolha um valor para adicionar créditos:`;
+            DOMElements.paymentOptionsDiv.classList.remove('hidden');
+            DOMElements.pixInfoContainer.classList.add('hidden');
+            DOMElements.paymentMessage.textContent = '';
+        }
+
+        function handleInitiatePixPayment() {
+            if (!currentUserID) {
+                displayMessage(DOMElements.paymentMessage, "Erro: Usuário não autenticado.");
                 return;
             }
+            const selectedValue = parseFloat(DOMElements.paymentAmountSelect.value);
+            const qrCodeData = `PIX para: ${PIX_KEY}, Valor: ${formatAsReal(selectedValue)}`;
 
-            loadingOverlayGame.classList.remove('hidden');
-            loadingOverlayGame.style.display = 'flex';
-            spinButton.disabled = true;
-            loadingMessageGame.textContent = 'A carregar dados...'; 
+            DOMElements.paymentOptionsDiv.classList.add('hidden');
+            DOMElements.pixInfoContainer.classList.remove('hidden');
+            DOMElements.paymentMessage.textContent = 'Escaneie o QR Code ou copie a chave PIX abaixo.';
             
-            gameForcarTrincaPeloCofre = false;
-            gameSimboloTrincaCofre = null;
-
-            reelElements.forEach(reel => { if(reel.img) reel.img.src = defaultImageSrc; });
-            
-            populatePaytable(); 
-
-            if (currentUserId && firebaseInitialized) { 
-                loadUserData(currentUserId).then(() => {
-                     setTimeout(() => {
-                        loadingOverlayGame.style.display = 'none';
-                        if (gameCredits >= gameSpinCost) { 
-                            spinButton.disabled = false;
-                        } else {
-                            spinButton.disabled = true; 
-                            showModal("SEM CRÉDITOS", "Você não tem créditos suficientes para o primeiro giro. Reinicie para jogar."); 
-                        }
-                        messageDisplay.textContent = gameCredits >= gameSpinCost ? 'CLIQUE EM GIRAR!' : 'SEM CRÉDITOS'; 
-                    }, 500); 
-                });
-            } else {
-                console.log("Condição inesperada em initializeGamePage. Firebase init:", firebaseInitialized, "UserID:", currentUserId);
-                loadingOverlayGame.style.display = 'none';
-                if(messageDisplay) messageDisplay.textContent = 'Erro ao carregar. Tente o login.';
-                if(spinButton) spinButton.disabled = true;
-                if (!currentUserId && firebaseInitialized) { 
-                    window.location.href = indexPageUrl;
-                }
-            }
+            DOMElements.pixKeyDisplay.textContent = PIX_KEY;
+            DOMElements.pixQrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrCodeData)}`;
+            DOMElements.pixQrCodeImg.alt = "QR Code PIX";
+            DOMElements.qrCodeErrorMessage.classList.add('hidden');
+            DOMElements.pixQrCodeImg.onerror = () => {
+                console.error("Erro ao carregar QR Code da API.");
+                DOMElements.pixQrCodeImg.classList.add('hidden');
+                DOMElements.qrCodeErrorMessage.textContent = "QR Code indisponível. Use a chave PIX.";
+                DOMElements.qrCodeErrorMessage.classList.remove('hidden');
+            };
         }
 
-        function getRandomSymbol() {
-            return symbols[Math.floor(Math.random() * symbols.length)];
-        }
-
-        async function spinReels() {
-            if (gameIsSpinning) return; 
-            if (gameCredits < gameSpinCost) {
-                showModal("SEM CRÉDITOS", "Você não tem créditos suficientes para girar."); 
+        async function handlePaymentConfirmation() {
+            if (!currentUserID) {
+                displayMessage(DOMElements.paymentMessage, "Erro: Usuário não autenticado.");
                 return;
             }
-            gameIsSpinning = true;
-            spinButton.disabled = true;
-            
-            gameValorCofre += 0.50; 
-            gameCredits -= gameSpinCost;
-            
-            if (currentUserId && db && firebaseInitialized) { 
-                await saveGameData(currentUserId); 
+            const selectedValue = parseFloat(DOMElements.paymentAmountSelect.value);
+            const creditsToGive = selectedValue * 2; // Regra: R$1 = 2 créditos
+
+            displayMessage(DOMElements.paymentMessage, `Confirmando pagamento de ${formatAsReal(selectedValue)}...`, false);
+            DOMElements.paymentConfirmedButton.disabled = true;
+            DOMElements.paymentConfirmedButton.textContent = 'Confirmando...';
+
+            console.warn("ALERTA DE SEGURANÇA: A adição de créditos está sendo feita no CLIENT-SIDE. Isso é inseguro para produção.");
+            console.log(`Simulando notificação para admin: Pagamento PIX R$ ${selectedValue} para ${currentUserDisplayName} (${currentUserID})`);
+
+            try {
+                const userDocRef = doc(fbDb, "users", currentUserID);
+                await updateDoc(userDocRef, { credits: increment(creditsToGive) });
+                console.log(`${creditsToGive} créditos adicionados para ${currentUserID}`);
+                // Redirecionar para a página do jogo
+                window.location.href = gamePageUrl;
+            } catch (error) {
+                console.error("Erro ao atualizar créditos:", error);
+                displayMessage(DOMElements.paymentMessage, "Erro ao processar a confirmação. Tente novamente.", true);
+            } finally {
+                DOMElements.paymentConfirmedButton.disabled = false;
+                DOMElements.paymentConfirmedButton.textContent = 'Já Paguei / Continuar';
             }
-            // console.log(`[ADMIN] Valor no cofre: R$ ${formatAsReal(gameValorCofre)}`); 
+        }
 
-            updateCreditsDisplay();
-            messageDisplay.textContent = 'GIRANDO...';
-            messageDisplay.style.color = '#a78bfa';
-
-            if (gameValorCofre >= valorCofreParaPremio && !gameForcarTrincaPeloCofre) {
-                gameForcarTrincaPeloCofre = true;
-                gameSimboloTrincaCofre = getRandomSymbol(); 
-                console.log(`COFRE ATINGIU R$ ${formatAsReal(valorCofreParaPremio)}! Próximo giro será prêmio de ${gameSimboloTrincaCofre.name}.`);
-            }
-
-            reelElements.forEach(reel => {
-                if (reel.container) reel.container.classList.add('spinning');
-                reel.isStillSpinning = true;
-                reel.finalSymbol = null; 
+        function copyPixKey() {
+            navigator.clipboard.writeText(PIX_KEY).then(() => {
+                DOMElements.copyFeedback.textContent = 'Chave PIX copiada!';
+            }).catch(err => {
+                DOMElements.copyFeedback.textContent = 'Erro ao copiar.';
+                console.error('Erro ao copiar chave PIX: ', err);
             });
+            setTimeout(() => { DOMElements.copyFeedback.textContent = ''; }, 2000);
+        }
+
+        // --- Event Listeners ---
+        function setupEventListeners() {
+            DOMElements.loginForm?.addEventListener('submit', handleLogin);
+            DOMElements.registrationForm?.addEventListener('submit', handleRegistration);
             
-            const reelStopTimes = [2000, 3000, 4000]; 
-            let spinningReelsCount = reelElements.length;
-            let elapsedTimes = [0, 0, 0]; 
-
-            function animateReel(index) {
-                if (!reelElements[index].isStillSpinning) return;
-                const randomSymbolForAnimation = getRandomSymbol();
-                if (reelElements[index].img) {
-                    if (randomSymbolForAnimation && randomSymbolForAnimation.imageSrc) { 
-                        reelElements[index].img.src = randomSymbolForAnimation.imageSrc;
-                    } else {
-                        reelElements[index].img.src = defaultImageSrc; 
-                    }
-                }
-                elapsedTimes[index] += 80; 
-                if (elapsedTimes[index] >= reelStopTimes[index]) {
-                    reelElements[index].isStillSpinning = false;
-                    reelElements[index].finalSymbol = gameForcarTrincaPeloCofre ? gameSimboloTrincaCofre : getRandomSymbol(); 
-                    if (reelElements[index].img) {
-                        if (reelElements[index].finalSymbol && reelElements[index].finalSymbol.imageSrc) {
-                            reelElements[index].img.src = reelElements[index].finalSymbol.imageSrc;
-                        } else {
-                            reelElements[index].img.src = defaultImageSrc;
-                        }
-                    }
-                    if(reelElements[index].container) reelElements[index].container.classList.remove('spinning');
-                    spinningReelsCount--;
-                    if (spinningReelsCount === 0) {
-                        finishSpin();
-                    }
-                } else {
-                    setTimeout(() => animateReel(index), 80);
-                }
-            }
-            reelElements.forEach((_, index) => animateReel(index));
-        }
-
-        function finishSpin() {
-            let results;
-            if (gameForcarTrincaPeloCofre && gameSimboloTrincaCofre) {
-                results = [gameSimboloTrincaCofre, gameSimboloTrincaCofre, gameSimboloTrincaCofre];
-                reelElements.forEach(reel => { if(reel.img) reel.img.src = gameSimboloTrincaCofre.imageSrc; });
-            } else {
-                results = reelElements.map(reel => reel.finalSymbol || getRandomSymbol()); 
-                results.forEach((symbol, index) => {
-                    if (reelElements[index].img) {
-                        if (symbol && symbol.imageSrc) {
-                            reelElements[index].img.src = symbol.imageSrc;
-                        } else {
-                            reelElements[index].img.src = defaultImageSrc;
-                        }
-                    }
-                });
-            }
-            checkWin(results);
-            gameIsSpinning = false;
-            if (spinButton) {
-                if (gameCredits >= gameSpinCost) { 
-                    spinButton.disabled = false;
-                } else {
-                    spinButton.disabled = true; 
-                    setTimeout(() => {
-                        if(gameCredits < gameSpinCost) { 
-                             showModal("FIM DE JOGO!", "Você ficou sem créditos."); 
-                        }
-                    }, 1000);
-                }
-            }
-        }
-
-        function checkWin(results) {
-            if (!results || results.length < 3 || !results[0] || !results[1] || !results[2] ||
-                results.some(r => !r || typeof r.value === 'undefined' || typeof r.payout === 'undefined')) { 
-                console.error("Resultados inválidos em checkWin:", results);
-                if(messageDisplay) {
-                    messageDisplay.textContent = "Erro ao verificar. Tente novamente.";
-                    messageDisplay.style.color = '#f87171'; 
-                }
-                return;
-            }
-            const [s1, s2, s3] = results;
-            let winAmount = 0;
-            let winningSymbol = null; 
-            let winMessage = "TENTE NOVAMENTE!";
-
-            if (s1.value === s2.value && s2.value === s3.value) { 
-                winAmount = s1.payout.three; 
-                if (winAmount > 0) { 
-                   winningSymbol = s1;
-                   winMessage = `Você Ganhou! R$ ${formatAsReal(winAmount)} Reais`;
-                }
-            }
-
-            if (winAmount > 0) {
-                if (gameForcarTrincaPeloCofre && winningSymbol && winAmount === premioDoCofre) {
-                    gameValorCofre -= premioDoCofre; 
-                    console.log(`[ADMIN] Prêmio de R$ ${formatAsReal(premioDoCofre)} pago pelo cofre. Novo valor do cofre (interno): R$ ${formatAsReal(gameValorCofre)}`);
-                    gameForcarTrincaPeloCofre = false; 
-                    gameSimboloTrincaCofre = null;
-                    if(currentUserId && db && firebaseInitialized) { 
-                        saveGameData(currentUserId); 
-                    }
-                }
-                if(messageDisplay) {
-                    messageDisplay.textContent = winMessage;
-                    messageDisplay.style.color = '#34d399';
-                }
-            } else {
-                if(messageDisplay) {
-                    messageDisplay.textContent = "TENTE NOVAMENTE!"; 
-                    messageDisplay.style.color = '#f87171';
-                }
-            }
-            updateCreditsDisplay(); 
-
-            if (gameCredits < gameSpinCost && winAmount === 0) { 
-                 setTimeout(() => {
-                    if(gameCredits < gameSpinCost) {
-                        showModal("FIM DE JOGO!", "Você ficou sem créditos."); 
-                        if(spinButton) spinButton.disabled = true;
-                    }
-                }, 1500);
-            }
-        }
-
-        function updateCreditsDisplay() { 
-            if(creditsDisplay) creditsDisplay.textContent = gameCredits; 
-        }
-
-        function showModal(title, message) {
-            if (!modalTitle || !modalMessageElement || !gameOverModal) return; 
-            modalTitle.textContent = title;
-            modalMessageElement.textContent = message; 
-            gameOverModal.style.display = 'flex';
-        }
-
-        function hideModal() {
-            if (gameOverModal) gameOverModal.style.display = 'none';
-        }
-
-        function resetGame() {
-            gameCredits = 100; 
-            gameForcarTrincaPeloCofre = false;
-            gameSimboloTrincaCofre = null;
-            updateCreditsDisplay();
-            if (currentUserId && db) { 
-                saveGameData(currentUserId); 
-            } else { 
-                gameValorCofre = 0; 
-                console.log("Jogo resetado. Cofre zerado (sessão local).");
-            }
-
-            if(messageDisplay) {
-                messageDisplay.textContent = 'BOA SORTE!';
-                messageDisplay.style.color = '#e5e7eb';
-            }
+            DOMElements.showRegisterLink?.addEventListener('click', (e) => { e.preventDefault(); showScreen('registrationScreen'); });
+            DOMElements.showLoginLinkFromRegister?.addEventListener('click', (e) => { e.preventDefault(); showScreen('loginScreen'); });
             
-            reelElements.forEach(reel => {
-                if(reel.img) reel.img.src = defaultImageSrc;
-            });
+            DOMElements.initiatePixPaymentButton?.addEventListener('click', handleInitiatePixPayment);
+            DOMElements.pixKeyDisplay?.addEventListener('click', copyPixKey);
+            DOMElements.paymentConfirmedButton?.addEventListener('click', handlePaymentConfirmation);
+            DOMElements.cancelPaymentLink?.addEventListener('click', (e) => { e.preventDefault(); showScreen('loginScreen'); });
+        }
+
+        // --- Application Initialization ---
+        async function main() {
+            DOMElements.authScreen.classList.remove('hidden');
+            setupLogo();
             
-            if (spinButton && gameCredits >= gameSpinCost) { 
-                 spinButton.disabled = false;
+            const firebaseReady = await initializeFirebase();
+            if (!firebaseReady) {
+                // Mensagem de erro global já foi exibida, forms desabilitados.
+                // Poderia mostrar uma tela de erro mais proeminente se desejado.
+                return; 
             }
-            hideModal();
-        }
-        
-        if(logoutButton) {
-            logoutButton.addEventListener('click', async () => {
-                if (!auth || !firebaseInitialized) return; 
-                try {
-                    if (currentUserId && db) {
-                        await saveGameData(currentUserId); 
-                    }
-                    await signOut(auth);
-                    console.log("Usuário deslogado.");
-                    window.location.href = indexPageUrl; 
-                } catch (error) {
-                    console.error("Erro ao fazer logout:", error);
-                    alert("Erro ao sair. Tente novamente.");
-                }
-            });
-        }
 
-        if(spinButton) spinButton.addEventListener('click', spinReels);
-        if(resetButton) resetButton.addEventListener('click', resetGame);
+            setupEventListeners();
 
-        if (auth && firebaseInitialized) { 
-            onAuthStateChanged(auth, (user) => {
+            onAuthStateChanged(fbAuth, (user) => {
                 if (user) {
-                    currentUserId = user.uid;
-                    console.log("Usuário logado na página do jogo:", currentUserId);
-                    if(gameScreen) gameScreen.classList.remove('hidden'); 
-                    initializeGamePage(); 
+                    currentUserID = user.uid;
+                    currentUserDisplayName = user.displayName || user.email; // Preferir displayName
+                    console.log("Usuário conectado:", currentUserID, ". Verificando dados...");
+                    
+                    // Verifica se o usuário tem créditos, se não, vai para pagamento.
+                    // Se tiver créditos, pode ir direto para o jogo (opcional, aqui está indo para pagamento por padrão após login/registro).
+                    getDoc(doc(fbDb, "users", user.uid)).then(docSnap => {
+                        if (docSnap.exists() && docSnap.data().credits > 0) {
+                            // Opção: Se já tem créditos, talvez ir direto para o jogo?
+                            // window.location.href = gamePageUrl; 
+                            // Por ora, o fluxo padrão leva à tela de pagamento após login.
+                            console.log("Usuário tem créditos, mas fluxo atual leva para tela de pagamento.");
+                            showScreen('paymentScreen');
+                            updatePaymentScreenUserInfo();
+                        } else {
+                            console.log("Usuário sem créditos ou novo, exibindo tela de pagamento.");
+                            showScreen('paymentScreen');
+                            updatePaymentScreenUserInfo();
+                        }
+                    }).catch(error => {
+                        console.error("Erro ao buscar dados do usuário:", error);
+                        showScreen('paymentScreen'); // Fallback para tela de pagamento
+                        updatePaymentScreenUserInfo();
+                    });
+
                 } else {
-                    console.log("Nenhum usuário logado, redirecionando para index.html");
-                    window.location.href = indexPageUrl; 
+                    currentUserID = null;
+                    currentUserDisplayName = '';
+                    console.log("Nenhum usuário conectado. Exibindo tela de login.");
+                    showScreen('loginScreen');
                 }
+                DOMElements.authScreen.classList.remove('hidden'); // Garante que a tela principal de autenticação está visível
             });
-        } else if (!firebaseInitialized) {
-            console.log("Firebase não inicializado, jogo.html não pode carregar (onAuthStateChanged não será configurado).");
-        } else { 
-             console.log("Objeto Auth não disponível em jogo.html, mas Firebase foi sinalizado como inicializado. Redirecionando para login.");
-             window.location.href = indexPageUrl; 
         }
 
+        main(); // Start the application
     </script>
 </body>
 </html>
