@@ -12,12 +12,12 @@
             background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             background-size: cover; background-position: center; background-attachment: fixed;
             display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; margin: 0; padding: 1rem; /* Padding geral para telas pequenas */
+            min-height: 100vh; margin: 0; padding: 1rem;
             color: #e5e7eb; overflow-x: hidden;
         }
         .container {
             width: 100%;
-            max-width: 400px; /* Limita a largura máxima do formulário */
+            max-width: 400px; /* Mantém o formulário com largura controlada */
             margin-left: auto;
             margin-right: auto;
         }
@@ -25,40 +25,40 @@
             background-color: rgba(30, 30, 50, 0.85);
             background-image: url('imagens_interface/fundo-auth.png'); background-size: cover; background-position: center;
             backdrop-filter: blur(8px);
-            padding: 1rem; /* Padding base para telas pequenas */
+            padding: 1rem; /* Padding base */
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255,255,255,0.03);
             text-align: left; border: 1px solid rgba(139, 92, 246, 0.25); position: relative;
         }
         .auth-logo-container { text-align: center; margin-bottom: 0.75rem; }
         #authLogo {
-            max-width: 120px; /* Tamanho base para o logo */
+            max-width: 120px; 
             height: auto; margin-bottom: 0.25rem;
             filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
         }
-        .text-logo {
+        .text-logo { /* "GAME FUN" */
             font-family: 'Russo One', sans-serif;
-            /* Ajuste no clamp: min, preferido (baseado em viewport), max */
-            font-size: clamp(1.5rem, 4.5vw, 1.8rem); /* Max reduzido */
+            font-size: clamp(1.6rem, 5vw, 2rem); /* Max um pouco maior para destaque */
             color: #fff; text-transform: uppercase; letter-spacing: 1.5px;
             text-shadow: 0 0 3px #8b5cf6, 0 0 6px #8b5cf6, 0 0 10px #ec4899, 0 0 14px #ec4899;
         }
-        h2.screen-title {
+        h2.screen-title { /* "Cadastro de Jogador", "Login", etc. */
             font-family: 'Poppins', sans-serif;
-            font-size: clamp(1.1rem, 3.2vw, 1.3rem); /* Max reduzido */
-            font-weight: 700; color: #e0e0e0; margin-bottom: 0.75rem; text-align: center;
+            font-size: clamp(1.1rem, 3.5vw, 1.3rem); 
+            font-weight: 700; color: #e0e0e0; margin-bottom: 1rem; text-align: center;
         }
-        .form-group { margin-bottom: 0.6rem; } /* Margem reduzida */
+        .form-group { margin-bottom: 0.75rem; } /* Espaço entre os campos */
         .form-group label {
-            display: block; margin-bottom: 0.15rem; font-weight: 600;
-            font-size: 0.65rem; /* Tamanho base da label */
+            display: block; margin-bottom: 0.25rem; /* Espaço entre label e input */
+            font-weight: 600;
+            font-size: 0.7rem; /* Tamanho base da label */
             color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.5px;
         }
         .form-group input, .form-group select {
-            width: 100%; padding: 0.5rem; /* Padding reduzido */
+            width: 100%; padding: 0.6rem 0.5rem; /* Padding horizontal e vertical */
             border-radius: 8px; border: 1px solid #4a5568;
             background-color: rgba(23, 30, 48, 0.7); color: #e5e7eb;
-            font-size: 0.8rem; /* Tamanho da fonte do input */
+            font-size: 0.85rem; /* Tamanho da fonte do input */
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .form-group input::placeholder { color: #9ca3af; }
@@ -66,19 +66,18 @@
             outline: none; border-color: #a78bfa;
             box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4), 0 0 10px rgba(167, 139, 250, 0.3);
         }
-        .address-grid { display: grid; grid-template-columns: 1fr; gap: 0.5rem; }
-        /* A media query @media (min-width: 420px) para .address-grid foi removida por ser redundante */
-
-        .switch-auth-link { text-align: center; margin-top: 0.75rem; font-size: 0.75rem; }
+        .address-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; } /* Aumentar gap se necessário */
+        
+        .switch-auth-link { text-align: center; margin-top: 1rem; font-size: 0.8rem; }
         .switch-auth-link a { color: #c4b5fd; text-decoration: underline; cursor: pointer; font-weight: 600; }
         .switch-auth-link a:hover { color: #fff; }
 
         .submit-button, .payment-button, .pix-confirm-button {
-            margin-top: 0.75rem; width: 100%; font-family: 'Poppins', sans-serif;
+            margin-top: 1rem; width: 100%; font-family: 'Poppins', sans-serif;
             background: linear-gradient(to right, #7c3aed, #db2777); color: white;
-            padding: 0.6rem 1.2rem; /* Padding ajustado */
+            padding: 0.7rem 1.4rem; 
             border: none; border-radius: 10px;
-            font-size: clamp(0.8rem, 2.8vw, 0.9rem); /* Max reduzido */
+            font-size: clamp(0.85rem, 3vw, 0.95rem); 
             font-weight: 700; cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 15px rgba(219, 39, 119, 0.4);
@@ -91,48 +90,54 @@
         }
         .submit-button:disabled { background: #4b5563 !important; cursor: not-allowed; opacity: 0.6; box-shadow: none; transform: none; }
 
-        .auth-message { text-align: center; margin-top: 0.75rem; font-size: 0.75rem; min-height: 1rem; }
+        .auth-message { text-align: center; margin-top: 0.75rem; font-size: 0.8rem; min-height: 1.1rem; }
         .auth-message.error { color: #f87171; }
         .auth-message.success { color: #34d399; }
 
         .hidden { display: none !important; }
 
         #pixInfoContainer { margin-top: 1rem; padding: 0.75rem; background-color: rgba(255, 255, 255, 0.1); border-radius: 10px; text-align: center; }
-        #pixQrCode { width: 130px; height: 130px; margin: 0 auto 0.75rem; background-color: white; padding: 5px; border-radius: 8px; display: block; }
-        #pixKeyDisplay { font-weight: 600; word-break: break-all; background-color: rgba(0,0,0,0.2); padding: 0.4rem; border-radius: 6px; margin-bottom: 0.4rem; cursor: pointer; user-select: all; font-size: 0.75rem;}
+        #pixQrCode { width: 140px; height: 140px; margin: 0 auto 0.75rem; background-color: white; padding: 5px; border-radius: 8px; display: block; }
+        #pixKeyDisplay { font-weight: 600; word-break: break-all; background-color: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 6px; margin-bottom: 0.5rem; cursor: pointer; user-select: all; font-size: 0.8rem;}
         #pixKeyDisplay:hover { background-color: rgba(0,0,0,0.4); }
-        .copy-feedback { font-size: 0.7rem; color: #a5b4fc; min-height: 0.9rem; margin-top: 0.2rem; margin-bottom: 0.6rem; }
+        .copy-feedback { font-size: 0.75rem; color: #a5b4fc; min-height: 1rem; margin-top: 0.25rem; margin-bottom: 0.75rem; }
 
-        /* Media Query para telas um pouco maiores (ex: tablets em modo paisagem, desktops pequenos) */
-        /* O container principal ainda será max-width: 400px, mas podemos refinar os elementos internos */
-        @media (min-width: 640px) { /* Tailwind 'sm' breakpoint */
+        /* Media Query para telas maiores (tablets em paisagem, desktops) */
+        @media (min-width: 768px) { /* Ponto de quebra para desktop, pode ser 640px (sm) ou 768px (md) */
             #authScreen {
-                padding: 1.25rem; /* Restaura padding um pouco maior se houver mais espaço na tela */
+                padding: 2rem 1.5rem; /* Aumenta o padding interno do card em desktop */
             }
             #authLogo {
-                max-width: 150px; /* Logo pode ser um pouco maior */
+                max-width: 160px; /* Logo pode ser um pouco maior */
             }
-            .text-logo {
-                font-size: 2rem; /* Define um tamanho fixo maior para o logo em texto */
+            .text-logo { /* "GAME FUN" */
+                font-size: 2.2rem; 
             }
-             h2.screen-title {
-                font-size: 1.5rem; /* Tamanho fixo para o título da tela */
+            h2.screen-title { /* "Cadastro de Jogador", etc */
+                font-size: 1.6rem; /* Título da seção um pouco maior */
+                margin-bottom: 1.25rem;
+            }
+            .form-group {
+                margin-bottom: 1rem; /* Mais espaço vertical entre os campos */
             }
             .form-group label {
-                font-size: 0.7rem;
+                font-size: 0.75rem; /* Label um pouco maior e mais legível */
+                margin-bottom: 0.3rem;
             }
             .form-group input, .form-group select {
-                font-size: 0.85rem;
-                padding: 0.6rem;
+                font-size: 0.9rem; /* Fonte do input maior */
+                padding: 0.8rem 0.75rem; /* Inputs mais altos e com mais padding interno */
             }
             .submit-button, .payment-button, .pix-confirm-button {
-                font-size: 1rem;
-                padding: 0.7rem 1.4rem;
+                font-size: 1rem; /* Botão com fonte maior */
+                padding: 0.8rem 1.5rem; /* Botão mais robusto */
+                margin-top: 1.5rem;
             }
              #pixQrCode {
-                width: 150px; height: 150px;
+                width: 160px; height: 160px; margin-bottom: 1rem;
             }
-            #pixKeyDisplay { font-size: 0.8rem; }
+            #pixKeyDisplay { font-size: 0.9rem; padding: 0.6rem; }
+            .copy-feedback { font-size: 0.8rem; margin-bottom: 1rem;}
         }
     </style>
 </head>
@@ -413,7 +418,6 @@
                 };
                 await setDoc(doc(fbDb, "users", user.uid), userProfileData);
                 console.log("Usuário cadastrado:", user.uid);
-                // onAuthStateChanged cuidará do fluxo
             } catch (error) {
                 console.error("Erro ao registrar:", error);
                 displayMessage(DOMElements.registerAuthMessage, getFirebaseAuthErrorMessage(error));
@@ -434,7 +438,6 @@
             try {
                 await signInWithEmailAndPassword(fbAuth, email, password);
                 console.log("Tentativa de login para:", email);
-                // onAuthStateChanged cuidará do fluxo
             } catch (error) {
                 console.error("Erro ao fazer login:", error);
                 displayMessage(DOMElements.loginAuthMessage, getFirebaseAuthErrorMessage(error));
@@ -544,7 +547,7 @@
                 }
             }
             
-            showScreen('loginScreen'); // Sempre começa na tela de login
+            showScreen('loginScreen');
             setupEventListeners();
 
             onAuthStateChanged(fbAuth, (user) => {
