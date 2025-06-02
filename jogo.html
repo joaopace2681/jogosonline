@@ -3,170 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAME FUN - Caça-Frutas Online</title>
+    <title>GAME FUN - Caça-Frutas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            /* Mantido o gradiente do index.html para consistência, ajuste se preferir o anterior */
             background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 1rem; /* Adicionado padding para telas menores */
+            padding: 0.75rem;
             color: #e5e7eb;
             overflow-x: hidden;
         }
-        .container { /* Adicionado um container para centralizar e limitar a largura */
+        .container-game { /* Similar ao .container do index.html */
             width: 100%;
-            max-width: 480px; /* max-width do slot-machine */
+            max-width: 420px; /* Um pouco maior para o jogo */
             margin-left: auto;
             margin-right: auto;
         }
         .slot-machine {
-            background-color: rgba(55, 65, 81, 0.8);
-            backdrop-filter: blur(12px);
-            padding: 25px;
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            background-color: rgba(30, 30, 50, 0.75);
+            background-image: url('imagens_interface/fundo-auth.png'); /* Reutilizando se desejar, ou mude */
+            background-size: cover; background-position: center;
+            backdrop-filter: blur(6px);
+            padding: 0.875rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25), inset 0 0 6px rgba(255,255,255,0.02);
             text-align: center;
-            width: 100%; /* Ocupa 100% do .container */
+            width: 100%;
             position: relative;
         }
-        .title { /* Nome do jogo, ex: GAME FUN ou CAÇA-FRUTAS */
-            font-family: 'Russo One', sans-serif; /* Usando Russo One como no index */
-            font-size: clamp(1.8rem, 6vw, 2.5rem); /* Responsivo */
-            font-weight: 800; /* Russo One já é bold */
-            margin-bottom: 1rem; /* Reduzido */
-            color: #fff;
-            text-shadow: 0 0 3px #8b5cf6, 0 0 6px #8b5cf6, 0 0 10px #ec4899, 0 0 14px #ec4899; /* Sombra do logo do index */
-        }
-         .header-game { /* Para alinhar título e botão de logout */
+        .header-game {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 0.75rem;
+        }
+        .title-game { /* "GAME FUN" no jogo */
+            font-family: 'Russo One', sans-serif;
+            font-size: clamp(1.4rem, 4vw, 1.6rem);
+            color: #fff; text-transform: uppercase; letter-spacing: 1.2px;
+            text-shadow: 0 0 2px #8b5cf6, 0 0 4px #8b5cf6, 0 0 8px #ec4899, 0 0 12px #ec4899;
         }
         .logout-button {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(to right, #ef4444, #f97316);
+            background: linear-gradient(to right, #e53e3e, #dd6b20); /* Vermelho/Laranja */
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border: none;
-            border-radius: 8px;
-            font-size: 0.875rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
         .logout-button:hover {
-            background: linear-gradient(to right, #f87171, #fb923c);
+            background: linear-gradient(to right, #fc8181, #f6ad55);
             transform: translateY(-1px);
         }
         .reels {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 25px; /* Reduzido */
-            background-color: rgba(31, 41, 55, 0.7);
-            padding: 15px; /* Reduzido */
-            border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+            background-color: rgba(18, 24, 38, 0.6); /* Mais escuro e sutil */
+            padding: 0.75rem;
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
         }
         .reel {
-            width: clamp(60px, 18vw, 80px); /* Responsivo */
-            height: clamp(80px, 22vw, 100px); /* Responsivo */
-            background-color: #4b5563;
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: clamp(55px, 17vw, 70px); 
+            height: clamp(75px, 21vw, 90px); 
+            background-color: #303848; /* Cor de fundo do rolo */
+            border-radius: 8px;
+            display: flex; justify-content: center; align-items: center;
             overflow: hidden;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.1);
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.25);
             transition: box-shadow 0.3s ease;
         }
         .reel-image {
-            max-width: 80%; /* Responsivo dentro do .reel */
-            max-height: 80%; /* Responsivo dentro do .reel */
+            max-width: 75%; 
+            max-height: 75%; 
             object-fit: contain;
-            transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
+            transition: transform 0.08s ease-in-out, opacity 0.08s ease-in-out;
         }
-        .reel.spinning .reel-image {
-            animation: modernSpinImageAnimation 0.08s linear infinite;
-            box-shadow: none;
-        }
-        .reel.spinning {
-            box-shadow: inset 0 0 15px rgba(167, 139, 250, 0.5), 0 0 10px rgba(167, 139, 250, 0.3);
-        }
+        .reel.spinning .reel-image { animation: modernSpinImageAnimation 0.07s linear infinite; }
+        .reel.spinning { box-shadow: inset 0 0 10px rgba(147, 112, 219, 0.4), 0 0 8px rgba(147, 112, 219, 0.3); }
         @keyframes modernSpinImageAnimation {
-            0% { transform: translateY(-10px) scale(0.95); opacity: 0.7; }
-            50% { transform: translateY(10px) scale(1); opacity: 1; }
-            100% { transform: translateY(-10px) scale(0.95); opacity: 0.7; }
+            0% { transform: translateY(-8px) scale(0.9); opacity: 0.6; }
+            50% { transform: translateY(8px) scale(1); opacity: 1; }
+            100% { transform: translateY(-8px) scale(0.9); opacity: 0.6; }
         }
-        .controls button#spinButton { /* Específico para o botão de girar */
+        .controls button#spinButton {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(to right, #8b5cf6, #ec4899);
+            background: linear-gradient(to right, #702bbf, #c41d68);
             color: white;
-            padding: 12px 30px; /* Reduzido */
+            padding: 0.6rem 1.5rem; /* Botão um pouco maior que os de formulário */
             border: none;
-            border-radius: 12px;
-            font-size: 1.1rem; /* Reduzido */
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(236, 72, 153, 0.4);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            border-radius: 8px;
+            font-size: clamp(0.8rem, 2.8vw, 0.9rem); 
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2), 0 0 8px rgba(196, 29, 104, 0.3);
+            text-transform: uppercase; letter-spacing: 0.8px;
         }
         .controls button#spinButton:hover:not(:disabled) {
-            background: linear-gradient(to right, #a78bfa, #f472b6);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 30px rgba(236, 72, 153, 0.6);
-            transform: translateY(-3px) scale(1.05);
+            background: linear-gradient(to right, #813ed4, #dd2e7d);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25), 0 0 12px rgba(221, 46, 125, 0.4);
+            transform: translateY(-1px) scale(1.01);
         }
         .controls button#spinButton:disabled {
-            background: #4b5563; cursor: not-allowed; opacity: 0.6; box-shadow: none; transform: none;
+            background: #3b4252; cursor: not-allowed; opacity: 0.5; box-shadow: none; transform: none;
         }
-        .info { margin-top: 25px; font-size: 1rem; } /* Reduzido */
-        .info p { margin: 8px 0; background-color: rgba(31, 41, 55, 0.5); padding: 10px; border-radius: 10px; } /* Reduzido */
-        .message { font-weight: 600; min-height: 24px; font-size: 1rem; transition: color 0.3s ease; } /* Reduzido */
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(17, 24, 39, 0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
-        .modal-content { background-color: #374151; color: #d1d5db; margin: auto; padding: 25px; border: none; border-radius: 16px; width: 85%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-        .modal-content h2 { font-family: 'Poppins', sans-serif; font-weight: 700; margin-top: 0; margin-bottom: 12px; color: #fff; font-size: 1.6rem; } /* Reduzido */
-        .modal-content p { font-size: 1rem; margin-bottom: 20px; } /* Reduzido */
-        .modal-button { font-family: 'Poppins', sans-serif; background: linear-gradient(to right, #8b5cf6, #ec4899); color: white; padding: 10px 24px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.2); } /* Reduzido */
-        .modal-button:hover { background: linear-gradient(to right, #a78bfa, #f472b6); box-shadow: 0 6px 15px rgba(0,0,0,0.3); transform: translateY(-2px); }
+        .info { margin-top: 1rem; font-size: 0.85rem; }
+        .info p { margin: 0.4rem 0; background-color: rgba(18, 24, 38, 0.5); padding: 0.5rem; border-radius: 8px; }
+        .message { font-weight: 600; min-height: 1.2rem; font-size: 0.9rem; transition: color 0.3s ease; }
+        
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(17, 24, 39, 0.9); backdrop-filter: blur(4px); justify-content: center; align-items: center; padding: 1rem; }
+        .modal-content { background-color: #2d3748; color: #cbd5e0; margin: auto; padding: 1.25rem; border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+        .modal-content h2 { font-family: 'Poppins', sans-serif; font-weight: 700; margin-top: 0; margin-bottom: 0.75rem; color: #fff; font-size: 1.3rem; }
+        .modal-content p { font-size: 0.85rem; margin-bottom: 1rem; }
+        .modal-button { font-family: 'Poppins', sans-serif; background: linear-gradient(to right, #702bbf, #c41d68); color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 3px 7px rgba(0,0,0,0.2); }
+        .modal-button:hover { background: linear-gradient(to right, #813ed4, #dd2e7d); transform: translateY(-1px); }
 
-        #loadingOverlayGame { /* Renomeado para evitar conflito com index.html se ambos estivessem na mesma página */
-            position: absolute; inset: 0; background-color: rgba(31, 41, 55, 0.95);
+        #loadingOverlayGame {
+            position: absolute; inset: 0; background-color: rgba(30, 30, 50, 0.9); /* Tom do authScreen */
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 50; border-radius: 24px;
+            z-index: 50; border-radius: 16px; /* Mesmo raio do slot-machine */
         }
         .loader {
-            border-top-color: #8b5cf6; animation: spinner 1.2s linear infinite;
-            border: 8px solid #4b5563; border-top-width: 8px; border-top-style: solid;
-            width: 60px; height: 60px; /* Loader menor */
+            border-top-color: #8b5cf6; animation: spinner 1s linear infinite; /* Mais rápido */
+            border: 6px solid #4b5563; border-top-width: 6px; border-top-style: solid;
+            width: 40px; height: 40px; /* Loader menor */
         }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .hidden { display: none !important; } /* Utilitário para esconder elementos */
+        .hidden { display: none !important; }
 
-        /* Media query para telas muito pequenas, se necessário */
-        @media (max-width: 380px) {
-            .slot-machine { padding: 15px; }
-            .title { font-size: 1.5rem; }
-            .reels { padding: 10px; }
-            .reel { width: clamp(50px, 17vw, 70px); height: clamp(70px, 20vw, 90px); }
-            .controls button#spinButton { padding: 10px 20px; font-size: 1rem; }
+        @media (min-width: 768px) { /* Desktop */
+            .slot-machine { padding: 1.5rem; }
+            .header-game { margin-bottom: 1rem; }
+            .title-game { font-size: 2rem; }
+            .logout-button { padding: 0.6rem 1.2rem; font-size: 0.8rem;}
+            .reels { padding: 1rem; margin-bottom: 1.5rem; }
+            .reel { width: clamp(70px, 18vw, 90px); height: clamp(90px, 22vw, 110px); }
+            .controls button#spinButton { padding: 0.75rem 2rem; font-size: 1rem; }
+            .info { margin-top: 1.5rem; font-size: 0.9rem; }
+            .info p { padding: 0.6rem; }
+            .message { font-size: 1rem; min-height: 1.5rem; }
+            .modal-content { padding: 1.5rem; }
+            .modal-content h2 { font-size: 1.5rem; }
+            .modal-content p { font-size: 0.9rem; }
+            .modal-button { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container"> <div class="slot-machine hidden" id="gameScreenContent"> <div id="loadingOverlayGame"> <div class="loader ease-linear rounded-full mb-4"></div> <p id="loadingMessageGame" class="text-white text-lg font-semibold text-center px-4">A carregar dados...</p>
+    <div class="container-game">
+        <div class="slot-machine hidden" id="gameScreenContent">
+            <div id="loadingOverlayGame"> 
+                <div class="loader ease-linear rounded-full mb-3"></div>
+                <p id="loadingMessageGame" class="text-white text-md font-semibold text-center px-4">A carregar dados...</p>
             </div>
 
             <div class="header-game">
-                 <h1 class="title">GAME FUN</h1> <button id="logoutButton" class="logout-button">Sair</button>
+                 <h1 class="title-game">GAME FUN</h1>
+                 <button id="logoutButton" class="logout-button">Sair</button>
             </div>
             <div class="reels">
                 <div class="reel" id="reel1Container"><img src="" alt="Símbolo 1" class="reel-image" id="reel1Image"></div>
@@ -177,28 +180,30 @@
                 <button id="spinButton" disabled>Girar</button>
             </div>
             <div class="info">
-                <p>CRÉDITOS: <span id="creditsDisplay">0</span></p> <p class="message" id="messageDisplay">A carregar...</p> </div>
+                <p>CRÉDITOS: <span id="creditsDisplay">0</span></p>
+                <p class="message" id="messageDisplay">A carregar...</p>
+            </div>
         </div>
     </div>
 
     <div id="gameOverModal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle">FIM DE JOGO!</h2>
-            <p id="modalMessage">Você ficou sem créditos.</p>
-            <button id="modalAction одним" class="modal-button">COMPRAR CRÉDITOS</button>
+            <p id="modalMessageText">Você ficou sem créditos.</p>
+            <button id="modalActionButton" class="modal-button">COMPRAR CRÉDITOS</button>
         </div>
     </div>
 
     <script type="module">
-        // Importações do Firebase SDK
+        // Firebase SDK Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; // Adicionado increment
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // --- Configurações do Jogo e Firebase ---
         let fbApp, fbAuth, fbDb;
         let currentUserID = null;
-        let userCredits = 0; // Créditos do usuário vindos do Firebase
+        let userCredits = 0; 
 
         const SYMBOLS = [
             { name: 'Limão', emojiForMessage: '🍋', value: 'LEMON', imageSrc: 'imagens_frutas/limao.png', payout: { three: 50, two: 5 } },
@@ -210,11 +215,10 @@
             { name: 'Morango', emojiForMessage: '🍓', value: 'STRAWBERRY', imageSrc: 'imagens_frutas/Morango.png', payout: { three: 200, two: 20 } },
             { name: 'Banana', emojiForMessage: '🍌', value: 'BANANA', imageSrc: 'imagens_frutas/Banana.png', payout: { three: 80, two: 8 } }
         ];
-        const DEFAULT_IMAGE_SRC = 'imagens_frutas/Trevo.png';
+        const DEFAULT_IMAGE_SRC = 'imagens_frutas/Trevo.png'; // Certifique-se que esta imagem existe
         const SPIN_COST = 5;
         let isSpinning = false;
         const indexPageUrl = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'index.html';
-
 
         // --- DOM Elements ---
         const DOMElements = {
@@ -228,8 +232,8 @@
             messageDisplay: document.getElementById('messageDisplay'),
             gameOverModal: document.getElementById('gameOverModal'),
             modalTitle: document.getElementById('modalTitle'),
-            modalMessageText: document.getElementById('modalMessage'), // Renomeado para clareza
-            modalActionButton: document.getElementById('modalAction одним'),
+            modalMessageText: document.getElementById('modalMessageText'),
+            modalActionButton: document.getElementById('modalActionButton'),
             logoutButton: document.getElementById('logoutButton')
         };
 
@@ -239,15 +243,24 @@
             if (configFromStudio) {
                 try {
                     const parsed = JSON.parse(configFromStudio);
-                    if (parsed.apiKey && parsed.projectId === "jogosonlie-fadc2" && parsed.appId === "1:998401435610:web:f4c99f5e8cd92bee0702e3") {
-                        console.log("Usando configuração Firebase do Studio (jogo.html).");
+                    if (parsed.apiKey && parsed.projectId === "jogosonline-fadc2" && parsed.appId === "1:998401435610:web:f4c99f5e8cd92bee0702e3") {
+                        console.log("jogo.html: Usando configuração Firebase do Studio.");
                         return parsed;
                     }
-                    console.warn("Configuração Firebase do Studio inválida (jogo.html). Usando fallback.");
-                } catch (e) { console.error("Erro parse __firebase_config (jogo.html):", e); }
+                    console.warn("jogo.html: Configuração Firebase do Studio inválida. Usando fallback.");
+                } catch (e) { console.error("jogo.html: Erro parse __firebase_config:", e); }
             }
-            console.warn("Usando config Firebase hardcoded (jogo.html).");
-            return {  apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8", authDomain: "jogosonlie-fadc2.firebaseapp.com", projectId: "jogosonlie-fadc2", storageBucket: "jogosonlie-fadc2.appspot.com", messagingSenderId: "998401435610", appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3", measurementId: "G-7SF242R7P0" };
+            console.warn("jogo.html: Usando config Firebase hardcoded (fallback).");
+            // CONFIGURAÇÃO CORRIGIDA
+            return {
+                apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8",
+                authDomain: "jogosonline-fadc2.firebaseapp.com",
+                projectId: "jogosonline-fadc2",
+                storageBucket: "jogosonline-fadc2.firebasestorage.app",
+                messagingSenderId: "998401435610",
+                appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3",
+                measurementId: "G-7SF242R7P0"
+            };
         }
 
         // --- UI Update Functions ---
@@ -256,9 +269,9 @@
             DOMElements.spinButton.disabled = isSpinning || userCredits < SPIN_COST;
         }
 
-        function displayUIMessage(text, type = 'info') { // type: 'info', 'win', 'error'
+        function displayUIMessage(text, type = 'info') {
             DOMElements.messageDisplay.textContent = text;
-            DOMElements.messageDisplay.style.color = type === 'win' ? '#34d399' : (type === 'error' ? '#f87171' : '#e5e7eb');
+            DOMElements.messageDisplay.style.color = type === 'win' ? '#81c784' : (type === 'error' ? '#e57373' : '#e5e7eb');
         }
 
         function showUIGameOverModal(title, message) {
@@ -266,8 +279,7 @@
             DOMElements.modalMessageText.textContent = message;
             DOMElements.gameOverModal.style.display = 'flex';
             DOMElements.modalActionButton.onclick = () => {
-                // Leva para a página de compra de créditos (index.html, que mostrará a tela de pagamento)
-                window.location.href = indexPageUrl + '#payment'; // Adiciona um hash para index.html saber qual tela mostrar
+                window.location.href = indexPageUrl; // Leva para index, que forçará login e irá para pagamento
             };
         }
         function hideUIGameOverModal() {
@@ -277,18 +289,19 @@
         function setLoadingState(isLoading, message = "A carregar...") {
             DOMElements.loadingOverlay.style.display = isLoading ? 'flex' : 'none';
             DOMElements.loadingMessage.textContent = message;
-            DOMElements.spinButton.disabled = isLoading || isSpinning || userCredits < SPIN_COST;
+            // Botão de girar só é manipulado por updateUICredits ou diretamente no handleSpin
         }
 
         // --- Game Logic ---
         function initializeLocalGameAssets() {
+            console.log("jogo.html: initializeLocalGameAssets com créditos:", userCredits);
             DOMElements.reelImages.forEach(img => img.src = DEFAULT_IMAGE_SRC);
             updateUICredits();
             if (userCredits >= SPIN_COST) {
                 displayUIMessage('CLIQUE EM GIRAR!');
             } else {
-                displayUIMessage('SEM CRÉDITOS SUFICIENTES.', 'error');
-                showUIGameOverModal("SEM CRÉDITOS", "Você não tem créditos para jogar.");
+                displayUIMessage('SEM CRÉDITOS.', 'error');
+                showUIGameOverModal("SEM CRÉDITOS", "Você não tem créditos suficientes para jogar.");
             }
         }
 
@@ -297,57 +310,66 @@
         }
 
         async function handleSpin() {
+            console.log("jogo.html: handleSpin iniciado.");
             if (isSpinning || userCredits < SPIN_COST) {
-                if(userCredits < SPIN_COST) showUIGameOverModal("SEM CRÉDITOS", "Você precisa de mais créditos para girar.");
+                if(userCredits < SPIN_COST && !isSpinning) { // Mostra modal apenas se não estiver já girando
+                    showUIGameOverModal("SEM CRÉDITOS", "Você precisa de mais créditos para girar.");
+                }
                 return;
             }
 
             isSpinning = true;
+            const creditsBeforeSpin = userCredits; // Guarda para o caso de erro ao salvar
             userCredits -= SPIN_COST;
             displayUIMessage('GIRANDO...');
-            updateUICredits(); // Atualiza a UI e desabilita o botão de girar
+            updateUICredits(); 
 
-            // Salva os créditos no Firestore ANTES de determinar o resultado
             if (currentUserID) {
                 try {
+                    console.log(`jogo.html: Tentando salvar ${userCredits} créditos para ${currentUserID} (antes do giro).`);
                     await updateDoc(doc(fbDb, "users", currentUserID), { credits: userCredits });
+                    console.log(`jogo.html: Créditos salvos (antes do giro): ${userCredits}`);
                 } catch (error) {
-                    console.error("Erro ao salvar créditos antes do giro:", error);
-                    // Considerar como lidar com isso - talvez impedir o giro ou notificar
+                    console.error("jogo.html: ERRO ao salvar créditos ANTES do giro:", error);
+                    userCredits = creditsBeforeSpin; // Reverte os créditos localmente
+                    displayUIMessage("Erro ao iniciar giro. Tente novamente.", 'error');
+                    isSpinning = false;
+                    updateUICredits();
+                    return; // Impede o giro se não conseguir salvar
                 }
             }
 
             DOMElements.reelContainers.forEach(container => container.classList.add('spinning'));
-
-            const spinDuration = 1200;
-            const animationIntervalTime = 80;
-            let elapsed = 0;
             const finalResults = [];
-
-            const animation = setInterval(() => {
-                DOMElements.reelImages.forEach(img => {
-                    const randomSymbol = getRandomSymbol();
-                    img.src = randomSymbol?.imageSrc || DEFAULT_IMAGE_SRC;
-                });
-                elapsed += animationIntervalTime;
-                if (elapsed >= spinDuration) {
-                    clearInterval(animation);
+            const reelPromises = DOMElements.reelImages.map((imgElement, index) => {
+                return new Promise(resolve => {
+                    let spinAnimInterval;
+                    const spinTime = 1000 + (index * 500); // Rolos param em momentos diferentes
                     
-                    // Determina os resultados finais
-                    for (let i = 0; i < DOMElements.reelImages.length; i++) {
-                        const symbol = getRandomSymbol();
-                        finalResults.push(symbol);
-                        DOMElements.reelImages[i].src = symbol?.imageSrc || DEFAULT_IMAGE_SRC;
-                    }
-                    DOMElements.reelContainers.forEach(container => container.classList.remove('spinning'));
-                    processSpinResult(finalResults);
-                }
-            }, animationIntervalTime);
+                    spinAnimInterval = setInterval(() => {
+                        imgElement.src = getRandomSymbol()?.imageSrc || DEFAULT_IMAGE_SRC;
+                    }, 70);
+
+                    setTimeout(() => {
+                        clearInterval(spinAnimInterval);
+                        const finalSymbol = getRandomSymbol();
+                        imgElement.src = finalSymbol?.imageSrc || DEFAULT_IMAGE_SRC;
+                        DOMElements.reelContainers[index].classList.remove('spinning');
+                        finalResults[index] = finalSymbol;
+                        resolve();
+                    }, spinTime);
+                });
+            });
+
+            await Promise.all(reelPromises);
+            console.log("jogo.html: Animação dos rolos concluída.");
+            processSpinResult(finalResults);
         }
 
         async function processSpinResult(results) {
+            console.log("jogo.html: processSpinResult com:", results);
             if (!results || results.length < 3 || results.some(r => !r || typeof r.value === 'undefined')) {
-                console.error("Resultados inválidos:", results);
+                console.error("jogo.html: Resultados inválidos no processSpinResult:", results);
                 displayUIMessage("Erro no resultado. Tente novamente.", 'error');
                 isSpinning = false;
                 updateUICredits();
@@ -366,115 +388,168 @@
                 winAmount = s1.payout.two;
                 winMessage = `DOIS ${s1.name.toUpperCase()} ${s1.emojiForMessage}! +${winAmount} CRÉDITOS!`;
             } else if (s2.value === s3.value && s2.payout.two > 0 && s1.value !== s2.value) { 
-                // Garante que não é uma trinca já coberta e que os dois últimos são iguais
                 winAmount = s2.payout.two;
                 winMessage = `DOIS ${s2.name.toUpperCase()} ${s2.emojiForMessage} NO FINAL! +${winAmount} CRÉDITOS!`;
             }
 
-
+            const creditsBeforeWin = userCredits;
             if (winAmount > 0) {
                 userCredits += winAmount;
                 messageType = 'win';
             }
             
             displayUIMessage(winMessage, messageType);
-            updateUICredits(); // Atualiza UI com novos créditos e status do botão
+            updateUICredits();
 
-            // Salva os créditos no Firestore APÓS determinar o resultado e possível ganho
             if (currentUserID) {
                 try {
-                    await updateDoc(doc(fbDb, "users", currentUserID), { credits: userCredits });
+                    console.log(`jogo.html: Tentando salvar ${userCredits} créditos para ${currentUserID} (após resultado).`);
+                    await updateDoc(doc(fbDb, "users", currentUserID), { credits: userCredits }); // Salva o estado final dos créditos
+                    console.log(`jogo.html: Créditos salvos (após resultado): ${userCredits}`);
                 } catch (error) {
-                    console.error("Erro ao salvar créditos após o giro:", error);
+                    console.error("jogo.html: ERRO ao salvar créditos APÓS o giro:", error);
+                    userCredits = creditsBeforeWin; // Reverte localmente se o save falhar
+                    displayUIMessage("Erro ao salvar seu prêmio. Contate o suporte.", 'error');
+                    updateUICredits(); // Atualiza UI com créditos revertidos
                 }
             }
             
-            isSpinning = false; // Libera para próximo giro
+            isSpinning = false; 
 
-            if (userCredits < SPIN_COST && winAmount === 0) {
+            if (userCredits < SPIN_COST && winAmount === 0) { // Só mostra modal de fim de jogo se não ganhou nada e não tem créditos
                 setTimeout(() => {
-                    if(userCredits < SPIN_COST) { // Checa novamente
+                    if(userCredits < SPIN_COST && !isSpinning) {
                          showUIGameOverModal("FIM DE JOGO!", "Você ficou sem créditos.");
                     }
                 }, 1500);
             }
         }
         
-        // --- Firebase Related Functions ---
         async function loadUserData(userId) {
-            setLoadingState(true, "Carregando seus dados...");
+            console.log(`jogo.html: loadUserData chamado para o usuário: ${userId}`);
+            setLoadingState(true, "Carregando seus dados de jogo...");
+            if (!userId) {
+                console.error("jogo.html: loadUserData chamado sem userId! Redirecionando para login.");
+                setLoadingState(false);
+                DOMElements.gameScreenContent.classList.add('hidden');
+                displayUIMessage("Erro: ID do usuário não encontrado.", 'error');
+                setTimeout(() => window.location.href = indexPageUrl, 3000);
+                return;
+            }
+
             try {
                 const userDocRef = doc(fbDb, "users", userId);
                 const docSnap = await getDoc(userDocRef);
                 if (docSnap.exists()) {
                     userCredits = docSnap.data().credits !== undefined ? docSnap.data().credits : 0;
-                    console.log(`Créditos carregados do Firebase: ${userCredits}`);
+                    console.log(`jogo.html: Créditos carregados do Firebase: ${userCredits}`);
                 } else {
-                    console.warn(`Documento do usuário ${userId} não encontrado. Iniciando com 0 créditos.`);
+                    console.warn(`jogo.html: Documento do usuário ${userId} não encontrado. Iniciando com 0 créditos e criando documento.`);
                     userCredits = 0; 
-                    // Opcional: Criar documento se não existir, mas geralmente é feito no registro.
-                    // await setDoc(userDocRef, { credits: 0, email: fbAuth.currentUser.email /* etc */ });
+                    // Se o documento não existe, cria um básico. Idealmente, o registro no index.html já faz isso.
+                    // Esta é uma salvaguarda.
+                    try {
+                        await setDoc(userDocRef, { credits: 0, email: fbAuth.currentUser?.email || 'N/A', uid: userId });
+                        console.log(`jogo.html: Documento criado para novo usuário ${userId} com 0 créditos.`);
+                    } catch (setDocError) {
+                        console.error(`jogo.html: ERRO ao criar documento para novo usuário ${userId}:`, setDocError);
+                    }
                 }
             } catch (error) {
-                console.error("Erro ao carregar dados do usuário do Firebase:", error);
-                displayUIMessage("Erro ao carregar seus créditos. Tente recarregar.", 'error');
+                console.error("jogo.html: ERRO ao carregar dados do usuário do Firebase:", error);
+                displayUIMessage("Erro ao carregar seus créditos (" + error.code + "). Tente recarregar.", 'error');
                 userCredits = 0; // Fallback
             } finally {
-                initializeLocalGameAssets(); // Configura o jogo com os créditos carregados (ou fallback)
-                setLoadingState(false);
-                DOMElements.gameScreenContent.classList.remove('hidden'); // Mostra o conteúdo do jogo
+                console.log("jogo.html: loadUserData - Bloco finally. Inicializando assets do jogo local...");
+                initializeLocalGameAssets(); 
+                setLoadingState(false); 
+                console.log("jogo.html: Removendo 'hidden' de gameScreenContent.");
+                if (DOMElements.gameScreenContent) {
+                    DOMElements.gameScreenContent.classList.remove('hidden'); 
+                } else {
+                    console.error("jogo.html: ERRO - gameScreenContent não encontrado no DOM!");
+                }
             }
         }
 
         async function handleLogout() {
-            if (currentUserID) { // Salva os créditos antes de deslogar
+            console.log("jogo.html: handleLogout iniciado.");
+            if (currentUserID) { 
                 setLoadingState(true, "Salvando seus dados...");
                 try {
+                    console.log(`jogo.html: Tentando salvar ${userCredits} créditos para ${currentUserID} (antes do logout).`);
                     await updateDoc(doc(fbDb, "users", currentUserID), { credits: userCredits });
-                    console.log("Créditos salvos antes do logout.");
+                    console.log("jogo.html: Créditos salvos antes do logout.");
                 } catch (error) {
-                    console.error("Erro ao salvar créditos no logout:", error);
+                    console.error("jogo.html: ERRO ao salvar créditos no logout:", error);
+                    // Continua com o logout mesmo se o save falhar, para não prender o usuário.
                 }
             }
             signOut(fbAuth).then(() => {
-                console.log("Usuário deslogado.");
+                console.log("jogo.html: Usuário deslogado. Redirecionando...");
                 window.location.href = indexPageUrl;
             }).catch(error => {
-                console.error("Erro ao fazer logout:", error);
-                setLoadingState(false); // Libera o loading se o logout falhar
+                console.error("jogo.html: Erro ao fazer logout:", error);
+                setLoadingState(false); 
+                displayUIMessage("Erro ao sair. Tente novamente.", "error");
             });
         }
 
         // --- Game Initialization ---
         async function initializeAppAndGame() {
-            DOMElements.gameScreenContent.classList.add('hidden'); // Mantém escondido até carregar
+            console.log("jogo.html: initializeAppAndGame - INÍCIO");
+            DOMElements.gameScreenContent.classList.add('hidden'); 
             setLoadingState(true, "Conectando...");
 
             try {
                 const firebaseConfig = getFirebaseConfig();
-                if (!firebaseConfig.apiKey) throw new Error("Configuração do Firebase ausente.");
+                if (!firebaseConfig.apiKey) {
+                    console.error("jogo.html: Configuração do Firebase ausente.");
+                    throw new Error("Configuração do Firebase ausente.");
+                }
                 fbApp = initializeApp(firebaseConfig);
                 fbAuth = getAuth(fbApp);
                 fbDb = getFirestore(fbApp);
-                console.log("Firebase inicializado em jogo.html.");
-            } catch (error) {
-                console.error("Erro crítico ao inicializar Firebase em jogo.html:", error);
-                setLoadingState(true, `Erro de conexão: ${error.message}. Redirecionando...`);
-                setTimeout(() => window.location.href = indexPageUrl, 3000);
-                return;
+                console.log("jogo.html: Firebase inicializado com sucesso.");
+            } catch (error) { 
+                console.error("jogo.html: ERRO CRÍTICO ao inicializar Firebase:", error);
+                setLoadingState(true, `Erro de conexão: ${error.message}. Verifique o console. Redirecionando em 5s...`);
+                setTimeout(() => window.location.href = indexPageUrl, 5000);
+                return; 
             }
 
+            console.log("jogo.html: Configurando onAuthStateChanged...");
             onAuthStateChanged(fbAuth, (user) => {
+                console.log("jogo.html: onAuthStateChanged disparado. User:", user ? user.uid : null);
                 if (user) {
+                    if (currentUserID === user.uid) {
+                        console.log("jogo.html: onAuthStateChanged - usuário já é o atual, não recarregar dados desnecessariamente.");
+                        // Isso pode acontecer. Se os dados já foram carregados, talvez não precise fazer nada
+                        // ou apenas uma atualização leve da UI se necessário.
+                        // Por segurança, se gameScreenContent ainda estiver hidden, mostre.
+                        if(DOMElements.gameScreenContent.classList.contains('hidden') && userCredits > 0){
+                             console.log("jogo.html: Forçando exibição do jogo pois usuário é o mesmo e créditos > 0");
+                             setLoadingState(false);
+                             DOMElements.gameScreenContent.classList.remove('hidden');
+                        }
+                        return; 
+                    }
                     currentUserID = user.uid;
-                    console.log("Usuário autenticado:", currentUserID);
+                    console.log("jogo.html: Usuário autenticado:", currentUserID);
+                    
+                    DOMElements.spinButton.removeEventListener('click', handleSpin); // Remove listener antigo
+                    DOMElements.logoutButton.removeEventListener('click', handleLogout); // Remove listener antigo
+                
                     DOMElements.spinButton.addEventListener('click', handleSpin);
                     DOMElements.logoutButton.addEventListener('click', handleLogout);
-                    // O botão do modal de game over já redireciona para index.html
                     
-                    loadUserData(currentUserID); // Carrega dados do usuário e então inicializa o jogo localmente
+                    loadUserData(currentUserID); 
                 } else {
-                    console.log("Nenhum usuário logado. Redirecionando para login...");
+                    currentUserID = null; 
+                    console.log("jogo.html: Nenhum usuário logado. Redirecionando para login...");
+                    // Esconde o conteúdo do jogo e mostra overlay de loading antes de redirecionar
+                    DOMElements.gameScreenContent.classList.add('hidden');
+                    setLoadingState(true, "Sessão encerrada. Redirecionando...");
                     window.location.href = indexPageUrl;
                 }
             });
