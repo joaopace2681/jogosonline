@@ -55,7 +55,7 @@
             font-size: 0.6rem; 
             color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.4px;
         }
-        .form-group input, .form-group select {
+        .form-group input, .form-group select { /* Select removido do HTML, mas estilo mantido caso precise */
             width: 100%; padding: 0.5rem 0.4rem; 
             border-radius: 6px; 
             border: 1px solid #424a58; 
@@ -75,7 +75,7 @@
         .switch-auth-link a { color: #b0a4fc; font-weight: 600; } 
         .switch-auth-link a:hover { color: #fff; }
 
-        .submit-button, .payment-button, .pix-confirm-button {
+        .submit-button { /* Apenas submit-button agora, .payment-button removido */
             margin-top: 0.8rem; width: 100%; font-family: 'Poppins', sans-serif;
             background: linear-gradient(to right, #702bbf, #c41d68); 
             color: white;
@@ -87,23 +87,20 @@
             box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2), 0 0 8px rgba(196, 29, 104, 0.3); 
             text-transform: uppercase; letter-spacing: 0.8px;
         }
-        .submit-button:hover, .payment-button:hover, .pix-confirm-button:hover {
+        .submit-button:hover {
             background: linear-gradient(to right, #813ed4, #dd2e7d);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25), 0 0 12px rgba(221, 46, 125, 0.4);
             transform: translateY(-1px) scale(1.01); 
         }
-        .submit-button:disabled { background: #3b4252 !important; cursor: not-allowed; opacity: 0.5; box-shadow: none; transform: none; }
+        .submit-button:disabled { 
+             background: #3b4252 !important; cursor: not-allowed; opacity: 0.5; box-shadow: none; transform: none;
+        }
 
         .auth-message { text-align: center; margin-top: 0.6rem; font-size: 0.7rem; min-height: 0.9rem; } 
         .auth-message.error { color: #e57373; } 
         .auth-message.success { color: #81c784; } 
 
         .hidden { display: none !important; }
-
-        #pixInfoContainer { margin-top: 0.8rem; padding: 0.6rem; background-color: rgba(255, 255, 255, 0.05); border-radius: 8px; } 
-        #pixQrCode { width: 120px; height: 120px; margin: 0 auto 0.6rem; background-color: white; padding: 4px; border-radius: 6px; } 
-        #pixKeyDisplay { font-weight: 600; padding: 0.4rem; border-radius: 4px; margin-bottom: 0.4rem; font-size: 0.7rem;} 
-        .copy-feedback { font-size: 0.65rem; min-height: 0.8rem; margin-top: 0.2rem; margin-bottom: 0.5rem; } 
 
         @media (min-width: 768px) { 
             .container {
@@ -113,7 +110,7 @@
                 padding: 1.5rem; 
             }
             #authLogo {
-                max-width: 120px; /* Mantido menor para um look mais clean no desktop também */
+                max-width: 120px;
             }
             .text-logo { 
                 font-size: 1.8rem; 
@@ -133,23 +130,17 @@
                 font-size: 0.8rem; 
                 padding: 0.6rem 0.5rem; 
             }
-            .submit-button, .payment-button, .pix-confirm-button {
+            .submit-button { /* Apenas submit-button */
                 font-size: 0.9rem; 
                 padding: 0.7rem 1.2rem;
                 margin-top: 1rem;
             }
-             #pixQrCode {
-                width: 140px; height: 140px; margin-bottom: 0.8rem;
-            }
-            #pixKeyDisplay { font-size: 0.8rem; padding: 0.5rem; }
-            .copy-feedback { font-size: 0.7rem; margin-bottom: 0.8rem;}
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="authScreen" class="hidden">
-            <div id="authContent">
+        <div id="authScreen" class="hidden"> <div id="authContent">
                 <div class="auth-logo-container">
                     <img id="authLogo" src="imagens_interface/logo-game-fun.png" alt="GAME FUN Logo">
                     <div id="textLogoFallback" class="text-logo hidden">GAME FUN</div>
@@ -167,8 +158,7 @@
                             <label for="loginPassword">Senha</label>
                             <input type="password" id="loginPassword" name="loginPassword" required>
                         </div>
-                        <button type="submit" class="submit-button">Entrar</button>
-                        <p id="loginAuthMessage" class="auth-message"></p>
+                        <button type="submit" class="submit-button">Entrar e Jogar</button> <p id="loginAuthMessage" class="auth-message"></p>
                     </form>
                     <p class="switch-auth-link">Não tem conta? <a href="#" id="showRegisterLink">Cadastre-se aqui</a></p>
                 </div>
@@ -199,48 +189,20 @@
                     <p class="switch-auth-link">Já tem uma conta? <a href="#" id="showLoginLinkFromRegister">Faça login</a></p>
                 </div>
 
-                <div id="paymentScreen" class="screen hidden">
-                    <h2 class="screen-title">Comprar Créditos</h2>
-                    <p id="paymentUserInfo" class="text-center mb-4"></p>
-                    <div id="paymentOptions">
-                        <div class="form-group">
-                            <label for="paymentAmount">Valor do Depósito (R$)</label>
-                            <select id="paymentAmount" class="form-group input">
-                                <option value="5">R$ 5,00 (10 créditos)</option>
-                                <option value="10">R$ 10,00 (20 créditos)</option>
-                                <option value="20">R$ 20,00 (40 créditos)</option>
-                                <option value="50">R$ 50,00 (100 créditos)</option>
-                            </select>
-                        </div>
-                        <button id="initiatePixPaymentButton" class="payment-button submit-button">Pagar com PIX</button>
-                    </div>
-                    <div id="pixInfoContainer" class="hidden">
-                        <p class="mb-2 text-sm">Escaneie o QR Code ou copie a chave PIX:</p>
-                        <img id="pixQrCode" src="imagens_interface/qrcode-pix-placeholder.png" alt="QR Code PIX">
-                        <p id="qrCodeErrorMessage" class="text-red-500 text-xs mt-1 hidden">Não foi possível carregar o QR Code. Use a chave PIX abaixo.</p>
-                        <p class="mt-2 text-sm">Chave PIX (Email):</p>
-                        <p id="pixKeyDisplay" class="font-mono text-sm"></p>
-                        <div id="copyFeedback" class="copy-feedback"></div>
-                        <button id="paymentConfirmedButton" class="pix-confirm-button submit-button mt-4">Já Paguei / Continuar</button>
-                    </div>
-                    <p id="paymentMessage" class="auth-message"></p>
-                    <p class="switch-auth-link"><a href="#" id="cancelPaymentLink">Cancelar e Sair</a></p>
                 </div>
-            </div>
         </div>
     </div>
 
     <script type="module">
         // Firebase SDK Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; // updateDoc e increment não são mais usados aqui
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // --- Application State ---
         let fbApp, fbAuth, fbDb;
         let currentUserID = null;
-        let currentUserDisplayName = '';
-        const PIX_KEY = "obapremiacoes@gmail.com";
+        // currentUserDisplayName não é mais usado aqui para info de pagamento
 
         // --- DOM Elements ---
         const DOMElements = {
@@ -258,19 +220,7 @@
             registrationForm: document.getElementById('registrationForm'),
             registerAuthMessage: document.getElementById('registerAuthMessage'),
             showLoginLinkFromRegister: document.getElementById('showLoginLinkFromRegister'),
-            paymentScreen: document.getElementById('paymentScreen'),
-            paymentUserInfo: document.getElementById('paymentUserInfo'),
-            paymentAmountSelect: document.getElementById('paymentAmount'),
-            initiatePixPaymentButton: document.getElementById('initiatePixPaymentButton'),
-            paymentOptionsDiv: document.getElementById('paymentOptions'),
-            pixInfoContainer: document.getElementById('pixInfoContainer'),
-            pixQrCodeImg: document.getElementById('pixQrCode'),
-            qrCodeErrorMessage: document.getElementById('qrCodeErrorMessage'),
-            pixKeyDisplay: document.getElementById('pixKeyDisplay'),
-            copyFeedback: document.getElementById('copyFeedback'),
-            paymentConfirmedButton: document.getElementById('paymentConfirmedButton'),
-            paymentMessage: document.getElementById('paymentMessage'),
-            cancelPaymentLink: document.getElementById('cancelPaymentLink'),
+            // Elementos da tela de pagamento foram removidos
         };
         
         const gamePageUrl = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'jogo.html';
@@ -291,12 +241,11 @@
                 }
             }
             console.warn("Usando configuração Firebase hardcoded (fallback).");
-            // OBJETO FIREBASECONFIG CORRIGIDO AQUI:
             return {
                 apiKey: "AIzaSyDzSYVDE14MSP_hVH1Bss7t-wcTDZzRfm8",
-                authDomain: "jogosonline-fadc2.firebaseapp.com", // CORRIGIDO
-                projectId: "jogosonline-fadc2",                 // CORRIGIDO
-                storageBucket: "jogosonline-fadc2.firebasestorage.app", // CORRIGIDO
+                authDomain: "jogosonline-fadc2.firebaseapp.com", 
+                projectId: "jogosonline-fadc2",                 
+                storageBucket: "jogosonline-fadc2.firebasestorage.app", 
                 messagingSenderId: "998401435610",
                 appId: "1:998401435610:web:f4c99f5e8cd92bee0702e3",
                 measurementId: "G-7SF242R7P0"
@@ -305,45 +254,33 @@
         
         // --- UI Helper Functions ---
         function showScreen(screenName) {
-            ['loginScreen', 'registrationScreen', 'paymentScreen'].forEach(id => {
+            // Apenas loginScreen e registrationScreen são gerenciadas agora
+            ['loginScreen', 'registrationScreen'].forEach(id => {
                 DOMElements[id]?.classList.add('hidden');
             });
             DOMElements[screenName]?.classList.remove('hidden');
-            clearAuthMessages();
+            if(DOMElements.loginAuthMessage) DOMElements.loginAuthMessage.textContent = '';
+            if(DOMElements.registerAuthMessage) DOMElements.registerAuthMessage.textContent = '';
         }
-
-        function displayMessage(element, message, isError = true) {
+        function displayMessage(element, message, isError = true) { 
             if (!element) return;
             element.textContent = message;
             element.className = `auth-message ${isError ? 'error' : 'success'}`;
             setTimeout(() => { if (element) element.textContent = ''; }, 7000);
         }
-        
-        function displayGlobalFirebaseError(message) {
+        function displayGlobalFirebaseError(message) { 
             if (DOMElements.firebaseError) {
                 DOMElements.firebaseError.textContent = message;
                 DOMElements.firebaseError.classList.remove('hidden');
             }
             disableForms(true);
         }
-
-        function disableForms(disabled) {
+        function disableForms(disabled) { 
             DOMElements.loginForm?.querySelector('button[type="submit"]')?.toggleAttribute('disabled', disabled);
             DOMElements.registrationForm?.querySelector('button[type="submit"]')?.toggleAttribute('disabled', disabled);
-            DOMElements.initiatePixPaymentButton?.toggleAttribute('disabled', disabled);
         }
-
-        function clearAuthMessages() {
-            if(DOMElements.loginAuthMessage) DOMElements.loginAuthMessage.textContent = '';
-            if(DOMElements.registerAuthMessage) DOMElements.registerAuthMessage.textContent = '';
-            if(DOMElements.paymentMessage) DOMElements.paymentMessage.textContent = '';
-        }
-
-        function formatAsReal(value) {
-            return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-
-        function setupLogo() {
+        // clearAuthMessages é chamada dentro de showScreen
+        function setupLogo() { 
             if (!DOMElements.authLogo) return;
             DOMElements.authLogo.onerror = () => {
                 DOMElements.authLogo.classList.add('hidden');
@@ -356,10 +293,10 @@
         }
 
         // --- Firebase Initialization ---
-        async function initializeFirebase() {
+        async function initializeFirebase() { 
             const firebaseConfig = getFirebaseConfig();
             if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.appId) {
-                displayGlobalFirebaseError("Configuração do Firebase inválida ou incompleta. Verifique apiKey, projectId e appId.");
+                displayGlobalFirebaseError("Configuração do Firebase inválida. Verifique apiKey, projectId e appId.");
                 return false;
             }
             try {
@@ -378,7 +315,7 @@
         }
 
         // --- Authentication Logic ---
-        async function handleRegistration(event) {
+        async function handleRegistration(event) { 
             event.preventDefault();
             const form = event.target;
             const submitButton = form.querySelector('button[type="submit"]');
@@ -420,10 +357,12 @@
                     uid: user.uid, fullName, email, phone, cpf,
                     address: { street, number, neighborhood, city, state, zip },
                     createdAt: new Date().toISOString(),
-                    credits: 0, valorCofre: 0
+                    credits: 0, // Novo usuário começa com 0 créditos
+                    valorCofre: 0 
                 };
                 await setDoc(doc(fbDb, "users", user.uid), userProfileData);
-                console.log("Usuário cadastrado:", user.uid);
+                console.log("Usuário cadastrado e perfil inicial salvo:", user.uid);
+                // onAuthStateChanged cuidará do redirecionamento para o jogo
             } catch (error) {
                 console.error("Erro ao registrar:", error);
                 displayMessage(DOMElements.registerAuthMessage, getFirebaseAuthErrorMessage(error));
@@ -432,8 +371,7 @@
                 submitButton.textContent = 'Cadastrar e Jogar';
             }
         }
-
-        async function handleLogin(event) {
+        async function handleLogin(event) { 
             event.preventDefault();
             const form = event.target;
             const submitButton = form.querySelector('button[type="submit"]');
@@ -443,116 +381,40 @@
             const password = DOMElements.loginPasswordInput.value;
             try {
                 await signInWithEmailAndPassword(fbAuth, email, password);
-                console.log("Tentativa de login para:", email);
+                console.log("Tentativa de login bem-sucedida para:", email);
+                // onAuthStateChanged cuidará do redirecionamento para o jogo
             } catch (error) {
                 console.error("Erro ao fazer login:", error);
                 displayMessage(DOMElements.loginAuthMessage, getFirebaseAuthErrorMessage(error));
             } finally {
                 submitButton.disabled = false;
-                submitButton.textContent = 'Entrar';
+                submitButton.textContent = 'Entrar e Jogar';
             }
         }
-
-        function getFirebaseAuthErrorMessage(error) {
+        function getFirebaseAuthErrorMessage(error) { 
             switch (error.code) {
                 case 'auth/email-already-in-use': return "Este email já está em uso.";
-                case 'auth/weak-password': return "A senha é muito fraca (mínimo 6 caracteres).";
+                case 'auth/weak-password': return "A senha é muito fraca.";
                 case 'auth/invalid-email': return "Formato de email inválido.";
                 case 'auth/user-not-found':
                 case 'auth/wrong-password':
                 case 'auth/invalid-credential': return "Email ou senha inválidos.";
-                case 'auth/too-many-requests': return "Muitas tentativas de login. Tente mais tarde.";
+                case 'auth/too-many-requests': return "Muitas tentativas. Tente mais tarde.";
                 default: return `Erro: ${error.message || 'Ocorreu um problema.'}`;
             }
         }
 
-        // --- Payment Logic ---
-        function updatePaymentScreenUserInfo() {
-            DOMElements.paymentUserInfo.textContent = `Olá, ${currentUserDisplayName || 'Jogador'}! Escolha um valor:`;
-            DOMElements.paymentOptionsDiv.classList.remove('hidden');
-            DOMElements.pixInfoContainer.classList.add('hidden');
-            DOMElements.paymentMessage.textContent = '';
-        }
-
-        function handleInitiatePixPayment() {
-            if (!currentUserID) {
-                displayMessage(DOMElements.paymentMessage, "Erro: Usuário não autenticado.");
-                return;
-            }
-            const selectedValue = parseFloat(DOMElements.paymentAmountSelect.value);
-            const qrCodeData = `PIX para: ${PIX_KEY}, Valor: ${formatAsReal(selectedValue)}`;
-            DOMElements.paymentOptionsDiv.classList.add('hidden');
-            DOMElements.pixInfoContainer.classList.remove('hidden');
-            DOMElements.paymentMessage.textContent = 'Escaneie o QR Code ou copie a chave PIX.';
-            DOMElements.pixKeyDisplay.textContent = PIX_KEY;
-            DOMElements.pixQrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrCodeData)}`;
-            DOMElements.pixQrCodeImg.alt = "QR Code PIX";
-            DOMElements.qrCodeErrorMessage.classList.add('hidden');
-            DOMElements.pixQrCodeImg.onerror = () => {
-                DOMElements.pixQrCodeImg.classList.add('hidden');
-                DOMElements.qrCodeErrorMessage.textContent = "QR Code indisponível. Use a chave PIX.";
-                DOMElements.qrCodeErrorMessage.classList.remove('hidden');
-            };
-        }
-
-        async function handlePaymentConfirmation() {
-            console.log("handlePaymentConfirmation: INÍCIO da função.");
-            if (!currentUserID) {
-                displayMessage(DOMElements.paymentMessage, "Erro: Usuário não autenticado para processar pagamento.");
-                console.error("handlePaymentConfirmation: ERRO - currentUserID é nulo ou indefinido.");
-                DOMElements.paymentConfirmedButton.disabled = false;
-                DOMElements.paymentConfirmedButton.textContent = 'Já Paguei / Continuar';
-                return;
-            }
-            console.log(`handlePaymentConfirmation: Processando para currentUserID = ${currentUserID}`);
-
-            const selectedValue = parseFloat(DOMElements.paymentAmountSelect.value);
-            const creditsToGive = selectedValue * 2; 
-
-            displayMessage(DOMElements.paymentMessage, `Confirmando ${formatAsReal(selectedValue)}...`, false);
-            DOMElements.paymentConfirmedButton.disabled = true;
-            DOMElements.paymentConfirmedButton.textContent = 'Confirmando...';
-
-            console.warn("ALERTA: Adição de créditos no CLIENT-SIDE. Inseguro para produção.");
-            console.log(`Tentando adicionar ${creditsToGive} créditos para o usuário ${currentUserID}.`);
-
-            try {
-                const userDocRef = doc(fbDb, "users", currentUserID);
-                console.log("handlePaymentConfirmation: Referência do documento (userDocRef.path):", userDocRef.path);
-
-                await updateDoc(userDocRef, { credits: increment(creditsToGive) });
-                console.log(`SUCESSO: ${creditsToGive} créditos foram processados para ${currentUserID} no Firestore.`);
-                
-                console.log("Redirecionando para a página do jogo:", gamePageUrl);
-                window.location.href = gamePageUrl;
-
-            } catch (error) {
-                console.error("ERRO CRÍTICO ao atualizar créditos ou durante o processo de redirecionamento:", error); 
-                console.error("Detalhes do erro - Código:", error.code, "Mensagem:", error.message);
-                displayMessage(DOMElements.paymentMessage, `Erro (${error.code || 'desconhecido'}) ao processar pagamento. Tente novamente.`, true);
-                
-                DOMElements.paymentConfirmedButton.disabled = false;
-                DOMElements.paymentConfirmedButton.textContent = 'Já Paguei / Continuar';
-            }
-        }
-
-        function copyPixKey() {
-            navigator.clipboard.writeText(PIX_KEY).then(() => {
-                DOMElements.copyFeedback.textContent = 'Chave PIX copiada!';
-            }).catch(err => { DOMElements.copyFeedback.textContent = 'Erro ao copiar.'; });
-            setTimeout(() => { if(DOMElements.copyFeedback) DOMElements.copyFeedback.textContent = ''; }, 2000);
-        }
+        // --- Funções de Pagamento Removidas ---
 
         // --- Event Listeners ---
         function setupEventListeners() {
             DOMElements.loginForm?.addEventListener('submit', handleLogin);
             DOMElements.registrationForm?.addEventListener('submit', handleRegistration);
+            
             DOMElements.showRegisterLink?.addEventListener('click', (e) => { e.preventDefault(); showScreen('registrationScreen'); });
             DOMElements.showLoginLinkFromRegister?.addEventListener('click', (e) => { e.preventDefault(); showScreen('loginScreen'); });
-            DOMElements.initiatePixPaymentButton?.addEventListener('click', handleInitiatePixPayment);
-            DOMElements.pixKeyDisplay?.addEventListener('click', copyPixKey);
-            DOMElements.paymentConfirmedButton?.addEventListener('click', handlePaymentConfirmation);
-            DOMElements.cancelPaymentLink?.addEventListener('click', (e) => { e.preventDefault(); showScreen('loginScreen'); });
+            
+            // Listeners de pagamento removidos
         }
 
         // --- Application Initialization ---
@@ -562,6 +424,7 @@
             const firebaseReady = await initializeFirebase();
             if (!firebaseReady) return; 
 
+            // Lógica para forçar logout ao carregar index.html
             if (fbAuth.currentUser) {
                 console.log("Usuário persistido encontrado. Invalidando sessão (signOut)...");
                 try {
@@ -572,21 +435,20 @@
                 }
             }
             
-            showScreen('loginScreen');
+            showScreen('loginScreen'); // Sempre começa na tela de login
             setupEventListeners();
 
             onAuthStateChanged(fbAuth, (user) => {
                 if (user) {
-                    currentUserID = user.uid;
-                    currentUserDisplayName = user.displayName || user.email; 
-                    console.log("Usuário LOGADO (após login explícito):", currentUserID);
-                    showScreen('paymentScreen');
-                    updatePaymentScreenUserInfo();
+                    currentUserID = user.uid; // Definido, mas não usado mais nesta página para UI
+                    console.log("Usuário LOGADO (após login/registro explícito):", currentUserID);
+                    // Redireciona IMEDIATAMENTE para o jogo
+                    console.log("Redirecionando para a página do jogo:", gamePageUrl);
+                    window.location.href = gamePageUrl;
                 } else {
                     currentUserID = null;
-                    currentUserDisplayName = '';
-                    console.log("Nenhum usuário conectado / sessão invalidada. Tela de login.");
-                    showScreen('loginScreen'); 
+                    console.log("Nenhum usuário conectado / sessão invalidada. Exibindo tela de login.");
+                    showScreen('loginScreen'); // Garante que fique na tela de login
                 }
             });
         }
