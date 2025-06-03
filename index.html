@@ -6,9 +6,6 @@
     <title>GAME FUN - Autenticação</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&family=Russo+One&display=swap" rel="stylesheet">
-    <!-- Script do reCAPTCHA Enterprise comentado para teste local
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeUzFArAAAAAH7w3RYY_MM6LKq1fzaP3hJcRGy7" async defer></script>
-    -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -735,7 +732,7 @@
                     });
 
                     console.log(`${creditsToGive} créditos adicionados para ${currentUserId}`);
-                    window.location.href = gamePageUrl; // Redireciona para jogo.html
+                    window.location.href = gamePageUrl; 
 
                 } catch (error) {
                     console.error("Erro ao atualizar créditos após confirmação de pagamento:", error);
@@ -753,30 +750,33 @@
             });
         }
         
-        // Lógica de exibição inicial
         authScreen.classList.remove('hidden'); 
         authContent.classList.remove('hidden'); 
-        // Força sempre a tela de login ao carregar, mesmo se houver sessão Firebase.
-        // O usuário precisará fazer login ativamente.
-        switchToLoginScreen();
 
         if (firebaseInitialized && auth) {
             onAuthStateChanged(auth, (user) => {
+                // Força sempre a tela de login ao carregar a página, mesmo se houver sessão Firebase.
+                currentUserId = null;
+                currentUser = null;
+                console.log("Forçando exibição da tela de login.");
+                authScreen.classList.remove('hidden');
+                loginScreen.classList.remove('hidden'); 
+                registrationScreen.classList.add('hidden'); 
+                paymentScreen.classList.add('hidden');
+                if (firebaseErrorElement) firebaseErrorElement.classList.add('hidden');
+
+                // Se um usuário for detectado (mesmo que estejamos forçando o login visual),
+                // podemos armazenar os dados para uso após o login ativo.
                 if (user) {
-                    currentUserId = user.uid;
-                    currentUser = user; 
-                    console.log("Sessão Firebase detectada para:", currentUserId, ". Usuário precisará logar novamente ou será direcionado para pagamento após login.");
-                    // Não redireciona automaticamente para pagamento aqui, espera o login ativo.
-                } else {
-                    currentUserId = null;
-                    currentUser = null;
-                    console.log("Nenhum usuário logado (onAuthStateChanged).");
+                    console.log("Sessão Firebase pré-existente detectada para:", user.uid);
+                    // Não redireciona ou mostra a tela de pagamento automaticamente aqui.
                 }
             });
         } else {
-             // Se o Firebase não inicializou, a mensagem de erro global já foi exibida.
-             // Garante que a tela de login seja a padrão.
-             switchToLoginScreen();
+             authScreen.classList.remove('hidden');
+             loginScreen.classList.remove('hidden');
+             registrationScreen.classList.add('hidden');
+             paymentScreen.classList.add('hidden');
         }
     </script>
 </body>
@@ -784,8 +784,6 @@
 ```
 
 **2. `jogo.html` (Página do Jogo)**
-Este arquivo também foi atualizado com a configuração correta do Firebase.
-
 
 ```html
 <!DOCTYPE html>
